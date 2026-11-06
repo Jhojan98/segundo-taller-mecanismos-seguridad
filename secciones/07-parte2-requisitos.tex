@@ -1,0 +1,114 @@
+\section{Requisitos funcionales}
+
+La Tabla~\ref{tab:requisitos-funcionales} recoge los requisitos funcionales mínimos del sistema. El equipo debe completar la prioridad, el criterio de aceptación y el estado de implementación.
+
+\begin{table}[H]
+	\caption{Requisitos funcionales de la solución}
+	\label{tab:requisitos-funcionales}
+	\centering
+	\footnotesize
+	\setlength{\tabcolsep}{3pt}
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabularx}{\textwidth}{@{}c >{\raggedright\arraybackslash}p{0.18\textwidth} Y c Y@{}}
+		\toprule
+		\textbf{Código} & \textbf{Requisito} & \textbf{Descripción} & \textbf{Prioridad} & \textbf{Criterio de aceptación} \\
+		\midrule
+		RF-01 & Registro por número telefónico & El sistema debe registrar y vincular dispositivos a través del número telefónico. & Alta & \\
+		RF-02 & Solicitud y captura de ubicación & Permitir al usuario objetivo enviar su ubicación actual o automática. & Alta & \\
+		RF-03 & Actualización periódica & Capturar la ubicación del dispositivo cada intervalo definido (por ejemplo, cada 10 minutos). & Media & \\
+		RF-04 & Visualización en mapa & Mostrar la ubicación en un mapa integrado (Google Maps, OpenStreetMap u otro). & Alta & \\
+		RF-05 & Alertas (opcional) & Alertar si el dispositivo entra o sale de una zona geográfica (geofencing). & Baja & \\
+		RF-06 & Historial de ubicaciones & Guardar y consultar ubicaciones pasadas por fecha y hora. & Alta & \\
+		RF-07 & Acceso seguro & Autenticar al usuario y autorizar el acceso a las ubicaciones propias o compartidas. & Alta & \\
+		& & & & \\
+		& & & & \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\section{Requisitos técnicos}
+
+La solución se compone de una aplicación móvil, un bot opcional, un backend con API REST, una base de datos y una capa de visualización. La Tabla~\ref{tab:componentes-tecnicos} resume los componentes y las tecnologías sugeridas.
+
+\begin{table}[H]
+	\caption{Componentes técnicos y tecnologías sugeridas}
+	\label{tab:componentes-tecnicos}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.20\textwidth} Y >{\raggedright\arraybackslash}p{0.18\textwidth} c c@{}}
+		\toprule
+		\textbf{Componente} & \textbf{Requisito técnico} & \textbf{Tecnología sugerida} & \textbf{Versión} & \textbf{Estado} \\
+		\midrule
+		Aplicación móvil & Captura GPS y envío periódico de coordenadas. & Android/iOS nativo o Flutter/React Native. & & \\
+		Bot de Telegram & Solicitud manual de ubicación y autorización del usuario. & Bot API de Telegram. & & \\
+		Backend & API REST para registrar usuarios y recibir ubicaciones. & Python, Node.js, PHP o similar. & & \\
+		Base de datos & Persistencia de usuarios, dispositivos, ubicaciones y consentimientos. & PostgreSQL, MongoDB o Firebase. & & \\
+		Autenticación & Registro y acceso por número y token. & JWT, OAuth 2.0 o sesiones seguras. & & \\
+		Mapa & Visualización y geocodificación inversa. & Google Maps, Mapbox o Leaflet.js. & & \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\subsection{Aplicación móvil}
+
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item Aplicación Android/iOS instalada en el dispositivo objetivo.
+	\item Solicitud de permisos de GPS y localización en el momento de la instalación o del primer uso.
+	\item Envío periódico de coordenadas al servidor (backend).
+	\item Vinculación con el número telefónico mediante SMS o código de verificación.
+	\item Indicador visible de que la ubicación se está compartiendo y opción de detenerla.
+\end{itemize}
+
+\subsection{Bot en Telegram (opcional)}
+
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item El bot puede solicitar la ubicación manual mediante botones.
+	\item No puede rastrear automáticamente sin que el usuario envíe su ubicación.
+	\item Requiere que el usuario inicie el chat y autorice el envío.
+	\item El bot debe informar la finalidad, el tiempo de retención y la forma de revocar el consentimiento.
+\end{itemize}
+
+\subsection{Backend y API REST}
+
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item Lenguaje: Python, Node.js, PHP o similar.
+	\item API REST para enviar y recibir ubicaciones, con versionado y documentación OpenAPI.
+	\item Base de datos: PostgreSQL, MongoDB o Firebase.
+	\item Sistema de autenticación por número y token, con expiración y revocación.
+	\item Registros de auditoría para accesos, consultas y cambios de consentimiento.
+\end{itemize}
+
+\subsection{Mapa y visualización}
+
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item API de Google Maps, Mapbox o Leaflet.js para mostrar las ubicaciones.
+	\item Soporte para geocodificación inversa (coordenadas a dirección).
+	\item Marcas con fecha y hora, historial por intervalo y control de acceso por usuario.
+\end{itemize}
+
+\subsection{Requisitos de seguridad y privacidad}
+
+\begin{table}[H]
+	\caption{Requisitos de seguridad y privacidad de la solución}
+	\label{tab:requisitos-seguridad}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabularx}{\textwidth}{@{}c >{\raggedright\arraybackslash}p{0.24\textwidth} Y Y@{}}
+		\toprule
+		\textbf{Código} & \textbf{Requisito} & \textbf{Implementación propuesta} & \textbf{Verificación} \\
+		\midrule
+		RS-01 & Cifrado en tránsito & TLS 1.2 o superior en todas las comunicaciones con la API y el bot. & \\
+		RS-02 & Protección de credenciales & Hash de contraseñas con Argon2, bcrypt o scrypt; nunca almacenar texto claro. & \\
+		RS-03 & Sesiones y tokens & Tokens con expiración, rotación y revocación; almacenamiento seguro en el cliente. & \\
+		RS-04 & Control de acceso & Cada usuario solo puede consultar sus dispositivos y ubicaciones autorizadas. & \\
+		RS-05 & Limitación de tasa & Límites por usuario, dispositivo e IP para evitar abuso y enumeración. & \\
+		RS-06 & Validación de entradas & Validar y normalizar números, coordenadas, fechas y parámetros de la API. & \\
+		RS-07 & Cifrado en reposo & Cifrar la base de datos y las copias de seguridad; gestionar claves fuera del código. & \\
+		RS-08 & Auditoría & Registrar accesos, consultas, cambios de consentimiento y errores de seguridad. & \\
+		RS-09 & Consentimiento & Registro explícito, fecha, alcance, finalidad y revocación del consentimiento. & \\
+		RS-10 & Minimización y retención & Recolectar solo los datos necesarios y definir plazos de conservación y borrado. & \\
+		\bottomrule
+	\end{tabularx}
+\end{table}

@@ -1,0 +1,50 @@
+\subsection{Caso 3. Exposición de servicios HTTP, FTP y otros servicios heredados}
+\label{caso:servicios-heredados}
+
+\begin{situacion}
+El servidor presenta servicios abiertos que podrían estar innecesarios o débilmente configurados. Los riesgos de aplicaciones web se pueden contrastar con el catálogo OWASP \parencite{owasp2021}.
+\end{situacion}
+
+\paragraph{Procedimiento.}
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item Inventariar servicios y puertos en el servidor propio usando el inventario del sistema y una comprobación autorizada de alcance limitado.
+	\item Revisar los registros de autenticación y los eventos del sistema; documentar versión, necesidad operativa y propietario de cada servicio.
+	\item Comprobar si se utiliza cifrado y si las cuentas siguen el principio de mínimo privilegio.
+\end{itemize}
+
+\paragraph{Indicadores que deben buscarse.}
+Servicios expuestos sin necesidad, software sin soporte, intentos de autenticación fallidos, uso de protocolos en texto claro o configuraciones por defecto.
+
+\paragraph{Mitigación y defensa.}
+Deshabilitar servicios no requeridos; preferir SFTP/SSH o HTTPS frente a protocolos en texto claro; aplicar MFA donde corresponda; parchear y usar cuentas de mínimo privilegio.
+
+\paragraph{Evidencias que se entregan.}
+Inventario de servicios, eventos relevantes, matriz riesgo/criticidad y plan de remediación.
+
+\paragraph{Preguntas de análisis.}
+\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item ¿Cómo se prioriza un puerto abierto?
+	\item ¿Qué diferencia hay entre exposición, vulnerabilidad y explotación?
+\end{enumerate}
+
+\begin{table}[H]
+	\caption{Inventario de servicios expuestos}
+	\label{tab:inventario-servicios}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabularx}{\textwidth}{@{}c >{\raggedright\arraybackslash}p{0.15\textwidth} >{\raggedright\arraybackslash}p{0.12\textwidth} c >{\raggedright\arraybackslash}p{0.18\textwidth} Y@{}}
+		\toprule
+		\textbf{Puerto} & \textbf{Servicio} & \textbf{Versión} & \textbf{¿Necesario?} & \textbf{Propietario} & \textbf{Riesgo / observación} \\
+		\midrule
+		& & & & & \\
+		& & & & & \\
+		& & & & & \\
+		& & & & & \\
+		& & & & & \\
+		& & & & & \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\registrohallazgo{Caso 3}

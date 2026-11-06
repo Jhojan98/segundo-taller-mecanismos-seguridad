@@ -1,0 +1,129 @@
+\section{Presentación y alcance}
+
+La práctica estudia riesgos de disponibilidad, confidencialidad e integridad en una LAN Ethernet IEEE 802.3 que transporta IPv4/IPv6 y servicios TCP/IP. El trabajo se realiza exclusivamente en equipos propios o máquinas virtuales, con direcciones privadas, tráfico de prueba y autorización expresa. No se debe generar tráfico hacia Internet, redes institucionales en producción ni direcciones de terceros.
+
+El alcance del informe comprende el análisis de diez casos críticos, la propuesta de controles preventivos, detectivos, correctivos y de recuperación, y el diseño de una solución de programación para el rastreo autorizado de ubicaciones. Los controles se contrastan con las recomendaciones para sistemas de detección y prevención de intrusiones \parencite{nist80094} y para el endurecimiento de servidores \parencite{nist800123}. Cada afirmación técnica debe sostenerse en evidencia verificable: capturas, registros, filtros, comandos, hashes y marcas de tiempo.
+
+\section{Objetivos}
+
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item Reconocer indicadores de compromiso y comportamientos anómalos en tráfico TCP, UDP, ICMP, DNS, HTTP/HTTPS y mensajería.
+	\item Usar Wireshark y registros del sistema para correlacionar eventos, direcciones, puertos, marcas de tiempo y estados de conexión.
+	\item Evaluar controles preventivos y detectivos: firewall, segmentación, endurecimiento de servicios, TLS, limitación de tasa e IDS/SIEM.
+	\item Proponer el uso responsable de aprendizaje automático para priorizar alertas, sin delegar bloqueos automáticos críticos a un modelo no validado.
+	\item Documentar resultados reproducibles mediante capturas, filtros, registros, hashes y recomendaciones verificables.
+	\item Diseñar, en la Parte~II, una propuesta técnica y ética de una aplicación, programa o bot que permita compartir y visualizar ubicaciones con consentimiento informado.
+\end{itemize}
+
+\section{Resultados de aprendizaje}
+
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item Diferencia entre síntoma, indicador, hipótesis y evidencia confirmada.
+	\item Interpreta capturas de paquetes y registros sin confundir anomalías con prueba definitiva de ataque.
+	\item Relaciona cada caso con controles preventivos, detectivos, correctivos y de recuperación.
+	\item Entrega un informe técnico con hallazgos, limitaciones y un plan de mejora priorizado.
+\end{itemize}
+
+\section{Topología y reglas del laboratorio}
+
+La topología sugerida es un ejemplo; se pueden usar direcciones privadas equivalentes, siempre que la red permanezca aislada y bajo control del equipo.
+
+\begin{table}[H]
+	\caption{Elementos de la topología sugerida}
+	\label{tab:topologia}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.25\textwidth} >{\raggedright\arraybackslash}p{0.24\textwidth} Y@{}}
+		\toprule
+		\textbf{Elemento} & \textbf{Dirección / función} & \textbf{Recomendación} \\
+		\midrule
+		Switch Ethernet IEEE 802.3 & VLAN de laboratorio & Sin conexión a la red productiva. \\
+		Equipo analista & 192.168.50.10/24 & Wireshark; acceso a los registros del laboratorio. \\
+		Servidor web/pruebas & 192.168.50.20/24 & HTTP de laboratorio o HTTPS con certificado de prueba. \\
+		Servidor DNS de laboratorio & 192.168.50.53/24 & Resolver solo nombres de prueba. \\
+		Servidor de mensajería (opcional) & 192.168.50.30/24 & XMPP en entorno aislado. \\
+		Gateway de laboratorio & 192.168.50.1/24 & Sin reenvío hacia Internet; filtrado habilitado. \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\fbox{%
+		\parbox[c][5.2cm][c]{0.92\textwidth}{%
+			\centering
+			\textbf{[Insertar aquí el diagrama de la topología del laboratorio]}\\[0.4cm]
+			\footnotesize
+			Incluya switch, equipo analista, servidores, gateway y las direcciones privadas utilizadas.\\
+			Puede elaborarse con draw.io, Diagrams.net, Visio, TikZ o una captura de Packet Tracer.
+		}%
+	}
+	\caption{Topología del laboratorio}
+	\label{fig:topologia}
+\end{figure}
+
+\noindent\textbf{Reglas obligatorias.}
+
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item Usar exclusivamente equipos o máquinas virtuales bajo control del grupo y una VLAN o red virtual aislada.
+	\item Generar tráfico de prueba benigno o utilizar PCAP didácticos o sintéticos. Ejecutar pruebas de DoS, exfiltración o spoofing únicamente en ambientes aislados y con autorización.
+	\item Sincronizar los relojes de los equipos y registrar fecha, hora, IP, puerto, herramienta y versión.
+	\item Anonimizar datos personales y credenciales; no capturar tráfico de usuarios ajenos al laboratorio.
+	\item Guardar una copia original de cada evidencia y calcular su hash SHA-256; analizar una copia de trabajo.
+\end{itemize}
+
+\section{Herramientas sugeridas}
+
+Se sugiere Wireshark; \texttt{netstat} y PowerShell en Windows; el Visor de eventos; Windows Defender Firewall; Zeek y/o Suricata cuando estén disponibles; Wazuh o un SIEM equivalente; y Python con scikit-learn para el análisis de características agregadas \parencite{wireshark,sklearn}. Utilice herramientas y versiones aprobadas para el laboratorio y registre la versión exacta en cada ficha.
+
+\begin{table}[H]
+	\caption{Herramientas del laboratorio y registro de versiones}
+	\label{tab:herramientas}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.26\textwidth} Y >{\raggedright\arraybackslash}p{0.15\textwidth}@{}}
+		\toprule
+		\textbf{Herramienta} & \textbf{Uso en el taller} & \textbf{Versión registrada} \\
+		\midrule
+		Wireshark & Captura, filtrado y análisis de tráfico. & \\
+		\texttt{netstat} y PowerShell & Estado de conexiones, procesos y servicios. & \\
+		Visor de eventos & Registros del sistema operativo y de seguridad. & \\
+		Windows Defender Firewall & Reglas, registros y validación de filtrado. & \\
+		Zeek y/o Suricata & Detección de intrusiones y metadatos de flujos. & \\
+		Wazuh o SIEM equivalente & Correlación y priorización de alertas. & \\
+		Python y scikit-learn & Análisis de características agregadas y detección de anomalías. & \\
+		& & \\
+		& & \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\section{Casos críticos de trabajo}
+
+En cada caso, el equipo debe completar las tareas de observación y análisis, justificar los indicadores, proponer controles y adjuntar evidencia. Las actividades de ataque se sustituyen por análisis de PCAP, telemetría sintética o pruebas benignas autorizadas. La Tabla~\ref{tab:resumen-casos} presenta el panorama de los diez casos.
+
+\begin{table}[H]
+	\caption{Resumen de los casos críticos}
+	\label{tab:resumen-casos}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.15}
+	\begin{tabularx}{\textwidth}{@{}c >{\raggedright\arraybackslash}p{0.27\textwidth} >{\raggedright\arraybackslash}p{0.14\textwidth} Y@{}}
+		\toprule
+		\textbf{Caso} & \textbf{Tema} & \textbf{Protocolo / servicio} & \textbf{Evidencia principal} \\
+		\midrule
+		1 & TCP SYN Flood & TCP & Gráfica temporal SYN/ACK y tabla de conexiones. \\
+		2 & DNS tunneling & UDP/53, DNS & Consultas filtradas y tabla por host/dominio. \\
+		3 & Servicios HTTP, FTP y heredados & HTTP, FTP, otros & Inventario de servicios y matriz de riesgo. \\
+		4 & Detección de anomalías con IA/ML & TCP/IP & Notebook reproducible y métricas del modelo. \\
+		5 & Resets TCP e indicios de inyección & TCP & Tabla de flujos afectados y extractos de logs. \\
+		6 & Reflexión y amplificación UDP & DNS, NTP, SSDP & Gráficas de paquetes y bytes por segundo. \\
+		7 & ICMP: escaneo, payloads y túnel & ICMP & Dashboard por IP y tabla de tamaños/frecuencias. \\
+		8 & Escaneo de puertos y fingerprinting & TCP/UDP & Lista de exposición y regla de detección. \\
+		9 & Priorización de alertas con IA y SIEM & Múltiples fuentes & Pipeline y ejemplo de alerta enriquecida. \\
+		10 & Mensajería XMPP y errores de TLS & XMPP, TLS & Checklist TLS y eventos anonimizados. \\
+		\bottomrule
+	\end{tabularx}
+\end{table}

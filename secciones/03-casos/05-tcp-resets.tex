@@ -1,0 +1,30 @@
+\subsection{Caso 5. TCP: resets inesperados e indicios de inyección o desincronización}
+\label{caso:tcp-resets}
+
+\begin{situacion}
+Las aplicaciones reportan sesiones TCP que terminan abruptamente o se reinician de forma repetida.
+\end{situacion}
+
+\paragraph{Procedimiento.}
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item En una PCAP de laboratorio, filtrar \texttt{tcp.flags.reset == 1} y correlacionar marcas de tiempo, endpoints y sesiones.
+	\item Examinar si los RST coinciden con cierres legítimos, reinicios de servicio, firewall o pérdida de conectividad.
+	\item Correlacionar con registros de Zeek/Suricata y registros de aplicación, si están instalados.
+\end{itemize}
+
+\paragraph{Indicadores que deben buscarse.}
+RST fuera de contexto, frecuencia inusual, sesiones truncadas o inconsistencias que requieren correlación; no inferir MITM solo por observar RST.
+
+\paragraph{Mitigación y defensa.}
+Usar TLS correctamente validado; segmentar la red; actualizar los endpoints; activar detección IDS y revisar rutas y dispositivos intermedios.
+
+\paragraph{Evidencias que se entregan.}
+Tabla de flujos afectados, extractos de registros, tiempos y hash SHA-256 de la PCAP.
+
+\paragraph{Preguntas de análisis.}
+\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item ¿Qué causas benignas generan RST?
+	\item ¿Qué evidencia adicional haría más sólida la hipótesis de manipulación?
+\end{enumerate}
+
+\registrohallazgo{Caso 5}

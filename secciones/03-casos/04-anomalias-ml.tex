@@ -1,0 +1,52 @@
+\subsection{Caso 4. Detección de anomalías con IA/ML en tráfico TCP/IP}
+\label{caso:anomalias-ml}
+
+\begin{situacion}
+El equipo debe proponer una defensa inteligente que identifique desviaciones frente al tráfico normal.
+\end{situacion}
+
+\paragraph{Procedimiento.}
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item Crear un conjunto de datos con PCAP didácticos o tráfico benigno de laboratorio y características agregadas: conexiones por minuto, bytes por flujo, duración, flags TCP y proporción petición/respuesta.
+	\item Separar los datos de entrenamiento y evaluación por tiempo o por sesión para evitar fuga de información.
+	\item Comparar una línea base estadística con un detector de anomalías; documentar precisión, falsos positivos y límites. Se puede usar scikit-learn como referencia \parencite{sklearn}.
+	\item Anonimizar los ejemplos y proteger los datos de entrenamiento.
+\end{itemize}
+
+\paragraph{Indicadores que deben buscarse.}
+Desviación sostenida respecto a la línea base; puntuación de anomalía alta que debe investigarse junto con evidencia de red y registros.
+
+\paragraph{Mitigación y defensa.}
+Mantener revisión humana; monitorizar la deriva del modelo; no usar la salida de un prototipo como única razón para bloquear; proteger los datos de entrenamiento.
+
+\paragraph{Evidencias que se entregan.}
+Notebook o script reproducible, definición de atributos, métricas, matriz de confusión si hay etiquetas y ejemplos anonimizados.
+
+\paragraph{Preguntas de análisis.}
+\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item ¿Cómo afectan el desbalance de clases y los cambios legítimos de carga?
+	\item ¿Qué métrica es más útil para este caso?
+\end{enumerate}
+
+\begin{table}[H]
+	\caption{Características agregadas para el detector de anomalías}
+	\label{tab:caracteristicas-ml}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.26\textwidth} Y >{\raggedright\arraybackslash}p{0.14\textwidth} >{\raggedright\arraybackslash}p{0.12\textwidth}@{}}
+		\toprule
+		\textbf{Característica} & \textbf{Definición operativa} & \textbf{Unidad} & \textbf{Ventana} \\
+		\midrule
+		Conexiones por minuto & & conexiones/min & \\
+		Bytes por flujo & & bytes & \\
+		Duración del flujo & & segundos & \\
+		Flags TCP & & conteo & \\
+		Proporción petición/respuesta & & razón & \\
+		& & & \\
+		& & & \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\registrohallazgo{Caso 4}

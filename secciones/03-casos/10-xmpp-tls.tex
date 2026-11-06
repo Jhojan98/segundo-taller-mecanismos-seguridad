@@ -1,0 +1,52 @@
+\subsection{Caso 10. Mensajería XMPP: interceptación y errores de TLS}
+\label{caso:xmpp-tls}
+
+\begin{situacion}
+Se investiga si la comunicación entre clientes y servidor de mensajería está correctamente protegida. XMPP se especifica en el RFC~6120 y TLS~1.3 en el RFC~8446 \parencite{rfc6120,rfc8446}.
+\end{situacion}
+
+\paragraph{Procedimiento.}
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item En un servidor XMPP de laboratorio (por ejemplo, Openfire o ejabberd), revisar la configuración TLS, los certificados, los nombres, la vigencia y la cadena de confianza.
+	\item Capturar metadatos de conexión en una prueba autorizada y verificar que el contenido de una sesión cifrada no se trate como texto legible.
+	\item Revisar los registros del servidor en busca de errores de negociación, certificados inválidos o conexiones inesperadas.
+\end{itemize}
+
+\paragraph{Indicadores que deben buscarse.}
+Certificados vencidos o no confiables, negociación insegura, servicios de administración expuestos o patrones de conexión que no coinciden con el uso esperado.
+
+\paragraph{Mitigación y defensa.}
+Exigir TLS robusto y validación de certificados; limitar las interfaces administrativas; mantener el servidor actualizado; aplicar cifrado de extremo a extremo (E2EE) cuando el modelo de amenaza lo requiera.
+
+\paragraph{Evidencias que se entregan.}
+Checklist TLS, eventos anonimizados, evidencia de configuración y plan de corrección.
+
+\paragraph{Preguntas de análisis.}
+\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item ¿Qué protege TLS y qué no protege?
+	\item ¿En qué se diferencia el cifrado de transporte del cifrado de extremo a extremo?
+\end{enumerate}
+
+\begin{table}[H]
+	\caption{Checklist de configuración TLS del servidor XMPP}
+	\label{tab:checklist-tls}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.34\textwidth} >{\raggedright\arraybackslash}p{0.14\textwidth} Y@{}}
+		\toprule
+		\textbf{Verificación} & \textbf{Resultado} & \textbf{Evidencia / observación} \\
+		\midrule
+		Vigencia del certificado & & \\
+		Coincidencia del nombre (CN/SAN) & & \\
+		Cadena de confianza completa & & \\
+		Versión de TLS negociada & & \\
+		Suites de cifrado permitidas & & \\
+		Interfaz administrativa restringida & & \\
+		Cifrado de extremo a extremo (E2EE) & & \\
+		Errores de negociación en los registros & & \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\registrohallazgo{Caso 10}

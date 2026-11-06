@@ -1,0 +1,219 @@
+% =====================================================================
+% PLANTILLA DEL SEGUNDO TALLER
+% Mecanismos de Seguridad
+% Facultad de Ingeniería
+% Universidad Distrital Francisco José de Caldas
+%
+% Estructura del proyecto:
+%   main.tex                 Preámbulo, portada y ensamblado del documento
+%   referencias.bib          Fuentes en BibLaTeX (estilo APA 7)
+%   imagenes/                Logo institucional y figuras
+%   secciones/               Contenido dividido por secciones
+%     secciones/03-casos/    Una ficha independiente por caso (10 casos)
+%
+% Compilación recomendada:
+%   latexmk -pdf main.tex
+%
+% Si se compila manualmente:
+%   pdflatex main.tex
+%   biber main
+%   pdflatex main.tex
+%   pdflatex main.tex
+% =====================================================================
+
+\documentclass[stu, 12pt, letterpaper, donotrepeattitle, floatsintext]{apa7}
+
+% ---------------------------------------------------------------------
+% Paquetes generales
+% ---------------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-noquoting]{babel}
+\usepackage{csquotes}
+\usepackage{newtxtext,newtxmath}
+\usepackage{graphicx}
+\graphicspath{{imagenes/}}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{makecell}
+\usepackage{tabularx}
+\usepackage{setspace}
+\usepackage{ragged2e}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage[most]{tcolorbox}
+\usepackage[style=apa, backend=biber]{biblatex}
+\DeclareLanguageMapping{spanish}{spanish-apa}
+\addbibresource{referencias.bib}
+\AtBeginBibliography{\justifying\sloppy}
+\hypersetup{hidelinks}
+
+% ---------------------------------------------------------------------
+% Ajustes de formato
+% ---------------------------------------------------------------------
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+% Casilla vacía para listas de verificación (sin depender de amssymb).
+\newcommand{\checkbox}{\framebox[1.1ex]{\rule{0pt}{1.1ex}}}
+
+% Numeración de secciones y subsecciones: "1", "1.1", "1.2", ...
+\setcounter{secnumdepth}{2}
+
+\setlength{\JustifyingParindent}{0.5in}
+
+% "s. f." con espacio, como lo prefiere el estilo APA en español.
+\DefineBibliographyStrings{spanish}{%
+	nodate = {s.~f\adddot},
+}
+
+\AtBeginDocument{%
+	\renewcommand{\keywordname}{Palabras clave}%
+	\renewcommand{\notelabel}{Nota}%
+	\renewcommand{\tablename}{Tabla}%
+}
+
+% ---------------------------------------------------------------------
+% Cajas de apoyo
+% ---------------------------------------------------------------------
+\newtcolorbox{situacion}{
+	colback=gray!5,
+	colframe=gray!55,
+	boxrule=0.5pt,
+	arc=1.5pt,
+	left=6pt,
+	right=6pt,
+	top=4pt,
+	bottom=4pt,
+	title={Situación},
+	fonttitle=\bfseries,
+	coltitle=black
+}
+
+\newtcolorbox{nota}[1]{
+	colback=blue!3,
+	colframe=blue!45!black,
+	boxrule=0.5pt,
+	arc=1.5pt,
+	left=6pt,
+	right=6pt,
+	top=4pt,
+	bottom=4pt,
+	title={#1},
+	fonttitle=\bfseries,
+	coltitle=white
+}
+
+% ---------------------------------------------------------------------
+% Ficha de registro reutilizable para los diez casos
+% ---------------------------------------------------------------------
+\newcommand{\registrohallazgo}[1]{%
+	\begin{table}[H]
+		\centering
+		\caption{Ficha de registro del hallazgo. #1}
+		\footnotesize
+		\renewcommand{\arraystretch}{1.15}
+		\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.23\textwidth} Y@{}}
+			\toprule
+			\textbf{Campo} & \textbf{Registro} \\
+			\midrule
+			Identificador & \rule{0pt}{0.7cm} \\
+			Fecha y hora & \rule{0pt}{0.7cm} \\
+			Origen/destino & \rule{0pt}{0.7cm} \\
+			Observación & \rule{0pt}{1.5cm} \\
+			Hipótesis & \rule{0pt}{1.5cm} \\
+			Validación & \rule{0pt}{1.5cm} \\
+			Severidad & \rule{0pt}{1.2cm} \\
+			Acción & \rule{0pt}{1.5cm} \\
+			Integridad & \rule{0pt}{1.0cm} \\
+			\bottomrule
+		\end{tabularx}
+	\end{table}
+}
+
+% ---------------------------------------------------------------------
+% Metadatos de la portada
+% Reemplace los marcadores por los datos reales de los cuatro integrantes.
+% No se incluye línea de profesor.
+% ---------------------------------------------------------------------
+\shorttitle{Segundo Taller de Mecanismos de Seguridad}
+
+\title{%
+	\includegraphics[width=1.9in]{Logo_UD.png}\\[0.6cm]
+	Segundo Taller\\[0.15cm]
+	Mecanismos de seguridad para redes IEEE 802.3 con servidores TCP/IP%
+}
+
+\authorsnames{Integrante 1, Integrante 2, Integrante 3, Integrante 4}
+
+\authorsaffiliations{{Ingeniería de Sistemas, Facultad de Ingeniería\\Universidad Distrital Francisco José de Caldas}}
+
+\course{Mecanismos de Seguridad}
+
+% Línea de profesor vacía: el taller no solicita nombre del docente.
+% \mbox{} evita el error "There's no line here to end" de la clase apa7.
+\professor{\mbox{}}
+
+\duedate{14 de noviembre de 2026\\Bogotá, D.C.}
+
+\authornote{Trabajo académico desarrollado en un laboratorio aislado y autorizado. Las pruebas se realizan con equipos propios o máquinas virtuales, direcciones privadas y tráfico de prueba; no se genera tráfico hacia Internet, redes institucionales en producción ni direcciones de terceros.}
+
+% =====================================================================
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+\justifying
+
+% ---------------------------------------------------------------------
+% Introducción y datos del equipo
+% ---------------------------------------------------------------------
+\input{secciones/01-introduccion}
+
+% ---------------------------------------------------------------------
+% PARTE I. ANÁLISIS DE CASOS
+% ---------------------------------------------------------------------
+\section*{Parte I. Análisis de casos}
+\addcontentsline{toc}{section}{Parte I. Análisis de casos}
+
+\input{secciones/02-marco-parte1}
+
+% Fichas de caso (una por archivo)
+\input{secciones/03-casos/01-syn-flood}
+\input{secciones/03-casos/02-dns-tunneling}
+\input{secciones/03-casos/03-servicios-heredados}
+\input{secciones/03-casos/04-anomalias-ml}
+\input{secciones/03-casos/05-tcp-resets}
+\input{secciones/03-casos/06-udp-reflexion}
+\input{secciones/03-casos/07-icmp}
+\input{secciones/03-casos/08-escaneo-puertos}
+\input{secciones/03-casos/09-siem-alertas}
+\input{secciones/03-casos/10-xmpp-tls}
+
+\input{secciones/04-registro-hallazgos}
+\input{secciones/05-entregables-parte1}
+
+% ---------------------------------------------------------------------
+% PARTE II. PROGRAMACIÓN
+% ---------------------------------------------------------------------
+\section*{Parte II. Programación}
+\addcontentsline{toc}{section}{Parte II. Programación}
+
+\input{secciones/06-parte2-descripcion}
+\input{secciones/07-parte2-requisitos}
+\input{secciones/08-parte2-arquitectura}
+\input{secciones/09-parte2-etica}
+
+% ---------------------------------------------------------------------
+% Cierre
+% ---------------------------------------------------------------------
+\input{secciones/10-conclusiones}
+
+\printbibliography
+
+\input{secciones/11-anexos}
+
+\end{document}

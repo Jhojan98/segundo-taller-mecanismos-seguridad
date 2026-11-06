@@ -1,0 +1,33 @@
+\subsection{Caso 1. TCP SYN Flood: indisponibilidad y agotamiento de conexiones}
+\label{caso:syn-flood}
+
+\begin{situacion}
+Un servidor web de laboratorio responde lentamente o deja de aceptar nuevas conexiones.
+\end{situacion}
+
+\paragraph{Procedimiento.}
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item En una captura de tráfico previamente generada o una prueba de carga benigna autorizada, revisar el establecimiento TCP y contar SYN, SYN/ACK y ACK por ventana temporal.
+	\item En Windows, inspeccionar los estados de conexión con \texttt{netstat -ano} y relacionar PID/servicio cuando proceda.
+	\item Comparar la tasa de intentos con una línea base normal; revisar los registros del servidor y del firewall.
+\end{itemize}
+
+\paragraph{Indicadores que deben buscarse.}
+Picos de SYN sin completar el handshake, incremento de conexiones pendientes, muchas fuentes o un patrón temporal inusual. Un indicador aislado no confirma un ataque.
+
+\paragraph{Mitigación y defensa.}
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item Mantener el sistema y el servicio actualizados; limitar la exposición; aplicar la protección SYN disponible en la plataforma; establecer límites de tasa en los controles de red y escalar al administrador de infraestructura.
+	\item Validar que la mitigación no bloquee clientes legítimos.
+\end{itemize}
+
+\paragraph{Evidencias que se entregan.}
+Gráfica temporal de SYN/ACK; tabla de conexiones; regla o alerta propuesta; comparación antes/después.
+
+\paragraph{Preguntas de análisis.}
+\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item ¿Qué recursos mantiene el servidor durante el handshake TCP?
+	\item ¿Qué falsos positivos pueden producir picos legítimos?
+\end{enumerate}
+
+\registrohallazgo{Caso 1}

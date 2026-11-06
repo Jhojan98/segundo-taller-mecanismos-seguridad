@@ -1,0 +1,49 @@
+\subsection{Caso 7. ICMP: escaneo, payloads atípicos y posible túnel}
+\label{caso:icmp}
+
+\begin{situacion}
+Se observa una tasa de ICMP mayor de lo habitual o paquetes con tamaños o patrones repetitivos. ICMP se especifica en el RFC~792 \parencite{rfc792}.
+\end{situacion}
+
+\paragraph{Procedimiento.}
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item En Wireshark, filtrar \texttt{icmp} y agrupar por IP de origen/destino, tipo, código, longitud y tiempo.
+	\item Establecer una línea base de ping de diagnóstico legítimo y compararla con la captura analizada.
+	\item Usar PCAP sintético o didáctico para estudiar payloads; no transmitir información sensible por ICMP.
+\end{itemize}
+
+\paragraph{Indicadores que deben buscarse.}
+Ráfagas de echo request/reply, longitudes inusuales, periodicidad repetitiva o volumen no explicado por tareas de diagnóstico.
+
+\paragraph{Mitigación y defensa.}
+Permitir solo los tipos ICMP necesarios para la operación y el diagnóstico; aplicar límites proporcionados; monitorizar sin bloquear indiscriminadamente mensajes requeridos por la red.
+
+\paragraph{Evidencias que se entregan.}
+Dashboard por IP, filtro aplicado, tabla de tamaños y frecuencias, y propuesta de regla.
+
+\paragraph{Preguntas de análisis.}
+\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item ¿Qué funciones legítimas cumple ICMP?
+	\item ¿Qué impacto tendría bloquearlo completamente?
+\end{enumerate}
+
+\begin{table}[H]
+	\caption{Distribución de tráfico ICMP por tipo y longitud}
+	\label{tab:icmp}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabularx}{\textwidth}{@{}c c c >{\raggedright\arraybackslash}p{0.17\textwidth} >{\raggedright\arraybackslash}p{0.17\textwidth} Y@{}}
+		\toprule
+		\textbf{Tipo} & \textbf{Código} & \textbf{Longitud} & \textbf{Origen} & \textbf{Destino} & \textbf{Frecuencia / observación} \\
+		\midrule
+		& & & & & \\
+		& & & & & \\
+		& & & & & \\
+		& & & & & \\
+		& & & & & \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\registrohallazgo{Caso 7}

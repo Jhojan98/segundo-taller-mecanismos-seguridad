@@ -1,0 +1,30 @@
+\subsection{Caso 2. DNS tunneling: posible salida encubierta mediante UDP/53}
+\label{caso:dns-tunneling}
+
+\begin{situacion}
+Se observa tráfico DNS con consultas repetitivas o nombres de dominio inusualmente largos. El DNS se define en el RFC~1035 \parencite{rfc1035}.
+\end{situacion}
+
+\paragraph{Procedimiento.}
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item Aplicar en Wireshark el filtro \texttt{udp.port == 53} y, cuando corresponda, \texttt{dns}.
+	\item Examinar la longitud y la entropía aproximada de las etiquetas, la frecuencia, el volumen por cliente y los dominios consultados.
+	\item Correlacionar con el resolver autorizado y los registros DNS; usar únicamente dominios de prueba o PCAP de entrenamiento.
+\end{itemize}
+
+\paragraph{Indicadores que deben buscarse.}
+Subdominios largos o de alta entropía, alta frecuencia, respuestas o tamaños atípicos y destinos no habituales; verificar explicaciones legítimas como telemetría o CDN.
+
+\paragraph{Mitigación y defensa.}
+Forzar el uso de resolvers autorizados; registrar las consultas; aplicar filtrado DNS y políticas de salida; investigar el host de origen antes de bloquear.
+
+\paragraph{Evidencias que se entregan.}
+Capturas filtradas, tabla por host/dominio, hipótesis y verificación con registros.
+
+\paragraph{Preguntas de análisis.}
+\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item ¿Por qué el carácter sin conexión de UDP no significa que todo DNS sea malicioso?
+	\item ¿Qué atributos ayudan a distinguir una anomalía?
+\end{enumerate}
+
+\registrohallazgo{Caso 2}

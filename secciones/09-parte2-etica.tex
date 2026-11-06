@@ -1,0 +1,52 @@
+\section{Consideraciones éticas, legales y de privacidad}
+
+El diseño y la implementación de la solución deben cumplir los principios de consentimiento, finalidad, minimización, seguridad y transparencia. En Colombia, el tratamiento de datos personales se rige, entre otras normas, por la Ley~1581 de 2012 \parencite{ley1581}. La ubicación geográfica es un dato personal y su tratamiento requiere autorización previa, expresa e informada del titular, salvo las excepciones legales.
+
+\subsection{Principios de tratamiento}
+
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item \textbf{Consentimiento informado:} el usuario debe conocer quién recibe la ubicación, para qué, durante cuánto tiempo y cómo revocar la autorización.
+	\item \textbf{Finalidad limitada:} los datos solo se usan para el propósito académico declarado; no se reutilizan para marketing, vigilancia o perfilamiento.
+	\item \textbf{Minimización:} se recolectan únicamente los datos necesarios; se evita la ubicación continua cuando basta una captura periódica.
+	\item \textbf{Seguridad:} TLS en tránsito, cifrado en reposo, control de acceso, tokens con expiración y registros de auditoría.
+	\item \textbf{Retención y borrado:} se define un plazo de conservación y un mecanismo de eliminación verificable.
+	\item \textbf{Transparencia:} el usuario puede consultar qué datos se almacenan, corregirlos y solicitar su eliminación.
+	\item \textbf{No discriminación:} la ubicación no se usa para tomar decisiones automatizadas sobre personas.
+\end{itemize}
+
+\subsection{Prohibiciones explícitas}
+
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item Rastrear a una persona sin su consentimiento o mediante engaño, coerción o suplantación.
+	\item Interceptar comunicaciones, vulnerar plataformas o usar APIs no oficiales.
+	\item Compartir ubicaciones con terceros no autorizados o publicarlas en el repositorio.
+	\item Usar los datos para vigilar, acosar, discriminar o tomar represalias.
+	\item Delegar en un modelo de IA la decisión de bloquear, sancionar o exponer a una persona.
+\end{itemize}
+
+\begin{nota}{Nota del taller}
+El taller no solicita vulnerar, atacar ni hackear escenarios domésticos o empresariales reales. El ejercicio es académico y los participantes deben actuar como profesionales de seguridad: sin causar daño intencional a sistemas, redes o personas, y sin usar técnicas que comprometan la integridad de sistemas reales sin autorización expresa de sus propietarios.
+\end{nota}
+
+\subsection{Matriz de riesgos éticos y legales}
+
+\begin{table}[H]
+	\caption{Riesgos éticos y legales de la solución}
+	\label{tab:riesgos-eticos}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.26\textwidth} >{\raggedright\arraybackslash}p{0.16\textwidth} Y@{}}
+		\toprule
+		\textbf{Riesgo} & \textbf{Impacto} & \textbf{Medida de mitigación} \\
+		\midrule
+		Rastreo sin consentimiento & Alto & Consentimiento explícito, registro de fecha y revocación; bloqueo del servicio sin autorización. \\
+		Exposición de ubicaciones & Alto & Cifrado, control de acceso, minimización y auditoría de consultas. \\
+		Uso secundario de los datos & Medio & Política de finalidad limitada y prohibición de reutilización. \\
+		Retención excesiva & Medio & Plazo de conservación definido y borrado programado. \\
+		Acceso no autorizado & Alto & Autenticación fuerte, tokens con expiración y principio de mínimo privilegio. \\
+		Sesgo o error del modelo & Medio & Revisión humana, métricas de falsos positivos y explicabilidad. \\
+		& & \\
+		\bottomrule
+	\end{tabularx}
+\end{table}

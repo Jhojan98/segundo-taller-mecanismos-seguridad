@@ -1,0 +1,30 @@
+\subsection{Caso 6. UDP: reflexión/amplificación DNS, NTP o SSDP}
+\label{caso:udp-reflexion}
+
+\begin{situacion}
+El servidor o gateway registra un volumen inusual de respuestas UDP, posiblemente desproporcionado respecto de las solicitudes.
+\end{situacion}
+
+\paragraph{Procedimiento.}
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item Examinar el volumen por protocolo, origen, destino y ventana temporal; distinguir el tráfico esperado de las respuestas no solicitadas.
+	\item Revisar la configuración de los servicios propios y confirmar que no actúan como reflectores abiertos.
+	\item No generar tráfico de amplificación: usar PCAP de entrenamiento o contadores agregados simulados.
+\end{itemize}
+
+\paragraph{Indicadores que deben buscarse.}
+Gran volumen de respuestas, asimetría entre peticiones y respuestas, puertos inesperados y destinos no relacionados con las solicitudes observadas.
+
+\paragraph{Mitigación y defensa.}
+Deshabilitar servicios innecesarios; restringir las consultas recursivas DNS; aplicar limitación de tasa y filtrado anti-spoofing en la infraestructura administrada.
+
+\paragraph{Evidencias que se entregan.}
+Gráficas de paquetes y bytes por segundo, inventario de servicios y controles recomendados.
+
+\paragraph{Preguntas de análisis.}
+\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item ¿Cómo se diferencia una ráfaga legítima de un patrón de reflexión?
+	\item ¿Qué controles corresponden al servidor y cuáles al proveedor de red?
+\end{enumerate}
+
+\registrohallazgo{Caso 6}

@@ -1,0 +1,100 @@
+\section{Arquitectura de referencia}
+
+La arquitectura de referencia separa la captura de ubicación, la autenticación, el almacenamiento y la visualización. La Figura~\ref{fig:arquitectura} es un espacio para que el equipo incluya su diagrama; la Tabla~\ref{tab:componentes-arquitectura} describe las responsabilidades de cada componente.
+
+\begin{figure}[H]
+	\centering
+	\fbox{%
+		\parbox[c][6.2cm][c]{0.92\textwidth}{%
+			\centering
+			\textbf{[Insertar aquí el diagrama de arquitectura de la solución]}\\[0.4cm]
+			\footnotesize
+			Incluya la aplicación móvil, el bot de Telegram, la API REST, el servicio de autenticación,\\
+			la base de datos, el servicio de mapas y el panel administrativo.\\
+			Señale con flechas el sentido del flujo y los controles TLS en cada tramo.
+		}%
+	}
+	\caption{Arquitectura de referencia de la solución}
+	\label{fig:arquitectura}
+\end{figure}
+
+\begin{table}[H]
+	\caption{Componentes de la arquitectura y responsabilidades}
+	\label{tab:componentes-arquitectura}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.17\textwidth} Y >{\raggedright\arraybackslash}p{0.16\textwidth} >{\raggedright\arraybackslash}p{0.15\textwidth} >{\raggedright\arraybackslash}p{0.15\textwidth}@{}}
+		\toprule
+		\textbf{Componente} & \textbf{Función} & \textbf{Entrada} & \textbf{Salida} & \textbf{Tecnología} \\
+		\midrule
+		Aplicación móvil & Captura y envía la ubicación con consentimiento. & GPS, usuario & Coordenadas, estado & \\
+		Bot de Telegram & Solicita la ubicación de forma manual. & Comando del usuario & Coordenadas & \\
+		API REST & Valida, autentica y registra las solicitudes. & Peticiones HTTPS & Respuestas JSON & \\
+		Autenticación & Verifica identidad y permisos. & Número, token & Sesión / JWT & \\
+		Base de datos & Persiste usuarios, dispositivos, ubicaciones y consentimientos. & Datos validados & Consultas & \\
+		Servicio de mapas & Representa las ubicaciones y resuelve direcciones. & Coordenadas & Mapa / dirección & \\
+		Panel administrativo & Consulta y audita el sistema. & Credenciales & Reportes & \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\section{Modelo de datos propuesto}
+
+La Tabla~\ref{tab:modelo-datos} propone las entidades mínimas. El equipo debe ajustar los campos a su implementación y documentar las claves primarias, foráneas e índices.
+
+\begin{table}[H]
+	\caption{Entidades y campos principales del modelo de datos}
+	\label{tab:modelo-datos}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.17\textwidth} Y >{\raggedright\arraybackslash}p{0.25\textwidth}@{}}
+		\toprule
+		\textbf{Entidad} & \textbf{Campos principales} & \textbf{Relaciones} \\
+		\midrule
+		Usuario & Identificador, nombre, número telefónico, correo, hash de contraseña, estado. & Uno a muchos con dispositivos y consentimientos. \\
+		Dispositivo & Identificador, usuario, número, plataforma, token, estado. & Muchos a uno con usuario; uno a muchos con ubicaciones. \\
+		Ubicación & Identificador, dispositivo, latitud, longitud, precisión, fecha/hora, fuente. & Muchos a uno con dispositivo. \\
+		Consentimiento & Identificador, usuario, finalidad, alcance, fecha, estado, fecha de revocación. & Muchos a uno con usuario. \\
+		Zona & Identificador, usuario, nombre, centro, radio. & Uno a muchos con alertas. \\
+		Alerta & Identificador, zona, dispositivo, tipo, fecha, estado. & Muchos a uno con zona y dispositivo. \\
+		& & \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\section{Plan de trabajo}
+
+El plan de la Tabla~\ref{tab:plan-trabajo} distribuye las tres semanas del taller. Ajuste las fechas y los responsables según la disponibilidad del equipo; conserve los hitos de revisión y la entrega final.
+
+\begin{table}[H]
+	\caption{Plan de trabajo sugerido}
+	\label{tab:plan-trabajo}
+	\centering
+	\footnotesize
+	\setlength{\tabcolsep}{3pt}
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabularx}{\textwidth}{@{}c >{\raggedright\arraybackslash}p{0.12\textwidth} Y >{\raggedright\arraybackslash}p{0.20\textwidth} >{\raggedright\arraybackslash}p{0.12\textwidth}@{}}
+		\toprule
+		\textbf{Semana} & \textbf{Fechas} & \textbf{Actividades} & \textbf{Entregable} & \textbf{Responsable} \\
+		\midrule
+		1 & 26 oct -- 1 nov & Marco del laboratorio, topología, casos 1 a 3 y diseño inicial de la Parte~II. & Fichas 1--3 y propuesta inicial. & \\
+		2 & 2 -- 8 nov & Casos 4 a 7, arquitectura, modelo de datos y API. & Fichas 4--7 y arquitectura. & \\
+		3 & 9 -- 14 nov & Casos 8 a 10, implementación, pruebas, informe final y hashes. & Versión final y anexos. & \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\section{Entregables de la Parte II}
+
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=4pt, label=\checkbox]
+	\item Código fuente funcional en un repositorio con historial de commits.
+	\item README con requisitos, instalación, configuración, ejecución y pruebas.
+	\item Diagrama de arquitectura y modelo de datos.
+	\item Documentación de la API REST (OpenAPI o equivalente).
+	\item Demostración con datos sintéticos o de laboratorio (video, capturas o ejecución en vivo).
+	\item Plan de pruebas y resultados de los casos felices y de error.
+	\item Política de privacidad, consentimiento informado y mecanismo de revocación.
+	\item Análisis de riesgos, limitaciones y trabajo futuro.
+\end{itemize}

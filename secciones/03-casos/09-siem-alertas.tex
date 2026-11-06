@@ -1,0 +1,50 @@
+\subsection{Caso 9. Priorización y correlación de alertas con IA y SIEM}
+\label{caso:siem-alertas}
+
+\begin{situacion}
+El centro de monitoreo recibe múltiples alertas que deben agruparse y priorizarse.
+\end{situacion}
+
+\paragraph{Procedimiento.}
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item Normalizar eventos de firewall, servidor, Zeek/Suricata y sistema operativo; eliminar duplicados sin perder trazabilidad.
+	\item Definir características agregadas por host y ventana temporal, y probar un detector de anomalías con datos controlados.
+	\item Usar un LLM únicamente para resumir alertas anonimizadas y sugerir el triage; verificar toda recomendación contra la evidencia.
+\end{itemize}
+
+\paragraph{Indicadores que deben buscarse.}
+Alertas correlacionadas por host/tiempo, puntuación de riesgo explicable y señales convergentes en varias fuentes.
+
+\paragraph{Mitigación y defensa.}
+Revisión humana antes de acciones disruptivas; control de acceso a los registros; evaluación de sesgo y deriva; registro de decisiones y posibilidad de reversión.
+
+\paragraph{Evidencias que se entregan.}
+Diagrama del pipeline, ejemplo de alerta enriquecida, criterios de prioridad y registro de validación humana.
+
+\paragraph{Preguntas de análisis.}
+\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item ¿Cómo explicar una alerta a un analista?
+	\item ¿Qué riesgo supone automatizar bloqueos basados solo en una puntuación?
+\end{enumerate}
+
+\begin{table}[H]
+	\caption{Fuentes de eventos del pipeline de correlación}
+	\label{tab:fuentes-siem}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.22\textwidth} Y >{\raggedright\arraybackslash}p{0.16\textwidth} >{\raggedright\arraybackslash}p{0.18\textwidth}@{}}
+		\toprule
+		\textbf{Fuente} & \textbf{Tipo de evento} & \textbf{Formato} & \textbf{Responsable} \\
+		\midrule
+		Firewall & & & \\
+		Servidor web & & & \\
+		Zeek / Suricata & & & \\
+		Sistema operativo & & & \\
+		SIEM / Wazuh & & & \\
+		& & & \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\registrohallazgo{Caso 9}

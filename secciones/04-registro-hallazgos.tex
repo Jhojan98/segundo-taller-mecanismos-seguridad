@@ -1,0 +1,57 @@
+\section{Formato mínimo de registro por hallazgo}
+
+Cada hallazgo debe registrarse con los campos de la Tabla~\ref{tab:formato-registro}. El registro separa el hecho observado de la interpretación y exige indicar la evidencia que permitió validar o descartar la hipótesis. El formato es obligatorio para los diez casos y se complementa con la ficha de cada caso.
+
+\begin{table}[H]
+	\caption{Formato mínimo de registro por hallazgo}
+	\label{tab:formato-registro}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.20\textwidth} Y@{}}
+		\toprule
+		\textbf{Campo} & \textbf{Qué registrar} \\
+		\midrule
+		Identificador & Caso, número de evidencia y nombre del analista. \\
+		Fecha/hora & Marca temporal y zona horaria; sincronización conocida. \\
+		Origen/destino & IP, MAC cuando sea pertinente, puertos y protocolo; anonimizar si aplica. \\
+		Observación & Hecho directamente observado, sin conclusiones prematuras. \\
+		Hipótesis & Explicación posible y alternativas benignas consideradas. \\
+		Validación & PCAP o registro consultado, filtro, comandos de inspección y resultado. \\
+		Severidad & Impacto, probabilidad y justificación. \\
+		Acción & Medida propuesta, responsable, riesgo de falsos positivos y verificación. \\
+		Integridad & Nombre de archivo, tamaño y hash SHA-256 de la evidencia original. \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\noindent\textbf{Consolidado de hallazgos.} Use la Tabla~\ref{tab:consolidado} para mantener la trazabilidad entre los casos y el informe final. Los hashes y la cadena de custodia se registran en el Anexo~A.
+
+\begin{table}[H]
+	\caption{Consolidado de hallazgos de la Parte I}
+	\label{tab:consolidado}
+	\centering
+	\footnotesize
+	\setlength{\tabcolsep}{3pt}
+	\renewcommand{\arraystretch}{1.3}
+	\begin{tabularx}{\textwidth}{@{}c c >{\raggedright\arraybackslash}p{0.12\textwidth} >{\raggedright\arraybackslash}p{0.15\textwidth} Y c Y@{}}
+		\toprule
+		\textbf{No.} & \textbf{Caso} & \textbf{Fecha/hora} & \textbf{Origen/destino} & \textbf{Observación} & \textbf{Severidad} & \textbf{Acción} \\
+		\midrule
+		& & & & & & \\
+		& & & & & & \\
+		& & & & & & \\
+		& & & & & & \\
+		& & & & & & \\
+		& & & & & & \\
+		& & & & & & \\
+		& & & & & & \\
+		& & & & & & \\
+		& & & & & & \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\begin{nota}{Regla de evidencia}
+Una anomalía no es una prueba de ataque. Antes de asignar severidad, confirme la observación con al menos dos fuentes independientes (por ejemplo, PCAP y registro del servidor) y documente las explicaciones benignas que no se pudieron descartar. Si la evidencia es insuficiente, indíquelo como limitación. La conservación y el análisis de la evidencia siguen las recomendaciones de gestión de incidentes de \textcite{nist80061}.
+\end{nota}

@@ -1,0 +1,26 @@
+# Artefactos de compilación de LaTeX
+*.aux
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.bbl
+*.bbl-SAVE-ERROR
+*.bcf-SAVE-ERROR
+main.pdf.viejo*
+
+# Temporales de compilación y previsualización
+build_output.txt
+single.txt
+single2.txt
+pass*.txt
+biber_output.txt
+preview_*.png
+
+# Documento base del taller (no se publica)
+SEGUNDO TALLER*.pdf

@@ -1,0 +1,43 @@
+\section{Descripción y alcance de la solución}
+
+La Parte~II propone una aplicación, programa o bot que permita registrar un número telefónico, solicitar la ubicación del dispositivo asociado y visualizarla en un mapa, en tiempo real o por intervalos. La solución debe operar con consentimiento informado del usuario y con datos anonimizados; el objetivo es académico y no comercial.
+
+\begin{table}[H]
+	\caption{Niveles de viabilidad del rastreo según el servicio}
+	\label{tab:niveles-rastreo}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.18\textwidth} >{\raggedright\arraybackslash}p{0.20\textwidth} Y >{\raggedright\arraybackslash}p{0.20\textwidth}@{}}
+		\toprule
+		\textbf{Servicio} & \textbf{Fuente de ubicación} & \textbf{Viabilidad y límites} & \textbf{Requisito de consentimiento} \\
+		\midrule
+		WhatsApp & Ubicación compartida manualmente & Limitada e indirecta: la aplicación no expone la ubicación en tiempo real ni permite rastrear a un contacto sin su acción. & El usuario debe compartir su ubicación de forma explícita. \\
+		Telegram & Bot y ubicación enviada por el usuario & Un bot puede solicitar la ubicación mediante botones, pero no puede rastrear automáticamente sin que el usuario la envíe. & El usuario debe iniciar el chat y autorizar el envío. \\
+		Celular directamente & GPS del dispositivo & Requiere una aplicación instalada en el dispositivo objetivo y permisos de localización. & Consentimiento expreso durante la instalación y uso. \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\subsection{Alcance propuesto}
+
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item Prototipo funcional con registro por número telefónico, autenticación y visualización de ubicaciones en un mapa.
+	\item Actualización periódica de la ubicación, con intervalo configurable (por ejemplo, cada 10 minutos).
+	\item Historial de ubicaciones y, como funcionalidad opcional, alertas por geofencing.
+	\item Documentación técnica, modelo de datos, API, plan de pruebas y análisis de riesgos.
+	\item Demostración con datos sintéticos o de laboratorio; no se utilizarán personas reales ni dispositivos de terceros.
+\end{itemize}
+
+\subsection{Fuera de alcance}
+
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item Rastrear personas sin consentimiento, interceptar comunicaciones o vulnerar la seguridad de WhatsApp, Telegram o de un operador móvil.
+	\item Utilizar APIs no oficiales, ingeniería inversa o técnicas que incumplan los términos de servicio de las plataformas.
+	\item Almacenar datos personales reales, credenciales o ubicaciones de terceros en el repositorio o en el informe.
+	\item Automatizar bloqueos, decisiones disciplinarias o acciones sobre personas a partir de una puntuación de riesgo.
+\end{itemize}
+
+\begin{nota}{Principio de diseño}
+La solución debe pedir la ubicación, no tomarla por la fuerza. El usuario objetivo debe conocer quién recibe sus datos, para qué se usan, durante cuánto tiempo se conservan y cómo puede revocar el consentimiento.
+\end{nota}

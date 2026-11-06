@@ -1,0 +1,71 @@
+\section*{Introducción}
+\addcontentsline{toc}{section}{Introducción}
+
+Este documento es la plantilla de trabajo del \textbf{Segundo Taller de Mecanismos de Seguridad}. Reúne, en un solo informe técnico, el análisis de diez casos de seguridad en redes IEEE 802.3 con servicios TCP/IP y el diseño de una solución de programación para el rastreo autorizado de ubicaciones. El taller se desarrolla en un laboratorio académico aislado, con equipos propios o máquinas virtuales, direcciones privadas y tráfico de prueba.
+
+La plantilla está dividida en archivos independientes para facilitar el trabajo en equipo, la revisión por pares y el control de versiones. Cada integrante puede trabajar en su archivo sin sobrescribir el de sus compañeros; al final, todos los archivos se ensamblan en \texttt{main.tex}.
+
+\begin{table}[H]
+	\caption{Organización de la plantilla}
+	\label{tab:organizacion}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.15}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.38\textwidth} Y@{}}
+		\toprule
+		\textbf{Archivo} & \textbf{Contenido} \\
+		\midrule
+		\texttt{main.tex} & Preámbulo, portada, metadatos y ensamblado del documento. \\
+		\path{secciones/01-introduccion.tex} & Introducción, alcance, nota ética y datos del equipo. \\
+		\path{secciones/02-marco-parte1.tex} & Presentación, objetivos, resultados de aprendizaje, topología, reglas y herramientas. \\
+		\path{secciones/03-casos/} & Diez fichas de caso, una por archivo. \\
+		\path{secciones/04-registro-hallazgos.tex} & Formato mínimo de registro y consolidado de hallazgos. \\
+		\path{secciones/05-entregables-parte1.tex} & Entregables y lista de verificación de la Parte I. \\
+		\path{secciones/06-parte2-descripcion.tex} & Descripción y alcance de la solución de rastreo. \\
+		\path{secciones/07-parte2-requisitos.tex} & Requisitos funcionales, técnicos y de seguridad. \\
+		\path{secciones/08-parte2-arquitectura.tex} & Arquitectura de referencia, modelo de datos y plan de trabajo. \\
+		\path{secciones/09-parte2-etica.tex} & Consideraciones éticas, legales y de privacidad. \\
+		\path{secciones/10-conclusiones.tex} & Conclusiones y recomendaciones. \\
+		\path{secciones/11-anexos.tex} & Registro de evidencias, lista de entrega y glosario. \\
+		\texttt{referencias.bib} & Fuentes bibliográficas en formato BibLaTeX (APA 7). \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\subsection*{Cómo usar la plantilla}
+
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item Reemplace los marcadores \texttt{Integrante 1}, \texttt{Integrante 2}, \texttt{Integrante 3} e \texttt{Integrante 4} de la portada por los nombres y códigos reales.
+	\item Complete la Tabla~\ref{tab:integrantes} con los datos del equipo y la distribución de responsabilidades.
+	\item Desarrolle cada caso en su archivo correspondiente. No elimine las preguntas de análisis: responda cada una con evidencia.
+	\item Adjunte capturas de pantalla legibles, filtros de Wireshark, extractos de registros y, cuando aplique, el archivo PCAP de laboratorio.
+	\item Calcule el hash SHA-256 de cada evidencia original y regístrelo en la ficha del caso y en el Anexo~A.
+	\item Verifique que todas las direcciones, nombres y credenciales estén anonimizados antes de entregar el informe.
+	\item Cierre el documento con las conclusiones, las limitaciones de la evidencia y las referencias consultadas.
+\end{itemize}
+
+\begin{nota}{Alcance ético y legal}
+Este taller es un ejercicio académico. No se solicita vulnerar, atacar ni hackear sistemas, redes o personas reales. Todas las actividades de análisis se realizan sobre capturas didácticas, telemetría sintética o pruebas benignas autorizadas en un entorno aislado. El rastreo de ubicaciones de la Parte~II debe operar únicamente con consentimiento informado, finalidad académica y datos anonimizados; no se permite rastrear personas sin autorización ni reutilizar la información para fines distintos de los del taller.
+\end{nota}
+
+\subsection*{Datos del equipo}
+
+\begin{table}[H]
+	\caption{Integrantes del equipo y distribución de responsabilidades}
+	\label{tab:integrantes}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.35}
+	\begin{tabularx}{\textwidth}{@{}c >{\raggedright\arraybackslash}p{0.27\textwidth} c Y@{}}
+		\toprule
+		\textbf{No.} & \textbf{Nombre completo} & \textbf{Código} & \textbf{Responsabilidad principal} \\
+		\midrule
+		1 & & & \\
+		2 & & & \\
+		3 & & & \\
+		4 & & & \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\noindent\textbf{Distribución sugerida.} Una distribución equilibrada consiste en asignar los casos 1 a 3 al Integrante~1; los casos 4 y 5, junto con el backend de la Parte~II, al Integrante~2; los casos 6 a 8 y la aplicación móvil al Integrante~3; y los casos 9 y 10, junto con el bot de Telegram y la integración, al Integrante~4. Todos los integrantes deben revisar la versión final y firmar la lista de verificación del Anexo~B.

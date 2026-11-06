@@ -1,0 +1,49 @@
+\subsection{Caso 8. Escaneo de puertos y fingerprinting de servicios}
+\label{caso:escaneo-puertos}
+
+\begin{situacion}
+Los registros muestran intentos secuenciales contra varios puertos o servicios no habituales.
+\end{situacion}
+
+\paragraph{Procedimiento.}
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item Analizar los registros del firewall/IDS y una PCAP autorizada; contar destinos y puertos únicos por origen y periodo.
+	\item Correlacionar eventos de Zeek y Suricata, si están disponibles.
+	\item Elaborar una lista de exposición de los servicios propios, sin sondear redes ajenas.
+\end{itemize}
+
+\paragraph{Indicadores que deben buscarse.}
+Conexiones a muchos puertos en poco tiempo, intentos repetidos a servicios inexistentes y consultas de banner o versiones no habituales.
+
+\paragraph{Mitigación y defensa.}
+Reducir la superficie expuesta; filtrar por necesidad; actualizar los servicios; alertar ante patrones repetidos y aplicar bloqueo temporal con revisión.
+
+\paragraph{Evidencias que se entregan.}
+Lista de indicadores, puertos y servicios expuestos, regla de detección y plan de endurecimiento.
+
+\paragraph{Preguntas de análisis.}
+\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item ¿Qué limitaciones tiene atribuir un escaneo a una sola IP?
+	\item ¿Cómo se reducen los falsos positivos por monitoreo autorizado?
+\end{enumerate}
+
+\begin{table}[H]
+	\caption{Lista de exposición de servicios propios}
+	\label{tab:exposicion}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabularx}{\textwidth}{@{}c >{\raggedright\arraybackslash}p{0.15\textwidth} >{\raggedright\arraybackslash}p{0.12\textwidth} c Y >{\raggedright\arraybackslash}p{0.18\textwidth}@{}}
+		\toprule
+		\textbf{Puerto} & \textbf{Servicio} & \textbf{Versión} & \textbf{¿Expuesto?} & \textbf{Justificación} & \textbf{Control propuesto} \\
+		\midrule
+		& & & & & \\
+		& & & & & \\
+		& & & & & \\
+		& & & & & \\
+		& & & & & \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\registrohallazgo{Caso 8}

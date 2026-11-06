@@ -1,0 +1,88 @@
+\section*{Anexos}
+\addcontentsline{toc}{section}{Anexos}
+
+\subsection*{Anexo A. Registro de evidencias y cadena de custodia}
+\addcontentsline{toc}{subsection}{Anexo A. Registro de evidencias y cadena de custodia}
+
+Conserve la evidencia original sin modificaciones y analice una copia de trabajo. Registre el hash SHA-256 de la copia original antes de abrirla con cualquier herramienta de análisis.
+
+\begin{landscape}
+	\begin{table}[H]
+		\caption{Registro de evidencias y cadena de custodia}
+		\label{tab:evidencias}
+		\centering
+		\footnotesize
+		\renewcommand{\arraystretch}{1.35}
+		\setlength{\tabcolsep}{4pt}
+		\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.15\textwidth} >{\raggedright\arraybackslash}p{0.09\textwidth} >{\raggedright\arraybackslash}p{0.08\textwidth} >{\raggedright\arraybackslash}p{0.11\textwidth} >{\ttfamily\scriptsize\raggedright\arraybackslash}p{0.32\textwidth} >{\raggedright\arraybackslash}p{0.10\textwidth}@{}}
+			\toprule
+			\textbf{Archivo} & \textbf{Tipo} & \textbf{Tamaño} & \textbf{Fecha/hora} & \textbf{SHA-256} & \textbf{Analista} \\
+			\midrule
+			& & & & & \\ \hline
+			& & & & & \\ \hline
+			& & & & & \\ \hline
+			& & & & & \\ \hline
+			& & & & & \\ \hline
+			& & & & & \\ \hline
+			& & & & & \\ \hline
+			& & & & & \\
+			\bottomrule
+		\end{tabularx}
+	\end{table}
+\end{landscape}
+
+\subsection*{Anexo B. Lista de verificación de entrega}
+\addcontentsline{toc}{subsection}{Anexo B. Lista de verificación de entrega}
+
+\begin{table}[H]
+	\caption{Lista de verificación de entrega}
+	\label{tab:checklist-entrega}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.3}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.36\textwidth} c Y >{\raggedright\arraybackslash}p{0.14\textwidth}@{}}
+		\toprule
+		\textbf{Entregable} & \textbf{¿Incluido?} & \textbf{Observaciones} & \textbf{Responsable} \\
+		\midrule
+		Informe técnico con resumen ejecutivo y alcance. & \checkbox & & \\
+		Diez fichas de caso completas. & \checkbox & & \\
+		Capturas legibles y PCAP de laboratorio. & \checkbox & & \\
+		Hashes SHA-256 y cadena de custodia. & \checkbox & & \\
+		Reglas de detección propuestas. & \checkbox & & \\
+		Conclusiones y limitaciones. & \checkbox & & \\
+		Código fuente y README de la Parte~II. & \checkbox & & \\
+		Diagrama de arquitectura y modelo de datos. & \checkbox & & \\
+		Demostración con datos sintéticos. & \checkbox & & \\
+		Política de privacidad y consentimiento. & \checkbox & & \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\subsection*{Anexo C. Glosario}
+\addcontentsline{toc}{subsection}{Anexo C. Glosario}
+
+\begin{table}[H]
+	\caption{Términos frecuentes del taller}
+	\label{tab:glosario}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.22\textwidth} Y@{}}
+		\toprule
+		\textbf{Término} & \textbf{Definición} \\
+		\midrule
+		Anomalía & Desviación observable respecto de una línea base o comportamiento esperado. \\
+		E2EE & Cifrado de extremo a extremo: solo los participantes pueden leer el contenido. \\
+		Falso positivo & Alerta que señala un comportamiento legítimo como si fuera malicioso. \\
+		Geofencing & Definición de una zona geográfica y generación de alertas al entrar o salir de ella. \\
+		Hash SHA-256 & Huella digital de 256 bits que permite verificar la integridad de un archivo. \\
+		IDS / IPS & Sistema de detección / prevención de intrusiones. \\
+		IOC & Indicador de compromiso: señal observable que sugiere actividad maliciosa. \\
+		MITM & Ataque de intermediario que intercepta o modifica una comunicación. \\
+		PCAP & Archivo de captura de paquetes de red. \\
+		SIEM & Plataforma de correlación y gestión de eventos e incidentes de seguridad. \\
+		TLS & Protocolo de seguridad para el transporte de datos en red. \\
+		& \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
