@@ -3,28 +3,139 @@
 
 \begin{situacion}
 Las aplicaciones reportan sesiones TCP que terminan abruptamente o se reinician de forma repetida.
+
+\textbf{Objetivo:} \par
+Identificar y analizar paquetes TCP con la bandera RST en una captura de tráfico de laboratorio mediante el filtrado y correlación de sesiones, marcas de tiempo, puertos e IPs. Con este análisis se busca discernir si los reinicios de conexión corresponden a un comportamiento legítimo o a patrones anómalos, como inyección de paquetes o desincronización, correlacionando los eventos con registros del sistema para evaluar su contexto, establecer causas y proponer medidas de mitigación que preserven la integridad y disponibilidad de la red.
+
+\textbf{Fundamento Teórico:} \par
+El protocolo TCP garantiza conexiones confiables mediante el three-way handshake, empleando la bandera RST (Reset) para interrumpir abruptamente una sesión cuando ocurren fallos legítimos como puertos cerrados o caídas de aplicaciones; sin embargo, su presencia anómala también puede alertar sobre inyecciones de tráfico o desincronizaciones de red. Debido a esto, la detección aislada de un paquete RST no evidencia un ataque por sí misma, requiriendo un análisis forense riguroso en Wireshark (tcp.flags.reset == 1) que examine flujos y secuencias, y que sea correlacionado con logs de sistemas operativos e IDS (como Zeek o Suricata). Finalmente, mitigar la manipulación de estas conexiones exige una estrategia de defensa en profundidad basada en el endurecimiento de plataformas, segmentación de red, uso de IDS/IPS y el cifrado de datos mediante protocolos seguros como TLS.
 \end{situacion}
 
-\paragraph{Procedimiento.}
-\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
-	\item En una PCAP de laboratorio, filtrar \texttt{tcp.flags.reset == 1} y correlacionar marcas de tiempo, endpoints y sesiones.
-	\item Examinar si los RST coinciden con cierres legítimos, reinicios de servicio, firewall o pérdida de conectividad.
-	\item Correlacionar con registros de Zeek/Suricata y registros de aplicación, si están instalados.
-\end{itemize}
-
-\paragraph{Indicadores que deben buscarse.}
-RST fuera de contexto, frecuencia inusual, sesiones truncadas o inconsistencias que requieren correlación; no inferir MITM solo por observar RST.
-
-\paragraph{Mitigación y defensa.}
-Usar TLS correctamente validado; segmentar la red; actualizar los endpoints; activar detección IDS y revisar rutas y dispositivos intermedios.
-
-\paragraph{Evidencias que se entregan.}
-Tabla de flujos afectados, extractos de registros, tiempos y hash SHA-256 de la PCAP.
-
-\paragraph{Preguntas de análisis.}
-\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=2pt]
-	\item ¿Qué causas benignas generan RST?
-	\item ¿Qué evidencia adicional haría más sólida la hipótesis de manipulación?
+\paragraph{Procedimiento:} \par
+Para llevar a cabo el análisis del comportamiento TCP y la búsqueda de paquetes de reinicio, se ejecutó la siguiente metodología:
+\begin{enumerate}
+    \item \textbf{Verificación de integridad de la captura:} Se calculó el resumen criptográfico SHA-256 de la PCAP de laboratorio para garantizar la autenticidad y no alteración de la evidencia digital.
+    \item \textbf{Inspección y filtrado de paquetes RST:} Se cargó el archivo en Wireshark y se aplicó el filtro de visualización \texttt{tcp.flags.reset == 1} para aislar cualquier segmento con la bandera de reinicio activa.
+    \item \textbf{Análisis de flujos y sesiones TCP:} Se examinaron los flujos de comunicación mediante la opción \textit{Follow TCP Stream} para verificar los números de secuencia, las banderas de establecimiento y el mecanismo de cierre de las conexiones.
+    \item \textbf{Evaluación temporal del tráfico:} Se empleó la herramienta gráfica \textit{I/O Graphs} de Wireshark para analizar la distribución temporal de los paquetes a lo largo de la captura y detectar posibles ráfagas o anomalías.
 \end{enumerate}
 
-\registrohallazgo{Caso 5}
+\paragraph{Resultados obtenidos:}
+A partir de la inspección de las evidencias proporcionadas por las capturas de Wireshark y la ejecución de herramientas del sistema, se obtuvieron los siguientes resultados cuantitativos y cualitativos:
+
+\begin{itemize}
+    \item \textbf{Integridad del archivo PCAP:} Mediante la ejecución del comando de verificación en PowerShell (Figura~\ref{fig:05_integridad_pcap}), se obtuvo el hash SHA-256 correspondiente al archivo original:
+    \begin{center}
+        \texttt{5295B16EA117FA8BB1A65418FCA81E709BEA58D3A830BC3BB5C4A2ED0466EA9C}
+    \end{center}
+    
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=0.85\textwidth]{imagenes/Evidencias CU-5/01_hash_original.png}
+        \caption{Cálculo de integridad del archivo PCAP mediante SHA-256[cite: 1].}
+        \label{fig:05_integridad_pcap}
+    \end{figure}
+
+    \item \textbf{Análisis de paquetes RST:} Al aplicar el filtro \texttt{tcp.flags.reset == 1} en Wireshark (Figura~\ref{fig:05_paquetes_rst}), se constató que **no existe ningún paquete con la bandera RST activa** ($0$ coincidencias en toda la captura). Las conexiones analizadas siguen un ciclo de vida estándar basado en el establecimiento clásico de tres vías (\texttt{SYN}, \texttt{SYN/ACK}, \texttt{ACK}) y un cierre ordenado mediante banderas \texttt{FIN}/\texttt{ACK}.
+
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=0.85\textwidth]{imagenes/Evidencias CU-5/02_paquetes_rst.png}
+        \caption{Inspección de las sesiones TCP en la captura de tráfico[cite: 2].}
+        \label{fig:05_paquetes_rst}
+    \end{figure}
+
+    \item \textbf{Inspección de flujos y distribución temporal:} Al examinar la estructura del encabezado TCP en la sesión de referencia (Figura~\ref{fig:05_detalle_paquete_rst}) y al graficar la distribución del tráfico a lo largo del tiempo (Figura~\ref{fig:05_distribucion_temporal_rst}), se ratifica la estabilidad de la red sin fluctuaciones ni patrones anómalos de reinicio.
+
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=0.85\textwidth]{imagenes/Evidencias CU-5/03_detalle_paquete_rst.png}
+        \caption{Detalle de la estructura del segmento TCP en la sesión analizada[cite: 3].}
+        \label{fig:05_detalle_paquete_rst}
+    \end{figure}
+
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=0.85\textwidth]{imagenes/Evidencias CU-5/04_distribucion_temporal_rst.png}
+        \caption{Gráfica de E/S de la distribución del flujo TCP a lo largo del tiempo[cite: 4].}
+        \label{fig:05_distribucion_temporal_rst}
+    \end{figure}
+\end{itemize}
+
+\begin{table}[htbp]
+    \centering
+    \caption{Resumen de flujos TCP analizados en la captura.}
+    \label{tab:flujos_rst}
+    \begin{tabularx}{\textwidth}{ccccccY} % Se añade \textwidth y la última columna es Y
+        \toprule
+        \textbf{Flujo} & \textbf{IP Origen} & \textbf{Puerto A} & \textbf{IP Destino} & \textbf{Puerto B} & \textbf{Paquetes RST} & \textbf{Interpretación} \\
+        \midrule
+        F01 & 192.168.200.135 & 7875 & 192.168.200.21 & 2000 & 0 & Tráfico legítimo (\texttt{FIN}/\texttt{ACK}) \\
+        F02 & 192.168.200.135 & 7876 & 192.168.200.21 & 2000 & 0 & Tráfico legítimo (\texttt{FIN}/\texttt{ACK}) \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\paragraph{Análisis de seguridad e indicadores:}
+A partir de los resultados obtenidos, se evaluaron los indicadores clave de anomalía en sesiones TCP:
+\begin{itemize}
+    \item \textbf{RST fuera de contexto:} No se detectaron segmentos de reinicio, por lo que no existen evidencias de desconexiones forzadas por esta vía.
+    \item \textbf{Frecuencia inusual:} La tasa de paquetes RST es nula ($0$ pkt/s), descartando ráfagas o ataques de denegación por reseteo de conexiones.
+    \item \textbf{Sesiones truncadas:} Las comunicaciones finalizan de manera ordenada mediante el intercambio de paquetes \texttt{FIN} y \texttt{ACK}, confirmando la integridad del ciclo de cierre.
+    \item \textbf{Inconsistencia de secuencia:} Los números de secuencia y reconocimiento se mantienen coherentes a lo largo de las sesiones evaluadas.
+\end{itemize}
+
+\paragraph{Mitigación y defensa:}
+Para preservar la robustez de las comunicaciones frente a potenciales escenarios de inyección o reseteo malicioso, se proponen las siguientes medidas defensivas:
+\begin{itemize}
+    \item \textbf{Cifrado de extremo a extremo:} Implementar TLS con validación estricta de certificados para impedir la manipulación del contenido de las sesiones.
+    \item \textbf{Segmentación de red:} Aislar los servicios críticos mediante políticas de control de acceso y \textit{firewalls}.
+    \item \textbf{Monitoreo con IDS/IPS:} Configurar reglas de detección orientadas a identificar anomalías en los encabezados TCP y ráfagas anormales de paquetes de control.
+    \item \textbf{Correlación de registros:} Integrar la auditoría de eventos del sistema operativo con las trazas de red para verificar la legitimidad de los cierres de sesión.
+\end{itemize}
+
+\paragraph{Conclusiones:}
+El análisis detallado de la captura de tráfico \texttt{200722\_tcp\_anon.pcapng} permitió determinar que los flujos de comunicación evaluados operan bajo parámetros completamente normales. La ausencia total de paquetes con la bandera \texttt{RST} activa y la presencia de cierres de sesión estructurados mediante \texttt{FIN}/\texttt{ACK} descartan la existencia de indicios de inyección o desincronización maliciosa en este escenario de laboratorio.
+
+\paragraph{Preguntas de análisis}
+\begin{enumerate}
+    \item \textbf{¿Qué causas benignas generan RST?}
+    \begin{itemize}
+        \item Intentos de conexión (\texttt{SYN}) dirigidos a puertos donde no hay servicios escuchando.
+        \item Cierres abruptos o terminaciones de procesos en las aplicaciones cliente o servidor.
+        \item Reinicios o detenciones de servicios de red a nivel del sistema operativo.
+        \item Políticas de seguridad implementadas en \textit{firewalls} o dispositivos intermedios que rechazan de forma activa un flujo.
+        \item Pérdida de sincronismo o estado de la conexión ante reinicios legítimos de los equipos extremos.
+    \end{itemize}
+    
+    \item \textbf{¿Qué evidencia adicional haría más sólida la hipótesis de manipulación?}
+    \begin{itemize}
+        \item Identificación de paquetes \texttt{RST} con números de secuencia fuera de ventana o inconsistentes con el estado real de la sesión.
+        \item Capturas de tráfico simultáneas en ambos extremos de la comunicación (origen y destino) para constatar si el paquete de reinicio fue inyectado en el medio por un atacante (MITM).
+        \item Ausencia de registros de error o reinicio en los sistemas operativos que justifiquen la emisión del \textit{Reset}.
+        \item Alertas generadas por un sistema de detección de intrusos (NIDS/NSM) que reporten anomalías en los flujos TCP.
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Ficha de registro del hallazgo. Caso 5}
+
+\begin{table}[htbp]
+    \centering
+    \caption{Ficha técnica de registro del hallazgo para el Caso 5.}
+    \label{tab:ficha_caso_5}
+    \begin{tabular}{ll}
+        \toprule
+        \textbf{Campo} & \textbf{Registro} \\
+        \midrule
+        Identificador & H-CU5-01 \\
+        Fecha y hora & 2026-07-22 (Captura de laboratorio anonimizada) \\
+        Origen/destino & \texttt{192.168.200.135} (Puerto 7875/7876) $\leftrightarrow$ \texttt{192.168.200.21} (Puerto 2000) \\
+        Observación & Ausencia total de paquetes \texttt{RST}; sesiones con cierre ordenado \texttt{FIN}/\texttt{ACK}. \\
+        Hipótesis & Tráfico de red legítimo sin indicios de inyección, manipulación ni reseteo anómalo. \\
+        Validación & Filtrado mediante \texttt{tcp.flags.reset == 1} (0 resultados) y revisión de flujos TCP. \\
+        Severidad & Baja / Informativa \\
+        Acción & Documentar el comportamiento normal y mantener monitoreo preventivo de red. \\
+        Integridad & SHA-256: \texttt{5295B16EA117FA8BB1A65418FCA81E709BEA58D3A830BC3BB5C4A2ED0466EA9C} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
