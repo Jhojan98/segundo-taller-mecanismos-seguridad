@@ -3,48 +3,187 @@
 
 \begin{situacion}
 El servidor presenta servicios abiertos que podrían estar innecesarios o débilmente configurados. Los riesgos de aplicaciones web se pueden contrastar con el catálogo OWASP \parencite{owasp2021}.
+
+\textbf{Objetivo:} \par
+Identificar y evaluar los servicios de red en un entorno de laboratorio mediante el inventario de puertos, versiones y configuraciones de seguridad. A través de este análisis, se busca detectar vulnerabilidades, protocolos inseguros o software desactualizado para proponer mitigaciones efectivas que reduzcan la superficie de exposición y protejan la infraestructura de posibles riesgos. \par
+\textbf{Fundamento Teórico:} \par
+Los servicios de red permiten el intercambio de recursos mediante protocolos y puertos específicos, pero cada puerto abierto constituye un punto de exposición cuyo riesgo real depende de su configuración, versión de software y controles de acceso. Mientras que protocolos tradicionales como HTTP (puerto 80) y FTP (puerto 21) transmiten información y credenciales sin cifrar, sus alternativas seguras como HTTPS (puerto 443) y SFTP (puerto 22) emplean cifrado para garantizar la integridad y confidencialidad de los datos. La identificación y evaluación de estos servicios, junto con otros protocolos heredados e inseguros, es fundamental para determinar su necesidad operativa y corregir configuraciones vulnerables en la infraestructura.
 \end{situacion}
 
 \paragraph{Procedimiento.}
-\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
-	\item Inventariar servicios y puertos en el servidor propio usando el inventario del sistema y una comprobación autorizada de alcance limitado.
-	\item Revisar los registros de autenticación y los eventos del sistema; documentar versión, necesidad operativa y propietario de cada servicio.
-	\item Comprobar si se utiliza cifrado y si las cuentas siguen el principio de mínimo privilegio.
-\end{itemize}
+Las actividades desarrolladas durante la práctica comprendieron:
 
-\paragraph{Indicadores que deben buscarse.}
-Servicios expuestos sin necesidad, software sin soporte, intentos de autenticación fallidos, uso de protocolos en texto claro o configuraciones por defecto.
-
-\paragraph{Mitigación y defensa.}
-Deshabilitar servicios no requeridos; preferir SFTP/SSH o HTTPS frente a protocolos en texto claro; aplicar MFA donde corresponda; parchear y usar cuentas de mínimo privilegio.
-
-\paragraph{Evidencias que se entregan.}
-Inventario de servicios, eventos relevantes, matriz riesgo/criticidad y plan de remediación.
-
-\paragraph{Preguntas de análisis.}
-\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=2pt]
-	\item ¿Cómo se prioriza un puerto abierto?
-	\item ¿Qué diferencia hay entre exposición, vulnerabilidad y explotación?
+\begin{enumerate}
+    \item \textbf{Inventario de servicios y puertos:} Se examinó el estado de los puertos TCP en escucha mediante comandos de red del sistema operativo, correlacionándolos con la lista de servicios instalados (Figuras~\ref{fig:01_puertos_escucha} y \ref{fig:02_servicios_sistema}).
+    \item \textbf{Identificación de servicios, versiones y propietarios:} Se asociaron los puertos activos con sus respectivos identificadores de proceso (PID) y servicios del sistema para determinar las dependencias operativas y ejecutores (Figura~\ref{fig:03_identificacion_servicios}).
+    \item \textbf{Comprobación autorizada de exposición:} Se realizaron pruebas de conectividad de alcance limitado hacia puertos específicos mediante utilidades de red nativas para verificar la accesibilidad local y el filtrado de interfaces (Figura~\ref{fig:04_comprobacion_exposicion}).
+    \item \textbf{Revisión de registros de autenticación y eventos:} Se consultaron los registros de eventos de seguridad del sistema operativo para identificar intentos de inicio de sesión o anomalías de acceso (Figura~\ref{fig:05_eventos_autenticacion}).
+    \item \textbf{Verificación de cifrado y mínimo privilegio:} Se inspeccionaron las cuentas de ejecución asignadas a los servicios del sistema para evaluar el cumplimiento del principio de mínimo privilegio y el uso de credenciales de servicio (Figura~\ref{fig:06_cuentas_privilegios}).
+    \item \textbf{Evaluación de riesgos y propuesta de mitigación:} Se integraron las evidencias para ponderar la exposición de la infraestructura y estructurar recomendaciones de endurecimiento.
 \end{enumerate}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{imagenes/Evidencias CU-3/01_puertos_escucha.png}
+\caption{Inventario de puertos TCP en estado de escucha y procesos asociados.}
+\label{fig:01_puertos_escucha}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{imagenes/Evidencias CU-3/02_servicios_sistema.png}
+\caption{Inventario parcial de servicios del sistema operativo.}
+\label{fig:02_servicios_sistema}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{imagenes/Evidencias CU-3/03_identificacion_servicios.png}
+\caption{Asociación de nombres de imagen, PIDs y servicios en ejecución.}
+\label{fig:03_identificacion_servicios}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{imagenes/Evidencias CU-3/04_comprobacion_exposicion.png}
+\caption{Comprobación autorizada de alcance limitado para la conectividad de puertos.}
+\label{fig:04_comprobacion_exposicion}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{imagenes/Evidencias CU-3/05_eventos_autenticacion.png}
+\caption{Consulta de registros de eventos de autenticación y seguridad.}
+\label{fig:05_eventos_autenticacion}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{imagenes/Evidencias CU-3/06_cuentas_privilegios.png}
+\caption{Revisión de cuentas de inicio y privilegios asociados a los servicios del sistema.}
+\label{fig:06_cuentas_privilegios}
+\end{figure}
+
+\paragraph{Resultados obtenidos:}
+A partir del análisis de las evidencias gráficas, se obtuvieron los siguientes resultados concretos:
+\begin{itemize}
+    \item \textbf{Puertos en estado LISTEN:} Se identificaron múltiples puertos activos en escucha (Figura~\ref{fig:01_puertos_escucha}), destacando conexiones ligadas a interfaces \texttt{127.0.0.1}, \texttt{::1}, \texttt{0.0.0.0}, \texttt{::}, así como interfaces específicas como \texttt{192.168.101.16} y \texttt{172.31.144.1} en el puerto \texttt{139} (asociado al proceso PID \texttt{4}).
+    \item \textbf{Servicios y procesos asociados:} La correlación de PIDs (Figura~\ref{fig:03_identificacion_servicios}) permitió identificar servicios del núcleo y componentes de virtualización o soporte (ej. \texttt{svchost.exe}, \texttt{lsass.exe}), sin evidencias visuales directas de la ejecución de servidores web HTTP o FTP tradicionales en las trazas expuestas.
+    \item \textbf{Comprobación de exposición:} Las pruebas mediante \texttt{Test-NetConnection} (Figura~\ref{fig:04_comprobacion_exposicion}) mostraron fallos de conexión (\texttt{TcpTestSucceeded : False}) al intentar alcanzar puertos como el \texttt{80} y el \texttt{139} en bucle local (\texttt{::1}), mientras que otros puertos internos respondieron de forma local.
+    \item \textbf{Eventos de autenticación:} La consulta al registro de eventos de seguridad buscando el Id \texttt{4625} (inicios de sesión fallidos) arrojó el mensaje de error \textit{"No se encontraron eventos que coincidan con los criterios de selección especificados"} (Figura~\ref{fig:05_eventos_autenticacion}), lo que indica ausencia de registros bajo ese filtro en el momento de la captura.
+    \item \textbf{Cuentas de ejecución y privilegios:} La inspección de instancias de servicio (Figura~\ref{fig:06_cuentas_privilegios}) evidenció que una gran proporción de los servicios del sistema operan bajo cuentas altamente privilegiadas como \texttt{LocalSystem}, mientras que otros utilizan cuentas de servicio restringidas como \texttt{NT AUTHORITY\textbackslash LocalService} o \texttt{NT AUTHORITY\textbackslash NetworkService}.
+\end{itemize}
+
+\paragraph{Inventario de servicios expuestos:}
+
 \begin{table}[H]
-	\caption{Inventario de servicios expuestos}
-	\label{tab:inventario-servicios}
-	\centering
-	\footnotesize
-	\renewcommand{\arraystretch}{1.25}
-	\begin{tabularx}{\textwidth}{@{}c >{\raggedright\arraybackslash}p{0.15\textwidth} >{\raggedright\arraybackslash}p{0.12\textwidth} c >{\raggedright\arraybackslash}p{0.18\textwidth} Y@{}}
-		\toprule
-		\textbf{Puerto} & \textbf{Servicio} & \textbf{Versión} & \textbf{¿Necesario?} & \textbf{Propietario} & \textbf{Riesgo / observación} \\
-		\midrule
-		& & & & & \\
-		& & & & & \\
-		& & & & & \\
-		& & & & & \\
-		& & & & & \\
-		& & & & & \\
-		\bottomrule
-	\end{tabularx}
+\centering
+\caption{Inventario de servicios expuestos}
+\label{tab:servicios_expuestos}
+\footnotesize 
+\renewcommand{\arraystretch}{1.2} 
+\begin{tabularx}{\textwidth}{|c|l|l|c|l|Y|}
+\hline
+\textbf{Puerto} & \textbf{Servicio} & \textbf{Versión} & \textbf{¿Necesario?} & \textbf{Propietario} & \textbf{Riesgo / observación} \\
+\hline
+139 & NetBIOS Session & v4.0 / Heredado & \textbf{No} (Heredado) & Sistema (\texttt{4}) & Expuesto en interfaces \texttt{192.168.101.16} y \texttt{172.31.144.1}; riesgo potencial de enumeración SMB/NetBIOS si hay acceso externo no filtrado. \\
+\hline
+445 & SMB (Direct Hosting) & SMBv2 / SMBv3 & \textbf{Solo Local} & Sistema (\texttt{4}) & Escucha en interfaces comodín (\texttt{::} y \texttt{0.0.0.0}); requiere validación de reglas de firewall perimetral y limitar el acceso externo. \\
+\hline
+3306 / 33060 & MySQL / X Protocol & v8.0.x (Community) & \textbf{Sí} (Condicional) & No determinado & Escucha configurada en interfaces de bucle invertido y local (\texttt{::}), limitando el riesgo de acceso externo directo. \\
+\hline
+\end{tabularx}
 \end{table}
 
-\registrohallazgo{Caso 3}
+\paragraph{Análisis de seguridad e indicadores:}
+Se evaluaron los indicadores de la guía frente a las evidencias:
+\begin{enumerate}
+    \item \textbf{Servicios expuestos sin necesidad:} No determinado de forma concluyente; aunque existen puertos en escucha, la mayoría se restura a interfaces de loopback o requiere validación de firewall. El puerto \texttt{139} muestra enlace en interfaces de red específicas.
+    \item \textbf{Software sin soporte o desactualizado:} No fue posible determinar versiones específicas de software a partir de las capturas disponibles.
+    \item \textbf{Intentos de autenticación fallidos:} No se identificó evidencia de eventos fallidos debido a que la consulta de seguridad no retornó registros coincidentes (Figura~\ref{fig:05_eventos_autenticacion}).
+    \item \textbf{Uso de protocolos en texto claro:} No determinado con las capturas analizadas, ya que no se interceptó tráfico de aplicación HTTP/FTP.
+    \item \textbf{Configuraciones por defecto:} No determinado; se observa predominio de servicios nativos del sistema operativo bajo cuentas predeterminadas.
+\end{enumerate}
+
+\paragraph{Matriz de riesgo y criticidad:}
+
+\begin{table}[H]
+\centering
+\caption{Matriz de riesgo y criticidad del Caso 3}
+\label{tab:matriz_riesgo}
+\begin{tabular}{|p{2cm}|p{2.5cm}|p{3cm}|c|c|c|p{3.5cm}|}
+\hline
+\textbf{Identificador} & \textbf{Elemento} & \textbf{Hallazgo} & \textbf{Impacto} & \textbf{Probab.} & \textbf{Riesgo} & \textbf{Justificación} \\
+\hline
+C3-H01 & Puertos SMB / NetBIOS (139, 445) & Escucha en interfaces de red secundarias e IP comodín. & Medio & Bajo & Medio & La exposición de servicios SMB en redes corporativas puede facilitar ataques lateralización si no hay filtrado perimetral estricto. \\
+\hline
+C3-H02 & Cuentas de Servicios & Uso extendido de la cuenta \texttt{LocalSystem} en múltiples servicios. & Alto & Bajo & Medio & Incrementa el radio de impacto en caso de que un servicio sufra un compromiso de ejecución de código. \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Plan de remediación y defensa:}
+
+\begin{table}[H]
+\centering
+\caption{Plan de remediación y defensa propuesto}
+\label{tab:remediacion}
+\begin{tabular}{|p{3cm}|p{4cm}|c|p{2.5cm}|p{3cm}|}
+\hline
+\textbf{Hallazgo / Riesgo} & \textbf{Acción recomendada} & \textbf{Prioridad} & \textbf{Responsable} & \textbf{Verificación} \\
+\hline
+Exposición de puertos SMB (139/445) & Restringir el tráfico SMB mediante reglas de firewall local y perimetral, bloqueando el acceso desde redes no confiables. & Media & Adm. de Infraestructura & Escaneo de puertos local/remoto (\texttt{nmap}). \\
+\hline
+Privilegios excesivos en servicios & Auditar y migrar servicios ejecutados bajo \texttt{LocalSystem} hacia cuentas de servicio con privilegios mínimos (\texttt{NetworkService} o cuentas dedicadas). & Media & Adm. de Sistemas & Revisión de configuraciones de servicios (\texttt{Get-CimInstance}). \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Preguntas de análisis:}
+\begin{enumerate}
+    \item \textbf{¿Cómo se prioriza un puerto abierto?}\par
+    La priorización no depende únicamente del número del puerto, sino de una evaluación integral que incluye: el servicio de red subyacente asociado, su necesidad operativa real para el negocio, la accesibilidad de la interfaz de red donde escucha (loopback frente a interfaz pública), la versión del software, la existencia de vulnerabilidades conocidas publicadas, los mecanismos de autenticación y cifrado soportados, y el impacto potencial que tendría una explotación exitosa sobre la confidencialidad, integridad y disponibilidad del sistema.
+    \item \textbf{¿Qué diferencia hay entre exposición, vulnerabilidad y explotación?}\par
+    \textit{Exposición} describe la condición en la cual un servicio o puerto se encuentra accesible o disponible a través de una interfaz de red o sistema operativo. \textit{Vulnerabilidad} representa una debilidad o fallo técnico específico en la implementación o configuración del servicio que puede ser aprovechado. \textit{Explotación} es la fase activa donde un atacante utiliza dicha vulnerabilidad para quebrantar los controles de seguridad y lograr un acceso o efecto no autorizado. Por ejemplo, un servidor con el puerto HTTP abierto está \textit{expuesto}; si el software web contiene un desbordamiento de búfer sin parches, posee una \textit{vulnerabilidad}; y si un script malicioso utiliza ese fallo para inyectar código, se ha concretado una \textit{explotación}.
+\end{enumerate}
+
+\paragraph{Conclusiones:}
+\begin{itemize}
+    \item Se logró realizar el inventario de puertos en estado de escucha y de los servicios del sistema operativo disponibles en el entorno evaluado, identificando enlaces en interfaces de bucle local, comodín y algunas direcciones de red específicas como el puerto \texttt{139}.
+    \item Se comprobó que el alcance de la exposición de ciertos puertos está limitado a nivel de interfaces locales, aunque se detectó la necesidad de mantener un control estricto mediante cortafuegos para evitar accesos no autorizados.
+    \item La revisión de los registros de autenticación y eventos no arrojó trazas de eventos de error de inicio de sesión bajo los filtros consultados, limitando la detección de anomalías de acceso activo en las evidencias analizadas.
+    \item Se evidenció que gran parte de los servicios del sistema operan bajo la cuenta \texttt{LocalSystem}, lo que destaca una oportunidad de mejora en la aplicación del principio de mínimo privilegio.
+    \item Las evidencias disponibles presentaron limitaciones para determinar versiones de software específicas o el uso de protocolos cifrados, por lo que se recomienda complementar la evaluación con escaneos de vulnerabilidades y auditorías de configuración avanzadas.
+\end{itemize}
+
+
+\paragraph{Ficha de registro del hallazgo. Caso 3}
+
+\begin{table}[H]
+\centering
+\caption{Ficha de registro del hallazgo. Caso 3}
+\label{tab:ficha_hallazgo_c3}
+\begin{tabular}{|p{4cm}|p{10cm}|}
+\hline
+\textbf{Campo} & \textbf{Registro} \\
+\hline
+Identificador & C3-H01 \\
+\hline
+Fecha y hora & No especificada en las evidencias de consola proporcionadas. \\
+\hline
+Origen/destino & Local / Interfaces de red locales (\texttt{192.168.101.16}, \texttt{172.31.144.1}) y bucle invertido (\texttt{127.0.0.1}, \texttt{::1}). \\
+\hline
+Observación & Presencia de puertos en estado \texttt{LISTEN} asociados a servicios de red y del sistema operativo, incluyendo puertos NetBIOS (139) y SMB (445). \\
+\hline
+Hipótesis & Si los puertos de administración o servicios heredados están accesibles desde interfaces externas sin control de firewall, se incrementa la superficie de ataque ante intrusiones. \\
+\hline
+Validación & Respaldado por el inventario de puertos en escucha obtenido mediante comandos del sistema (Figura~\ref{fig:01_puertos_escucha}). \\
+\hline
+Severidad & Media. \\
+\hline
+Acción & Aplicar filtrado de puertos perimetral, restringir servicios innecesarios y verificar la directiva de minimización de privilegios. \\
+\hline
+Integridad & Imágenes fuente: \texttt{01\_puertos\_escucha.png}, \texttt{02\_servicios\_sistema.png}, \texttt{03\_identificacion\_servicios.png}, \texttt{04\_comprobacion\_exposicion.png}, \texttt{05\_eventos\_autenticacion.png}, \texttt{06\_cuentas\_privilegios.png}. (Hashes SHA-256 no suministrados). \\
+\hline
+\end{tabular}
+\end{table}
