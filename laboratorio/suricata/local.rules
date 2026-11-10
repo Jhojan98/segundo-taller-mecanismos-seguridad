@@ -1,0 +1,14 @@
+# Reglas Suricata del laboratorio (Casos 7, 8 y 10).
+# Se validan contra las PCAP; no se activan bloqueos en producción.
+
+# --- Caso 7: ICMP ---
+alert icmp 172.28.50.0/24 any -> 172.28.50.20 any (msg:"CU7 ICMP echo request con payload grande (posible tunel)"; itype:8; dsize:>500; threshold: type threshold, track by_src, count 3, seconds 10; classtype:policy-violation; sid:1007001; rev:1;)
+alert icmp 172.28.50.0/24 any -> 172.28.50.0/24 any (msg:"CU7 rafaga de echo requests (posible barrido ICMP)"; itype:8; threshold: type threshold, track by_src, count 20, seconds 5; classtype:attempted-recon; sid:1007002; rev:1;)
+
+# --- Caso 8: escaneo de puertos ---
+alert tcp 172.28.50.10 any -> 172.28.50.20 any (msg:"CU8 escaneo TCP SYN (muchos SYNs por origen)"; flags:S; threshold: type threshold, track by_src, count 30, seconds 10; classtype:attempted-recon; sid:1008001; rev:1;)
+alert tcp 172.28.50.20 any -> 172.28.50.10 any (msg:"CU8 respuestas RST multiples (barrido de puertos)"; flags:R*; threshold: type threshold, track by_dst, count 30, seconds 10; classtype:attempted-recon; sid:1008002; rev:1;)
+
+# --- Caso 10: XMPP/TLS ---
+alert tls any any -> any any (msg:"CU10 certificado autofirmado CN=localhost"; tls.cert_subject; content:"CN=localhost"; classtype:policy-violation; sid:1001002; rev:1;)
+alert tcp any any -> any 5280 (msg:"CU10 BOSH XMPP sobre HTTP sin cifrar"; flow:to_server,established; content:"POST"; content:"/http-bind"; distance:0; classtype:policy-violation; sid:1001003; rev:1;)

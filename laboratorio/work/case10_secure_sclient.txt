@@ -1,0 +1,86 @@
+Connecting to 172.28.50.31
+CONNECTED(00000003)
+depth=1 C=CO, O=Laboratorio Academico, CN=Laboratorio CA
+verify return:1
+depth=0 C=CO, O=Laboratorio Academico, CN=lab.local
+verify return:1
+---
+Certificate chain
+ 0 s:C=CO, O=Laboratorio Academico, CN=lab.local
+   i:C=CO, O=Laboratorio Academico, CN=Laboratorio CA
+   a:PKEY: rsaEncryption, 2048 (bit); sigalg: RSA-SHA256
+   v:NotBefore: Nov 10 16:40:30 2026 GMT; NotAfter: Feb 12 16:40:30 2029 GMT
+-----BEGIN CERTIFICATE-----
+MIIEszCCApugAwIBAgIUbsveUv7NyPuHAWDAU6LDsy2djxQwDQYJKoZIhvcNAQEL
+BQAwRjELMAkGA1UEBhMCQ08xHjAcBgNVBAoMFUxhYm9yYXRvcmlvIEFjYWRlbWlj
+bzEXMBUGA1UEAwwOTGFib3JhdG9yaW8gQ0EwHhcNMjYxMTEwMTY0MDMwWhcNMjkw
+MjEyMTY0MDMwWjBBMQswCQYDVQQGEwJDTzEeMBwGA1UECgwVTGFib3JhdG9yaW8g
+QWNhZGVtaWNvMRIwEAYDVQQDDAlsYWIubG9jYWwwggEiMA0GCSqGSIb3DQEBAQUA
+A4IBDwAwggEKAoIBAQDJZ5fFgHgopdw18fXOfrh5Q2oTQ9+hawsljN+ZZZJbZ3Xu
+4SCVMAV0xbYyPtsB41m0X3UMhqhgafBJVb1FF29Uj3FkkpK7VsX7RJZjPtGdjpUV
+8GdlV6qJ1gbze/qP0cL5N5IEIsAaVc4egrOTG7qNn1eYQuWPw3D4Np6AKrg+ySMN
+RJ6ByHt9Eas3jyeFKp3zjWiPZ7iPaCHauZNxXY5RC3DYwtXJL7j7CSUvaMtfDBp4
+i2N3JiC9zF8QkpNv7ELEfmi3c3DhBT7AwTW4ZyvAcKtcXaoVP/w7KLsKoUimOjcW
+JJRCwGcKoOkHnWE7Jb0SL8AGJCShTNJbcHGTGYefAgMBAAGjgZ0wgZowHwYDVR0j
+BBgwFoAUQFutB/RsWqX9qI4fsxq49ONWCZ8wCQYDVR0TBAIwADALBgNVHQ8EBAMC
+BaAwEwYDVR0lBAwwCgYIKwYBBQUHAwEwKwYDVR0RBCQwIoIJbGFiLmxvY2Fsggls
+b2NhbGhvc3SHBKwcMh+HBH8AAAEwHQYDVR0OBBYEFByhXxYKvGm2ScmAE2Yl0egQ
+UEZXMA0GCSqGSIb3DQEBCwUAA4ICAQCwbi6S1PYdYEF0PA2q6WNhqb2eUz26bK6J
+GFFmoocV3nqmP8ZP+s9jE5Y95FEM4g7x7h2xeXneG7nxsBDkuyf9Bx9H5x01NGnh
+1jpJgA6gUYGu+mZ8CnWdV8nzlC/Ha8yBo+0FXgSlir1E1FDs/ySaGudbYOG0CPq/
+tewPYi33s75JasH1hgSPXZAyff1OAuZyBxJQvoFLsLAAzyoVSu22jnz5ToDHBJpO
+k5x46aju2B8ukuRAEbEARNf0cxBrhK7P3hJ8gwlI7cDir3lfK5Wst9Yh8QP5v69c
+vdFjOT41PjSySovAEXTCdl7g+/VtQlmNY193zo9obYSPvy0XlP9sX80jSmSDmEtj
+W9e/v9HKMdAIAyHncTxSAoHP0q7/oI68QV4aWjhci98O92DvQ/gh+47UHmJFymbO
+VqQNOS95H4Y0I7WijSl8RARsWsf7gmbMmfz9PKLRpti2u2G9yr3lqub+uLa45WV1
+kd3xUbjjw+po+XKZb0EMkeg/Dr0WyAOTNOto7HAFShKMV/bYwtR+SVI1nF5Meiu9
+HoJizG8qwgtvo6OxF/e+RMziZGsRxL7KT+84P6tQOyeyIN801Z13xL7pkWFL2ahq
+03Wpn+UEB9lfJCzCjcM0F0aJU1dw0KOFWvtSRgf/pzTfi3+l6eAfcFIp1KQOFpJS
+ArICWBa3Lw==
+-----END CERTIFICATE-----
+---
+Server certificate
+subject=C=CO, O=Laboratorio Academico, CN=lab.local
+issuer=C=CO, O=Laboratorio Academico, CN=Laboratorio CA
+---
+No client certificate CA names sent
+Requested Signature Algorithms: ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512:ed25519:ed448:rsa_pss_pss_sha256:rsa_pss_pss_sha384:rsa_pss_pss_sha512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:RSA+SHA256:RSA+SHA384:RSA+SHA512:ECDSA+SHA224:RSA+SHA224
+Shared Requested Signature Algorithms: ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512:ed25519:ed448:rsa_pss_pss_sha256:rsa_pss_pss_sha384:rsa_pss_pss_sha512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:RSA+SHA256:RSA+SHA384:RSA+SHA512
+Peer signing digest: SHA256
+Peer signature type: RSA-PSS
+Server Temp Key: ECDH, secp384r1, 384 bits
+---
+SSL handshake has read 2338 bytes and written 974 bytes
+Verification: OK
+---
+New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
+Server public key is 2048 bit
+This TLS version forbids renegotiation.
+No ALPN negotiated
+Early data was not sent
+Verify return code: 0 (ok)
+---
+DONE
+---
+Post-Handshake New Session Ticket arrived:
+SSL-Session:
+    Protocol  : TLSv1.3
+    Cipher    : TLS_AES_256_GCM_SHA384
+    Session-ID: A7ED72D56669659B8FA95CD385E946604E1EEF674D247B29B1E373ED1545E64B
+    Session-ID-ctx: 
+    Resumption PSK: 53E96075854FEF8322AC939CBFFBEE1184A6D1D91E4D55642C239DE444E582B031114125AB1D2CCDE6E86CD7132E6A4E
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    TLS session ticket lifetime hint: 7200 (seconds)
+    TLS session ticket:
+    0000 - b6 c7 0b a6 1f 7a 37 ff-1f 7e d6 1a c4 30 02 95   .....z7..~...0..
+    0010 - fd 53 ac 2c 5a 50 fd 37-ed d5 9b a1 67 6d 77 69   .S.,ZP.7....gmwi
+
+    Start Time: 1794329503
+    Timeout   : 7200 (sec)
+    Verify return code: 0 (ok)
+    Extended master secret: no
+    Max Early Data: 0
+---
+read R BLOCK

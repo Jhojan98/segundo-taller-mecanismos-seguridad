@@ -2,30 +2,165 @@
 \label{caso:xmpp-tls}
 
 \begin{situacion}
-Se investiga si la comunicación entre clientes y servidor de mensajería está correctamente protegida. XMPP se especifica en el RFC~6120 y TLS~1.3 en el RFC~8446 \parencite{rfc6120,rfc8446}.
+Se investiga si la comunicación entre clientes y servidor de mensajería está correctamente protegida, y qué ocurre cuando el certificado es inválido o la validación se desactiva.
+\textbf{Objetivo:} \par
+Comparar un servidor XMPP deliberadamente débil con uno endurecido, comprobar qué parte de la conversación queda expuesta en una captura pasiva, validar el comportamiento del cliente frente a un certificado vencido o suplantado y proponer un checklist de configuración TLS con controles verificables. \par
+\textbf{Fundamento Teórico:} \par
+XMPP (\textit{Extensible Messaging and Presence Protocol}) define un flujo XML sobre TCP y utiliza STARTTLS para negociar una sesión TLS antes de autenticar \parencite{rfc6120}. TLS~1.3 \parencite{rfc8446} proporciona confidencialidad e integridad en el tramo cliente-servidor y, cuando el cliente valida el certificado, autentica al servidor. Sin embargo, TLS termina en el servidor: el operador de ese servidor puede leer los mensajes, y los archivos de archivo (MAM) o las copias de respaldo pueden conservarlos en claro. La autenticación SASL \texttt{PLAIN} transmite usuario y contraseña codificados en Base64, que es una codificación reversible y no un cifrado; sin TLS, esa credencial queda expuesta en la red.
 \end{situacion}
 
 \paragraph{Procedimiento.}
-\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
-	\item En un servidor XMPP de laboratorio (por ejemplo, Openfire o ejabberd), revisar la configuración TLS, los certificados, los nombres, la vigencia y la cadena de confianza.
-	\item Capturar metadatos de conexión en una prueba autorizada y verificar que el contenido de una sesión cifrada no se trate como texto legible.
-	\item Revisar los registros del servidor en busca de errores de negociación, certificados inválidos o conexiones inesperadas.
+Se desplegaron dos servidores Prosody~0.11.9 en la red aislada \texttt{172.28.50.0/24} (Figura~\ref{fig:c10_topologia}): el inseguro en \texttt{172.28.50.30}, con certificado autofirmado y vencido, autenticación en claro permitida, registro abierto y archivo MAM; y el endurecido en \texttt{172.28.50.31}, con certificado firmado por una CA local, TLS~1.2 o superior, administración en \textit{loopback} y registro deshabilitado. El cliente se ejecutó desde el analista \texttt{172.28.50.10} con \texttt{slixmpp} y OpenSSL.
+
+\begin{enumerate}
+	\raggedright
+	\item \textbf{Integridad:} se calcularon las huellas SHA-256 de las siete capturas (Figura~\ref{fig:c10_hashes}).
+	\item \textbf{Negociación STARTTLS:} se capturaron \texttt{CU10\_01\_xmpp\_insecure.pcap} y \texttt{CU10\_02\_xmpp\_secure.pcap} y se comparó la secuencia XMPP/TLS (Figura~\ref{fig:c10_starttls}).
+	\item \textbf{Certificados:} se inspeccionaron ambos certificados con \texttt{openssl s\_client} y se registraron vigencia, nombre, cadena y código de verificación (Figuras~\ref{fig:c10_cert_vencido} y~\ref{fig:c10_cert_valido}).
+	\item \textbf{Contenido cifrado:} se envió un mensaje real sobre TLS y se buscó su cuerpo y la contraseña en la captura \texttt{CU10\_03\_xmpp\_message.pcap} (Figura~\ref{fig:c10_cifrado}).
+	\item \textbf{Sesión sin TLS:} se capturó \texttt{CU10\_05\_xmpp\_plaintext.pcap} con autenticación \texttt{PLAIN} y mensaje en claro (Figura~\ref{fig:c10_credenciales}).
+	\item \textbf{Archivo MAM:} se revisó el archivo del servidor y se comprobó si el cuerpo del mensaje queda legible (Figura~\ref{fig:c10_mam}).
+	\item \textbf{Validación frente a MITM:} se levantó un intermediario con certificado autofirmado y se comparó el resultado con y sin validación (Figura~\ref{fig:c10_mitm}).
+	\item \textbf{HTTPS y IDS:} se capturaron sesiones HTTPS con TLS~1.3 y TLS~1.2 para comprobar qué metadatos ve un IDS pasivo y se validó la regla de certificado (Figuras~\ref{fig:c10_versiones} y~\ref{fig:c10_suricata}).
+\end{enumerate}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\textwidth]{imagenes/Evidencias CU-10/01_topologia_lab.png}
+	\caption{Topología del laboratorio XMPP y TLS.}
+	\label{fig:c10_topologia}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.94\textwidth]{imagenes/Evidencias CU-10/02_hashes_sha256.png}
+	\caption{Verificación de integridad de las capturas del Caso 10 mediante SHA-256.}
+	\label{fig:c10_hashes}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.98\textwidth]{imagenes/Evidencias CU-10/03_starttls_handshake.png}
+	\caption{Negociación STARTTLS en el servidor inseguro y en el endurecido.}
+	\label{fig:c10_starttls}
+\end{figure}
+
+\paragraph{Resultados obtenidos.}
+Ambos servidores negocian TLS~1.3 tras el intercambio \texttt{STARTTLS}/\texttt{PROCEED}: la diferencia no está en la versión, sino en el certificado y en la validación del cliente. El servidor inseguro presenta un certificado \texttt{CN=localhost}, autofirmado y vencido el 13 de mayo de 2022; OpenSSL reporta \texttt{verify error:num=18} (autofirmado) y \texttt{num=10} (vencido), con código de retorno~10. El servidor endurecido presenta una cadena completa hasta la CA local, \texttt{CN=lab.local} con SAN para \texttt{lab.local}, \texttt{localhost} y las direcciones del laboratorio, válido hasta 2029, y código de retorno~0.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.98\textwidth]{imagenes/Evidencias CU-10/04_certificado_vencido.png}
+	\caption{Certificado autofirmado y vencido del servidor XMPP inseguro.}
+	\label{fig:c10_cert_vencido}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.98\textwidth]{imagenes/Evidencias CU-10/05_certificado_valido.png}
+	\caption{Certificado firmado por la CA local en el servidor XMPP endurecido.}
+	\label{fig:c10_cert_valido}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.98\textwidth]{imagenes/Evidencias CU-10/06_cifrado_vs_claro.png}
+	\caption{Contraste entre una sesión XMPP cifrada y una sesión sin TLS.}
+	\label{fig:c10_cifrado}
+\end{figure}
+
+\begin{itemize}
+	\item \textbf{Sesión cifrada (\texttt{CU10\_03}):} el cuerpo \texttt{HOLA-BOB-MENSAJE-CONFIDENCIAL-2026} y la contraseña \texttt{alice123} produjeron cero coincidencias en la PCAP. Solo se observan el SNI \texttt{lab.local} y registros TLS cifrados.
+	\item \textbf{Sesión sin TLS (\texttt{CU10\_05}):} la autenticación viaja como \texttt{AGFsaWNlAGFsaWNlMTIz}, que decodifica a \texttt{\textbackslash x00alice\textbackslash x00alice123}, y el cuerpo \texttt{HOLA-BOB-SIN-TLS-2026} aparece legible en la trama~18.
+	\item \textbf{Archivo MAM:} el archivo \texttt{/var/lib/prosody/lab\%2elocal/archive/alice.list} contiene el cuerpo completo en claro, junto con remitente, destinatario y marca de tiempo.
 \end{itemize}
 
-\paragraph{Indicadores que deben buscarse.}
-Certificados vencidos o no confiables, negociación insegura, servicios de administración expuestos o patrones de conexión que no coinciden con el uso esperado.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.98\textwidth]{imagenes/Evidencias CU-10/07_credenciales_claras.png}
+	\caption{Credenciales SASL \texttt{PLAIN} expuestas en una sesión sin TLS.}
+	\label{fig:c10_credenciales}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.98\textwidth]{imagenes/Evidencias CU-10/08_mam_servidor.png}
+	\caption{Mensaje en claro en el archivo MAM del servidor Prosody.}
+	\label{fig:c10_mam}
+\end{figure}
+
+\paragraph{Análisis de resultados.}
+TLS cumple su función: en la captura cifrada no se recupera ni el cuerpo ni la contraseña, y la sesión no puede alterarse sin romper la integridad. Pero TLS solo protege el tramo hasta el servidor. El archivo MAM demuestra que el operador del servidor conserva el historial en claro, de modo que un TLS correcto no equivale a confidencialidad de extremo a extremo. La protección real frente al propio servidor exige cifrado de extremo a extremo (por ejemplo, OMEMO), que no se configuró en este laboratorio.
+
+La comparación de certificados explica por qué la validación es imprescindible. Frente a un intermediario con certificado autofirmado \texttt{CN=lab.local}, OpenSSL sin validación completa el handshake (\texttt{exit 0}) y entrega el certificado; con \texttt{-CAfile} y \texttt{-verify\_return\_error}, aborta con \texttt{exit 1} y \texttt{certificate verify failed}. Un cliente XMPP que no valide el certificado queda expuesto a interceptación, aunque la sesión ``se vea'' cifrada.
+
+La captura HTTPS añade un matiz relevante para la detección: en TLS~1.3 el mensaje de certificado viaja cifrado, por lo que un IDS pasivo solo observa el SNI; en TLS~1.2 el certificado es visible y la regla basada en \texttt{tls.cert\_subject} puede alertar. Esto no significa que TLS~1.3 sea más débil, sino que la inspección pasiva dispone de menos metadatos y requiere otras fuentes (logs del servidor, sensores con terminación TLS o telemetría del endpoint).
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.92\textwidth]{imagenes/Evidencias CU-10/09_mitm_validacion.png}
+	\caption{Resultado del handshake frente a un intermediario, con y sin validación del certificado.}
+	\label{fig:c10_mitm}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.88\textwidth]{imagenes/Evidencias CU-10/11_versiones_tls.png}
+	\caption{Versiones TLS aceptadas por cada servidor.}
+	\label{fig:c10_versiones}
+\end{figure}
+
+\paragraph{Indicadores de detección.}
+\begin{itemize}
+	\item Certificados vencidos, autofirmados o con nombre que no coincide con el servicio (\texttt{CN=localhost} para \texttt{lab.local}).
+	\item Uso de \texttt{PLAIN} o autenticación sin TLS en XMPP.
+	\item Puertos de administración o BOSH expuestos más allá de \textit{loopback}.
+	\item Registro abierto y archivo MAM con cuerpos en claro.
+	\item Clientes que aceptan certificados inválidos o desactivan la validación.
+	\item Sesiones XMPP sin \texttt{STARTTLS} o con caída posterior a texto claro.
+\end{itemize}
+
+\paragraph{Regla de detección propuesta.}
+La regla de certificado se validó con Suricata~7.0.7 sobre \texttt{CU10\_07\_https\_tls12\_insecure.pcap}: una alerta por \texttt{CN=localhost}. La captura equivalente con certificado válido no generó alertas. También se propone una regla para BOSH sobre HTTP sin cifrar.
+
+\begin{verbatim}
+alert tls any any -> any any (
+  msg:"CU10 certificado autofirmado CN=localhost"; tls.cert_subject;
+  content:"CN=localhost"; classtype:policy-violation; sid:1001002; rev:1;)
+
+alert tcp any any -> any 5280 (
+  msg:"CU10 BOSH XMPP sobre HTTP sin cifrar"; flow:to_server,established;
+  content:"POST"; content:"/http-bind"; distance:0;
+  classtype:policy-violation; sid:1001003; rev:1;)
+\end{verbatim}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.98\textwidth]{imagenes/Evidencias CU-10/10_suricata_tls.png}
+	\caption{Alerta de Suricata por certificado autofirmado en una captura TLS~1.2.}
+	\label{fig:c10_suricata}
+\end{figure}
 
 \paragraph{Mitigación y defensa.}
-Exigir TLS robusto y validación de certificados; limitar las interfaces administrativas; mantener el servidor actualizado; aplicar cifrado de extremo a extremo (E2EE) cuando el modelo de amenaza lo requiera.
-
-\paragraph{Evidencias que se entregan.}
-Checklist TLS, eventos anonimizados, evidencia de configuración y plan de corrección.
+\begin{itemize}
+	\item \textbf{Certificado confiable:} emitir el certificado con una CA reconocida, incluir el nombre real en CN/SAN y renovarlo antes de su vencimiento.
+	\item \textbf{TLS obligatorio:} exigir TLS~1.2 o superior, deshabilitar versiones heredadas y rechazar autenticación en claro.
+	\item \textbf{Validación en el cliente:} no permitir la aceptación de certificados inválidos; considerar \textit{pinning} en clientes propios.
+	\item \textbf{Superficie administrativa:} limitar administración y BOSH a \textit{loopback} o a una red de gestión, y deshabilitar el registro abierto.
+	\item \textbf{Datos en reposo:} cifrar el archivo MAM, definir retención y acceso mínimo; para confidencialidad frente al servidor, usar E2EE.
+	\item \textbf{Monitorización:} alertar por certificados inválidos, ausencia de STARTTLS y caídas a texto claro, y revisar los registros del servidor.
+\end{itemize}
 
 \paragraph{Preguntas de análisis.}
-\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=2pt]
-	\item ¿Qué protege TLS y qué no protege?
-	\item ¿En qué se diferencia el cifrado de transporte del cifrado de extremo a extremo?
+\begin{enumerate}
+	\item \textbf{¿Qué protege TLS y qué no protege?}\par
+	TLS protege la confidencialidad e integridad de los datos en tránsito entre cliente y servidor, y autentica al servidor si el cliente valida la cadena. No protege los datos en reposo, los metadatos, los extremos comprometidos ni al operador del servidor; tampoco protege si el cliente desactiva la validación o acepta un certificado inválido, porque en ese caso un intermediario puede completar el handshake.
+	\item \textbf{¿En qué se diferencia el cifrado de transporte del cifrado de extremo a extremo?}\par
+	El cifrado de transporte termina en el servidor: este descifra el mensaje para procesarlo y puede archivarlo o leerlo. El cifrado de extremo a extremo se aplica en el cliente y solo el destinatario puede descifrarlo; el servidor transporta texto cifrado y no puede leer el contenido, aunque sí observa metadatos como participantes y horarios. En el laboratorio, TLS protegió la captura de red, pero MAM conservó el mensaje en claro: esa es exactamente la diferencia.
 \end{enumerate}
+
+\paragraph{Checklist de configuración TLS.}
+La Tabla~\ref{tab:checklist-tls} resume las verificaciones realizadas sobre ambos servidores.
 
 \begin{table}[H]
 	\caption{Checklist de configuración TLS del servidor XMPP}
@@ -33,20 +168,48 @@ Checklist TLS, eventos anonimizados, evidencia de configuración y plan de corre
 	\centering
 	\footnotesize
 	\renewcommand{\arraystretch}{1.25}
-	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.34\textwidth} >{\raggedright\arraybackslash}p{0.14\textwidth} Y@{}}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.30\textwidth} >{\raggedright\arraybackslash}p{0.15\textwidth} Y@{}}
 		\toprule
-		\textbf{Verificación} & \textbf{Resultado} & \textbf{Evidencia / observación} \\
-		\midrule
-		Vigencia del certificado & & \\
-		Coincidencia del nombre (CN/SAN) & & \\
-		Cadena de confianza completa & & \\
-		Versión de TLS negociada & & \\
-		Suites de cifrado permitidas & & \\
-		Interfaz administrativa restringida & & \\
-		Cifrado de extremo a extremo (E2EE) & & \\
-		Errores de negociación en los registros & & \\
+		\textbf{Verificación} & \textbf{Resultado} & \textbf{Evidencia / observación} \\ \midrule
+		Vigencia del certificado & Vencido / Válido & Inseguro: 2021-05-13 a 2022-05-13. Endurecido: hasta 2029. \\ \hline
+		Coincidencia del nombre (CN/SAN) & No / Sí & Inseguro: \texttt{CN=localhost}. Endurecido: \texttt{CN=lab.local} con SAN. \\ \hline
+		Cadena de confianza completa & No / Sí & Inseguro autofirmado; endurecido firmado por la CA local. \\ \hline
+		Versión de TLS negociada & TLS 1.3 & Ambos servidores; TLS 1.0 y 1.1 rechazadas con alerta~70. \\ \hline
+		Suites de cifrado permitidas & AES-GCM & \texttt{TLS\_AES\_256\_GCM\_SHA384} en ambos. \\ \hline
+		Interfaz administrativa restringida & No / Sí & Inseguro escucha en \texttt{*}:5280 y 5281; endurecido en \texttt{127.0.0.1}. \\ \hline
+		Cifrado de extremo a extremo (E2EE) & No & No configurado; MAM conserva el cuerpo en claro. \\ \hline
+		Errores de negociación en los registros & Sí / No & Inseguro: \texttt{verify error 18} y \texttt{10}. Endurecido: \texttt{Verify return code 0}. \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
 
-\registrohallazgo{Caso 10}
+\paragraph{Conclusiones.}
+\begin{itemize}
+	\item Ambos servidores negocian TLS~1.3 y rechazan TLS~1.0/1.1; la debilidad del escenario inseguro está en el certificado, la autenticación en claro, el archivo MAM y la exposición administrativa.
+	\item En la captura cifrada no se recuperan cuerpo ni contraseña; en la sesión sin TLS ambos aparecen en claro, incluida la credencial SASL \texttt{PLAIN}.
+	\item El archivo MAM demuestra que TLS no protege frente al operador del servidor; se requiere cifrado de extremo a extremo para ese modelo de amenaza.
+	\item La validación del certificado es decisiva: sin ella el handshake con un intermediario se completa; con validación se aborta.
+	\item La regla de Suricata detectó el certificado autofirmado en TLS~1.2, pero no puede verlo en TLS~1.3, lo que subraya el valor de la telemetría del servidor y del endpoint.
+	\item Las limitaciones incluyen el uso de una CA local, tráfico sintético y la ausencia de usuarios reales.
+\end{itemize}
+
+\begin{table}[H]
+	\centering
+	\caption{Ficha de registro del hallazgo. Caso 10}
+	\footnotesize
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.23\textwidth} Y@{}}
+		\toprule
+		\textbf{Campo} & \textbf{Registro} \\ \midrule
+		Identificador & Caso 10 (XMPP y TLS), evidencias \texttt{01\_topologia\_lab.png} a \texttt{11\_versiones\_tls.png}. Analista: Yader Ibraldo Quiroga Torres. \\ \hline
+		Fecha y hora & 10 de noviembre de 2026, 11:51--11:56 (UTC$-$5). \\ \hline
+		Origen/destino & Analista \texttt{172.28.50.10} hacia \texttt{172.28.50.30} (inseguro), \texttt{172.28.50.31} (endurecido) y el intermediario \texttt{172.28.50.10:4443}. \\ \hline
+		Observación & Certificado vencido y autofirmado, autenticación \texttt{PLAIN} sin TLS, mensaje en claro en MAM, MITM aceptado sin validación. \\ \hline
+		Hipótesis & Si TLS y la validación están bien configurados, el contenido no será recuperable de la captura y un certificado inválido será rechazado. \\ \hline
+		Validación & Cero coincidencias del cuerpo y la contraseña en la captura TLS; handshake con MITM abortado al validar; alerta de Suricata en TLS~1.2. \\ \hline
+		Severidad & Alta: exposición de credenciales y del historial de mensajes en el escenario inseguro. \\ \hline
+		Acción & Emitir certificado confiable, exigir TLS y autenticación cifrada, restringir administración, cifrar MAM y evaluar E2EE. \\ \hline
+		Integridad & \texttt{CU10\_05}: \texttt{79c12243\dots e7c1c76}; \texttt{CU10\_03}: \texttt{267df8e5\dots af1b66} (SHA-256 truncado; el valor completo está en el Anexo~A). \\
+		\bottomrule
+	\end{tabularx}
+\end{table}

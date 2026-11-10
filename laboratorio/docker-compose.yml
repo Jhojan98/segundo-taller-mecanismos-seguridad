@@ -1,0 +1,66 @@
+name: taller2-lab
+
+# Red aislada: no hay salida a Internet desde los contenedores.
+networks:
+  labnet:
+    driver: bridge
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.28.50.0/24
+
+services:
+  victim:
+    build: ./victim
+    container_name: lab-victim
+    restart: unless-stopped
+    networks:
+      labnet:
+        ipv4_address: 172.28.50.20
+
+  xmpp-insecure:
+    image: prosody/prosody:latest
+    container_name: lab-xmpp-insecure
+    restart: unless-stopped
+    environment:
+      LOCAL: alice
+      PASSWORD: alice123
+      DOMAIN: lab.local
+    volumes:
+      - ./xmpp/insecure/prosody.cfg.lua:/etc/prosody/prosody.cfg.lua:ro
+      - ./xmpp/certs:/certs:ro
+    networks:
+      labnet:
+        ipv4_address: 172.28.50.30
+
+  xmpp-secure:
+    image: prosody/prosody:latest
+    container_name: lab-xmpp-secure
+    restart: unless-stopped
+    environment:
+      LOCAL: bob
+      PASSWORD: bob123
+      DOMAIN: lab.local
+    volumes:
+      - ./xmpp/secure/prosody.cfg.lua:/etc/prosody/prosody.cfg.lua:ro
+      - ./xmpp/certs:/certs:ro
+    networks:
+      labnet:
+        ipv4_address: 172.28.50.31
+
+  analyst:
+    image: lab-analyst
+    container_name: lab-analyst
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    volumes:
+      - ./work:/lab
+      - ./captures:/captures
+      - ./scripts:/scripts:ro
+      - ./suricata:/suricata:ro
+      - ./xmpp/certs:/certs:ro
+    networks:
+      labnet:
+        ipv4_address: 172.28.50.10
+    command: sleep infinity

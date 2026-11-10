@@ -1,0 +1,5 @@
+frame.number\frame.time_relative\ip.src\ip.dst\_ws.col.info
+10\0.005782000\172.28.50.10\172.28.50.31\Client Hello (SNI=lab.local)
+11\0.006427000\172.28.50.31\172.28.50.10\Hello Retry Request, Change Cipher Spec
+12\0.007913000\172.28.50.10\172.28.50.31\Change Cipher Spec, Client Hello (SNI=lab.local)
+13\0.015605000\172.28.50.31\172.28.50.10\Server Hello, Application Data, Application Data, Application Data, Application Data, Application Data

@@ -1,0 +1,27 @@
+Connecting to 172.28.50.10
+CONNECTED(00000003)
+depth=0 C=CO, O=Atacante Laboratorio, CN=lab.local
+verify error:num=18:self-signed certificate
+285B53C8D6730000:error:0A000086:SSL routines:tls_post_process_server_certificate:certificate verify failed:ssl/statem/statem_clnt.c:2104:
+---
+Certificate chain
+ 0 s:C=CO, O=Atacante Laboratorio, CN=lab.local
+   i:C=CO, O=Atacante Laboratorio, CN=lab.local
+   a:PKEY: rsaEncryption, 2048 (bit); sigalg: RSA-SHA256
+   v:NotBefore: Nov 10 16:40:31 2026 GMT; NotAfter: Dec 10 16:40:31 2026 GMT
+---
+no peer certificate available
+---
+No client certificate CA names sent
+Server Temp Key: X25519, 253 bits
+---
+SSL handshake has read 1087 bytes and written 324 bytes
+Verification error: self-signed certificate
+---
+New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
+This TLS version forbids renegotiation.
+No ALPN negotiated
+Early data was not sent
+Verify return code: 18 (self-signed certificate)
+---
+exit_code_con_validacion=1

@@ -1,0 +1,14 @@
+# Nmap 7.95 scan initiated Tue Nov 10 16:58:20 2026 as: nmap -sU -Pn -n -p 53,123,161,500,5353 --max-retries 1 --host-timeout 40s -oN /lab/case8_udp_scan.txt 172.28.50.20
+Warning: 172.28.50.20 giving up on port because retransmission cap hit (1).
+Nmap scan report for 172.28.50.20
+Host is up (0.000081s latency).
+
+PORT     STATE         SERVICE
+53/udp   closed        domain
+123/udp  closed        ntp
+161/udp  closed        snmp
+500/udp  open|filtered isakmp
+5353/udp closed        zeroconf
+MAC Address: 06:CD:42:90:94:B7 (Unknown)
+
+# Nmap done at Tue Nov 10 16:58:21 2026 -- 1 IP address (1 host up) scanned in 1.75 seconds

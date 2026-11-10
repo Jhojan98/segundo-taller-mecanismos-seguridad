@@ -1,0 +1,141 @@
+# Nmap 7.95 scan initiated Tue Nov 10 16:58:10 2026 as: nmap -sT -sV -Pn -n -p 21,22,23,80,4444,8080 --version-all -oN /lab/case8_service_scan.txt 172.28.50.20
+Nmap scan report for 172.28.50.20
+Host is up (0.0012s latency).
+
+PORT     STATE SERVICE    VERSION
+21/tcp   open  ftp
+22/tcp   open  ssh        OpenSSH 9.7 (protocol 2.0)
+23/tcp   open  telnet
+80/tcp   open  http       nginx
+4444/tcp open  krb524?
+8080/tcp open  http-proxy LabHTTP/0.9
+4 services unrecognized despite returning data. If you know the service/version, please submit the following fingerprints at https://nmap.org/cgi-bin/submit.cgi?new-service :
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port21-TCP:V=7.95%I=9%D=11/10%Time=6AF34D24%P=x86_64-alpine-linux-musl%
+SF:r(NULL,1F,"220\x20Laboratorio\x20FTP\x201\.0\x20listo\r\n")%r(GenericLi
+SF:nes,1F,"220\x20Laboratorio\x20FTP\x201\.0\x20listo\r\n")%r(Help,1F,"220
+SF:\x20Laboratorio\x20FTP\x201\.0\x20listo\r\n")%r(GetRequest,1F,"220\x20L
+SF:aboratorio\x20FTP\x201\.0\x20listo\r\n")%r(HTTPOptions,1F,"220\x20Labor
+SF:atorio\x20FTP\x201\.0\x20listo\r\n")%r(RTSPRequest,1F,"220\x20Laborator
+SF:io\x20FTP\x201\.0\x20listo\r\n")%r(RPCCheck,1F,"220\x20Laboratorio\x20F
+SF:TP\x201\.0\x20listo\r\n")%r(DNSVersionBindReqTCP,1F,"220\x20Laboratorio
+SF:\x20FTP\x201\.0\x20listo\r\n")%r(DNSStatusRequestTCP,1F,"220\x20Laborat
+SF:orio\x20FTP\x201\.0\x20listo\r\n")%r(Hello,1F,"220\x20Laboratorio\x20FT
+SF:P\x201\.0\x20listo\r\n")%r(SSLSessionReq,1F,"220\x20Laboratorio\x20FTP\
+SF:x201\.0\x20listo\r\n")%r(TerminalServerCookie,1F,"220\x20Laboratorio\x2
+SF:0FTP\x201\.0\x20listo\r\n")%r(TLSSessionReq,1F,"220\x20Laboratorio\x20F
+SF:TP\x201\.0\x20listo\r\n")%r(SSLv23SessionReq,1F,"220\x20Laboratorio\x20
+SF:FTP\x201\.0\x20listo\r\n")%r(Kerberos,1F,"220\x20Laboratorio\x20FTP\x20
+SF:1\.0\x20listo\r\n")%r(SMBProgNeg,1F,"220\x20Laboratorio\x20FTP\x201\.0\
+SF:x20listo\r\n")%r(X11Probe,1F,"220\x20Laboratorio\x20FTP\x201\.0\x20list
+SF:o\r\n")%r(FourOhFourRequest,1F,"220\x20Laboratorio\x20FTP\x201\.0\x20li
+SF:sto\r\n")%r(LPDString,1F,"220\x20Laboratorio\x20FTP\x201\.0\x20listo\r\
+SF:n")%r(LDAPSearchReq,1F,"220\x20Laboratorio\x20FTP\x201\.0\x20listo\r\n"
+SF:)%r(LDAPBindReq,1F,"220\x20Laboratorio\x20FTP\x201\.0\x20listo\r\n")%r(
+SF:SIPOptions,1F,"220\x20Laboratorio\x20FTP\x201\.0\x20listo\r\n")%r(LANDe
+SF:sk-RC,1F,"220\x20Laboratorio\x20FTP\x201\.0\x20listo\r\n")%r(TerminalSe
+SF:rver,1F,"220\x20Laboratorio\x20FTP\x201\.0\x20listo\r\n")%r(NCP,1F,"220
+SF:\x20Laboratorio\x20FTP\x201\.0\x20listo\r\n")%r(NotesRPC,1F,"220\x20Lab
+SF:oratorio\x20FTP\x201\.0\x20listo\r\n")%r(DistCCD,1F,"220\x20Laboratorio
+SF:\x20FTP\x201\.0\x20listo\r\n")%r(JavaRMI,1F,"220\x20Laboratorio\x20FTP\
+SF:x201\.0\x20listo\r\n")%r(Radmin,1F,"220\x20Laboratorio\x20FTP\x201\.0\x
+SF:20listo\r\n")%r(NessusTPv12,1F,"220\x20Laboratorio\x20FTP\x201\.0\x20li
+SF:sto\r\n")%r(NessusTPv11,1F,"220\x20Laboratorio\x20FTP\x201\.0\x20listo\
+SF:r\n");
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port23-TCP:V=7.95%I=9%D=11/10%Time=6AF34D24%P=x86_64-alpine-linux-musl%
+SF:r(NULL,1E,"\xff\xfd\x18\xff\xfd\x20Laboratorio\x20Telnet\x200\.9\r\n")%
+SF:r(GenericLines,1E,"\xff\xfd\x18\xff\xfd\x20Laboratorio\x20Telnet\x200\.
+SF:9\r\n")%r(tn3270,1E,"\xff\xfd\x18\xff\xfd\x20Laboratorio\x20Telnet\x200
+SF:\.9\r\n")%r(GetRequest,1E,"\xff\xfd\x18\xff\xfd\x20Laboratorio\x20Telne
+SF:t\x200\.9\r\n")%r(HTTPOptions,1E,"\xff\xfd\x18\xff\xfd\x20Laboratorio\x
+SF:20Telnet\x200\.9\r\n")%r(RTSPRequest,1E,"\xff\xfd\x18\xff\xfd\x20Labora
+SF:torio\x20Telnet\x200\.9\r\n")%r(RPCCheck,1E,"\xff\xfd\x18\xff\xfd\x20La
+SF:boratorio\x20Telnet\x200\.9\r\n")%r(DNSVersionBindReqTCP,1E,"\xff\xfd\x
+SF:18\xff\xfd\x20Laboratorio\x20Telnet\x200\.9\r\n")%r(DNSStatusRequestTCP
+SF:,1E,"\xff\xfd\x18\xff\xfd\x20Laboratorio\x20Telnet\x200\.9\r\n")%r(Hell
+SF:o,1E,"\xff\xfd\x18\xff\xfd\x20Laboratorio\x20Telnet\x200\.9\r\n")%r(Hel
+SF:p,1E,"\xff\xfd\x18\xff\xfd\x20Laboratorio\x20Telnet\x200\.9\r\n")%r(SSL
+SF:SessionReq,1E,"\xff\xfd\x18\xff\xfd\x20Laboratorio\x20Telnet\x200\.9\r\
+SF:n")%r(TerminalServerCookie,1E,"\xff\xfd\x18\xff\xfd\x20Laboratorio\x20T
+SF:elnet\x200\.9\r\n")%r(TLSSessionReq,1E,"\xff\xfd\x18\xff\xfd\x20Laborat
+SF:orio\x20Telnet\x200\.9\r\n")%r(SSLv23SessionReq,1E,"\xff\xfd\x18\xff\xf
+SF:d\x20Laboratorio\x20Telnet\x200\.9\r\n")%r(Kerberos,1E,"\xff\xfd\x18\xf
+SF:f\xfd\x20Laboratorio\x20Telnet\x200\.9\r\n")%r(SMBProgNeg,1E,"\xff\xfd\
+SF:x18\xff\xfd\x20Laboratorio\x20Telnet\x200\.9\r\n")%r(X11Probe,1E,"\xff\
+SF:xfd\x18\xff\xfd\x20Laboratorio\x20Telnet\x200\.9\r\n")%r(FourOhFourRequ
+SF:est,1E,"\xff\xfd\x18\xff\xfd\x20Laboratorio\x20Telnet\x200\.9\r\n")%r(L
+SF:PDString,1E,"\xff\xfd\x18\xff\xfd\x20Laboratorio\x20Telnet\x200\.9\r\n"
+SF:)%r(LDAPSearchReq,1E,"\xff\xfd\x18\xff\xfd\x20Laboratorio\x20Telnet\x20
+SF:0\.9\r\n")%r(LDAPBindReq,1E,"\xff\xfd\x18\xff\xfd\x20Laboratorio\x20Tel
+SF:net\x200\.9\r\n")%r(SIPOptions,1E,"\xff\xfd\x18\xff\xfd\x20Laboratorio\
+SF:x20Telnet\x200\.9\r\n")%r(LANDesk-RC,1E,"\xff\xfd\x18\xff\xfd\x20Labora
+SF:torio\x20Telnet\x200\.9\r\n")%r(TerminalServer,1E,"\xff\xfd\x18\xff\xfd
+SF:\x20Laboratorio\x20Telnet\x200\.9\r\n")%r(NCP,1E,"\xff\xfd\x18\xff\xfd\
+SF:x20Laboratorio\x20Telnet\x200\.9\r\n");
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port4444-TCP:V=7.95%I=9%D=11/10%Time=6AF34D24%P=x86_64-alpine-linux-mus
+SF:l%r(NULL,13,"LAB-SVC/0\.1\x20ready\r\n")%r(GetRequest,13,"LAB-SVC/0\.1\
+SF:x20ready\r\n")%r(SSLSessionReq,13,"LAB-SVC/0\.1\x20ready\r\n")%r(TLSSes
+SF:sionReq,13,"LAB-SVC/0\.1\x20ready\r\n")%r(SSLv23SessionReq,13,"LAB-SVC/
+SF:0\.1\x20ready\r\n")%r(GenericLines,13,"LAB-SVC/0\.1\x20ready\r\n")%r(HT
+SF:TPOptions,13,"LAB-SVC/0\.1\x20ready\r\n")%r(RTSPRequest,13,"LAB-SVC/0\.
+SF:1\x20ready\r\n")%r(RPCCheck,13,"LAB-SVC/0\.1\x20ready\r\n")%r(DNSVersio
+SF:nBindReqTCP,13,"LAB-SVC/0\.1\x20ready\r\n")%r(DNSStatusRequestTCP,13,"L
+SF:AB-SVC/0\.1\x20ready\r\n")%r(Hello,13,"LAB-SVC/0\.1\x20ready\r\n")%r(He
+SF:lp,13,"LAB-SVC/0\.1\x20ready\r\n")%r(TerminalServerCookie,13,"LAB-SVC/0
+SF:\.1\x20ready\r\n")%r(Kerberos,13,"LAB-SVC/0\.1\x20ready\r\n")%r(SMBProg
+SF:Neg,13,"LAB-SVC/0\.1\x20ready\r\n")%r(X11Probe,13,"LAB-SVC/0\.1\x20read
+SF:y\r\n")%r(FourOhFourRequest,13,"LAB-SVC/0\.1\x20ready\r\n")%r(LPDString
+SF:,13,"LAB-SVC/0\.1\x20ready\r\n")%r(LDAPSearchReq,13,"LAB-SVC/0\.1\x20re
+SF:ady\r\n")%r(LDAPBindReq,13,"LAB-SVC/0\.1\x20ready\r\n")%r(SIPOptions,13
+SF:,"LAB-SVC/0\.1\x20ready\r\n")%r(LANDesk-RC,13,"LAB-SVC/0\.1\x20ready\r\
+SF:n")%r(TerminalServer,13,"LAB-SVC/0\.1\x20ready\r\n")%r(NCP,13,"LAB-SVC/
+SF:0\.1\x20ready\r\n")%r(NotesRPC,13,"LAB-SVC/0\.1\x20ready\r\n")%r(DistCC
+SF:D,13,"LAB-SVC/0\.1\x20ready\r\n")%r(JavaRMI,13,"LAB-SVC/0\.1\x20ready\r
+SF:\n")%r(Radmin,13,"LAB-SVC/0\.1\x20ready\r\n")%r(NessusTPv12,13,"LAB-SVC
+SF:/0\.1\x20ready\r\n")%r(NessusTPv11,13,"LAB-SVC/0\.1\x20ready\r\n")%r(Ne
+SF:ssusTPv10,13,"LAB-SVC/0\.1\x20ready\r\n")%r(WMSRequest,13,"LAB-SVC/0\.1
+SF:\x20ready\r\n")%r(oracle-tns,13,"LAB-SVC/0\.1\x20ready\r\n")%r(mydoom,1
+SF:3,"LAB-SVC/0\.1\x20ready\r\n")%r(WWWOFFLEctrlstat,13,"LAB-SVC/0\.1\x20r
+SF:eady\r\n")%r(Verifier,13,"LAB-SVC/0\.1\x20ready\r\n")%r(VerifierAdvance
+SF:d,13,"LAB-SVC/0\.1\x20ready\r\n")%r(Socks5,13,"LAB-SVC/0\.1\x20ready\r\
+SF:n")%r(Socks4,13,"LAB-SVC/0\.1\x20ready\r\n")%r(OfficeScan,13,"LAB-SVC/0
+SF:\.1\x20ready\r\n")%r(ms-sql-s,13,"LAB-SVC/0\.1\x20ready\r\n")%r(HELP4ST
+SF:OMP,13,"LAB-SVC/0\.1\x20ready\r\n")%r(Memcache,13,"LAB-SVC/0\.1\x20read
+SF:y\r\n")%r(beast2,13,"LAB-SVC/0\.1\x20ready\r\n");
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port8080-TCP:V=7.95%I=9%D=11/10%Time=6AF34D24%P=x86_64-alpine-linux-mus
+SF:l%r(NULL,71,"HTTP/1\.0\x20200\x20OK\r\nServer:\x20LabHTTP/0\.9\r\nConte
+SF:nt-Type:\x20text/plain\r\nContent-Length:\x2026\r\n\r\nServicio\x20HTTP
+SF:\x20de\x20pruebas\.\r\n")%r(GetRequest,71,"HTTP/1\.0\x20200\x20OK\r\nSe
+SF:rver:\x20LabHTTP/0\.9\r\nContent-Type:\x20text/plain\r\nContent-Length:
+SF:\x2026\r\n\r\nServicio\x20HTTP\x20de\x20pruebas\.\r\n")%r(HTTPOptions,7
+SF:1,"HTTP/1\.0\x20200\x20OK\r\nServer:\x20LabHTTP/0\.9\r\nContent-Type:\x
+SF:20text/plain\r\nContent-Length:\x2026\r\n\r\nServicio\x20HTTP\x20de\x20
+SF:pruebas\.\r\n")%r(RTSPRequest,71,"HTTP/1\.0\x20200\x20OK\r\nServer:\x20
+SF:LabHTTP/0\.9\r\nContent-Type:\x20text/plain\r\nContent-Length:\x2026\r\
+SF:n\r\nServicio\x20HTTP\x20de\x20pruebas\.\r\n")%r(FourOhFourRequest,71,"
+SF:HTTP/1\.0\x20200\x20OK\r\nServer:\x20LabHTTP/0\.9\r\nContent-Type:\x20t
+SF:ext/plain\r\nContent-Length:\x2026\r\n\r\nServicio\x20HTTP\x20de\x20pru
+SF:ebas\.\r\n")%r(Socks5,71,"HTTP/1\.0\x20200\x20OK\r\nServer:\x20LabHTTP/
+SF:0\.9\r\nContent-Type:\x20text/plain\r\nContent-Length:\x2026\r\n\r\nSer
+SF:vicio\x20HTTP\x20de\x20pruebas\.\r\n")%r(Socks4,71,"HTTP/1\.0\x20200\x2
+SF:0OK\r\nServer:\x20LabHTTP/0\.9\r\nContent-Type:\x20text/plain\r\nConten
+SF:t-Length:\x2026\r\n\r\nServicio\x20HTTP\x20de\x20pruebas\.\r\n")%r(Gene
+SF:ricLines,71,"HTTP/1\.0\x20200\x20OK\r\nServer:\x20LabHTTP/0\.9\r\nConte
+SF:nt-Type:\x20text/plain\r\nContent-Length:\x2026\r\n\r\nServicio\x20HTTP
+SF:\x20de\x20pruebas\.\r\n")%r(RPCCheck,71,"HTTP/1\.0\x20200\x20OK\r\nServ
+SF:er:\x20LabHTTP/0\.9\r\nContent-Type:\x20text/plain\r\nContent-Length:\x
+SF:2026\r\n\r\nServicio\x20HTTP\x20de\x20pruebas\.\r\n")%r(DNSVersionBindR
+SF:eqTCP,71,"HTTP/1\.0\x20200\x20OK\r\nServer:\x20LabHTTP/0\.9\r\nContent-
+SF:Type:\x20text/plain\r\nContent-Length:\x2026\r\n\r\nServicio\x20HTTP\x2
+SF:0de\x20pruebas\.\r\n")%r(DNSStatusRequestTCP,71,"HTTP/1\.0\x20200\x20OK
+SF:\r\nServer:\x20LabHTTP/0\.9\r\nContent-Type:\x20text/plain\r\nContent-L
+SF:ength:\x2026\r\n\r\nServicio\x20HTTP\x20de\x20pruebas\.\r\n")%r(Hello,7
+SF:1,"HTTP/1\.0\x20200\x20OK\r\nServer:\x20LabHTTP/0\.9\r\nContent-Type:\x
+SF:20text/plain\r\nContent-Length:\x2026\r\n\r\nServicio\x20HTTP\x20de\x20
+SF:pruebas\.\r\n");
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Tue Nov 10 16:58:16 2026 -- 1 IP address (1 host up) scanned in 6.67 seconds

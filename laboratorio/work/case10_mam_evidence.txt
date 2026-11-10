@@ -1,0 +1,40 @@
+item({
+	{
+		"HOLA-BOB-MENSAJE-CONFIDENCIAL-2026";
+		["attr"] = {};
+		["name"] = "body";
+	};
+	["with"] = "bob@lab.local";
+	["when"] = 1794329103;
+	["key"] = "NVQLMmeoCvdzLiFu";
+	["attr"] = {
+		["from"] = "alice@lab.local/nC8cE7_d";
+		["stamp_legacy"] = "20261110T16:45:03";
+		["type"] = "chat";
+		["stamp"] = "2026-11-10T16:45:03Z";
+		["xml:lang"] = "en";
+		["to"] = "bob@lab.local";
+		["id"] = "da73cfff149a48ed9df9ec1a6357fe8c";
+	};
+	["name"] = "message";
+});
+item({
+	{
+		"HOLA-BOB-MENSAJE-CONFIDENCIAL-2026";
+		["attr"] = {};
+		["name"] = "body";
+	};
+	["with"] = "bob@lab.local";
+	["when"] = 1794329291;
+	["key"] = "ZA8e6EZ9NdKvPXVQ";
+	["attr"] = {
+		["from"] = "alice@lab.local/_bERACiG";
+		["stamp_legacy"] = "20261110T16:48:11";
+		["type"] = "chat";
+		["stamp"] = "2026-11-10T16:48:11Z";
+		["xml:lang"] = "en";
+		["to"] = "bob@lab.local";
+		["id"] = "e9fcd95464f14ec68e1ea873ac289a9a";
+	};
+	["name"] = "message";
+});

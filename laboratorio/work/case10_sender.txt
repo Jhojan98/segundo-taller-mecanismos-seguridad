@@ -1,0 +1,4 @@
+Using slower stringprep, consider compiling the faster cython/libidn one.
+SENT
+Task was destroyed but it is pending!
+task: <Task pending name='Task-1' coro=<XMLStream.run_filters() running at /usr/lib/python3.12/site-packages/slixmpp/xmlstream/xmlstream.py:1263> wait_for=<Future cancelled>>

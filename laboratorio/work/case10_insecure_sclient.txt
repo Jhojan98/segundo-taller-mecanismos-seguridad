@@ -1,0 +1,83 @@
+Connecting to 172.28.50.30
+CONNECTED(00000003)
+depth=0 CN=localhost
+verify error:num=18:self-signed certificate
+verify return:1
+depth=0 CN=localhost
+verify error:num=10:certificate has expired
+notAfter=May 13 14:26:42 2022 GMT
+verify return:1
+depth=0 CN=localhost
+notAfter=May 13 14:26:42 2022 GMT
+verify return:1
+---
+Certificate chain
+ 0 s:CN=localhost
+   i:CN=localhost
+   a:PKEY: rsaEncryption, 2048 (bit); sigalg: RSA-SHA256
+   v:NotBefore: May 13 14:26:42 2021 GMT; NotAfter: May 13 14:26:42 2022 GMT
+-----BEGIN CERTIFICATE-----
+MIIDCTCCAfGgAwIBAgIUNO6xIxtEv2X9a6Ds4XJfjRBp6wcwDQYJKoZIhvcNAQEL
+BQAwFDESMBAGA1UEAwwJbG9jYWxob3N0MB4XDTIxMDUxMzE0MjY0MloXDTIyMDUx
+MzE0MjY0MlowFDESMBAGA1UEAwwJbG9jYWxob3N0MIIBIjANBgkqhkiG9w0BAQEF
+AAOCAQ8AMIIBCgKCAQEA4qQkOErOS2l7JvsUktnkd4UrWqozK8jtVPHPBUYXhZSo
+2SuofyxkHK3mfjU1BDkMY4ilzH9w4za4TJbHJXDjn/v9FdKTo/vsNJo161MRRU6v
+8rNuOZ5unxhAa9SLUiy27yLRgVNBey2yF8+Kb4b2vu5tU7ihRCee+YTnH/SE0YtS
+6JZsr5ooi13K0j8XdzFJyFdqejqoDNjDHCk6i+z1Hd88SDP0PAVY0C3jcn3kzx3m
+s9ZZ6pWgsUDW+ZwCeTbLM6xWRlREHv32qMKV1WLcX9wOnWNpv8CfV9C3NYX7Q4Bv
+6+mECaCjgGLoDccVfZH2jgsV3q9UWg7EYK2ScTR/OQIDAQABo1MwUTAdBgNVHQ4E
+FgQUB+JnHgHAkI+lO9uzq/ijb1XLV/AwHwYDVR0jBBgwFoAUB+JnHgHAkI+lO9uz
+q/ijb1XLV/AwDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEANNkB
+rMMUUWQHF8K6WK5vt0lSC9brrQkWWgbbcz94ORrnBxjw7l3v06Qo7uLxW0Yr3VEH
+lLKieZUV2NiV9QitIoOjQZrgcEfKNg7bdqfeDdG7HigCgxyj8ZIhmFOFCXXW7dze
+v3wyLSyOuGSD3Mwx4XwCbCDirGmGeZ5B3tIRrwh3hAhsnKFtJ19tDtDpBln6At4c
+WqTU+47TKZ+gRWBvg6ogDZwNHtX0jDCNephifPN6tammsvTqvEbEHf0JxRmsLGdJ
+aU1T2Kgdz07qkCLdIsVlH+rQmo6wbh2LK7UK9sWzFqXaVsXjtlyILs9Q5yBp5y3e
+7GkuI72eTLJU+HTSyQ==
+-----END CERTIFICATE-----
+---
+Server certificate
+subject=CN=localhost
+issuer=CN=localhost
+---
+No client certificate CA names sent
+Requested Signature Algorithms: ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512:ed25519:ed448:rsa_pss_pss_sha256:rsa_pss_pss_sha384:rsa_pss_pss_sha512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:RSA+SHA256:RSA+SHA384:RSA+SHA512:ECDSA+SHA224:ECDSA+SHA1:RSA+SHA224:RSA+SHA1
+Shared Requested Signature Algorithms: ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512:ed25519:ed448:rsa_pss_pss_sha256:rsa_pss_pss_sha384:rsa_pss_pss_sha512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:RSA+SHA256:RSA+SHA384:RSA+SHA512
+Peer signing digest: SHA256
+Peer signature type: RSA-PSS
+Server Temp Key: ECDH, secp384r1, 384 bits
+---
+SSL handshake has read 2081 bytes and written 974 bytes
+Verification error: certificate has expired
+---
+New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
+Server public key is 2048 bit
+This TLS version forbids renegotiation.
+No ALPN negotiated
+Early data was not sent
+Verify return code: 10 (certificate has expired)
+---
+DONE
+---
+Post-Handshake New Session Ticket arrived:
+SSL-Session:
+    Protocol  : TLSv1.3
+    Cipher    : TLS_AES_256_GCM_SHA384
+    Session-ID: 617C41C54B51364691324BFD1508D6F660962D1CE4E589BF97C08DDCB9906F5E
+    Session-ID-ctx: 
+    Resumption PSK: AB72EC786A558A2860587A0E2327747CEF229CAEEA438EEB0C7F82168CB303CFFD88C49F7DC17E8292A2C6935410458B
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    TLS session ticket lifetime hint: 7200 (seconds)
+    TLS session ticket:
+    0000 - 1f 51 6a 8e 95 13 c6 2e-95 d8 5d b1 69 bd cb 37   .Qj.......].i..7
+    0010 - 6b 6a 11 79 80 58 09 8b-39 cf 52 31 f0 15 c4 59   kj.y.X..9.R1...Y
+
+    Start Time: 1794329501
+    Timeout   : 7200 (sec)
+    Verify return code: 10 (certificate has expired)
+    Extended master secret: no
+    Max Early Data: 0
+---
+read R BLOCK

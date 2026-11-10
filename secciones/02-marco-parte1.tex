@@ -48,17 +48,11 @@ La topología sugerida es un ejemplo; se pueden usar direcciones privadas equiva
 	\end{tabularx}
 \end{table}
 
+En este trabajo se mantuvo el esquema sugerido, pero se utilizó el segmento \texttt{172.28.50.0/24} sobre una red Docker puente con la opción \texttt{internal: true}, de modo que los contenedores no tuvieran salida a Internet. El equipo analista se ubicó en \texttt{172.28.50.10} y los servidores de pruebas en \texttt{172.28.50.20}, \texttt{172.28.50.30} y \texttt{172.28.50.31}. La Figura~\ref{fig:topologia} muestra la topología efectivamente desplegada.
+
 \begin{figure}[H]
 	\centering
-	\fbox{%
-		\parbox[c][5.2cm][c]{0.92\textwidth}{%
-			\centering
-			\textbf{[Insertar aquí el diagrama de la topología del laboratorio]}\\[0.4cm]
-			\footnotesize
-			Incluya switch, equipo analista, servidores, gateway y las direcciones privadas utilizadas.\\
-			Puede elaborarse con draw.io, Diagrams.net, Visio, TikZ o una captura de Packet Tracer.
-		}%
-	}
+	\includegraphics[width=0.95\textwidth]{imagenes/Evidencias CU-7/01_topologia_lab.png}
 	\caption{Topología del laboratorio}
 	\label{fig:topologia}
 \end{figure}
@@ -87,15 +81,16 @@ Se sugiere Wireshark; \texttt{netstat} y PowerShell en Windows; el Visor de even
 		\toprule
 		\textbf{Herramienta} & \textbf{Uso en el taller} & \textbf{Versión registrada} \\
 		\midrule
-		Wireshark & Captura, filtrado y análisis de tráfico. & \\
-		\texttt{netstat} y PowerShell & Estado de conexiones, procesos y servicios. & \\
-		Visor de eventos & Registros del sistema operativo y de seguridad. & \\
-		Windows Defender Firewall & Reglas, registros y validación de filtrado. & \\
-		Zeek y/o Suricata & Detección de intrusiones y metadatos de flujos. & \\
-		Wazuh o SIEM equivalente & Correlación y priorización de alertas. & \\
-		Python y scikit-learn & Análisis de características agregadas y detección de anomalías. & \\
-		& & \\
-		& & \\
+		Wireshark / TShark & Captura, filtrado y análisis de tráfico. & 4.2.5 \\
+		\texttt{tcpdump} & Captura de paquetes en el laboratorio aislado. & 4.99.4 \\
+		Nmap & Escaneo de puertos y detección de servicios. & 7.95 \\
+		Suricata & Detección de intrusiones y validación de reglas. & 7.0.7 \\
+		OpenSSL & Inspección de certificados y pruebas TLS. & 3.3.7 \\
+		Prosody & Servidor XMPP de laboratorio. & 0.11.9 \\
+		Python y Scapy & Generación de tráfico y análisis automatizado. & 3.12.13 / 2.6.1 \\
+		Docker Engine y Compose & Contenedores y red aislada del laboratorio. & 29.8.0 / v5.5.1 \\
+		\texttt{netstat} y PowerShell & Estado de conexiones, procesos y servicios. & Windows 11 \\
+		Visor de eventos y Defender Firewall & Registros del sistema y validación de filtrado. & Windows 11 \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
@@ -120,10 +115,10 @@ En cada caso, el equipo debe completar las tareas de observación y análisis, j
 		4 & Detección de anomalías con IA/ML & TCP/IP & Notebook reproducible y métricas del modelo. \\
 		5 & Resets TCP e indicios de inyección & TCP & Tabla de flujos afectados y extractos de logs. \\
 		6 & Reflexión y amplificación UDP & DNS, NTP, SSDP & Gráficas de paquetes y bytes por segundo. \\
-		7 & ICMP: escaneo, payloads y túnel & ICMP & Dashboard por IP y tabla de tamaños/frecuencias. \\
-		8 & Escaneo de puertos y fingerprinting & TCP/UDP & Lista de exposición y regla de detección. \\
+		7 & ICMP: escaneo, payloads y túnel & ICMP & PCAP de línea base, barrido y túnel; reglas Suricata validadas. \\
+		8 & Escaneo de puertos y fingerprinting & TCP/UDP & PCAP de escaneo SYN, servicios y UDP; lista de exposición. \\
 		9 & Priorización de alertas con IA y SIEM & Múltiples fuentes & Pipeline y ejemplo de alerta enriquecida. \\
-		10 & Mensajería XMPP y errores de TLS & XMPP, TLS & Checklist TLS y eventos anonimizados. \\
+		10 & Mensajería XMPP y errores de TLS & XMPP, TLS & PCAP XMPP/HTTPS, checklist TLS y alerta de certificado. \\
 		\bottomrule
 	\end{tabularx}
 \end{table}

@@ -1,0 +1,3 @@
+=== 2. Texto visible en captura CON TLS ===
+coincidencias de HOLA-BOB-MENSAJE-CONFIDENCIAL-2026 en PCAP TLS: 0
+coincidencias de alice123 en PCAP TLS: 0

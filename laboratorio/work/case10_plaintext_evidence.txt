@@ -1,0 +1,8 @@
+=== 1. Texto visible en captura SIN TLS ===
+contiene 'HOLA-BOB-SIN-TLS-2026': True
+contiene 'AGFsaWNlAGFsaWNlMTIz': False
+contiene 'PLAIN': True
+contiene 'auth': True
+SASL auth (base64): eSwsbj1hbGljZSxyPTYxMzI0NzE5NjAxMDgyMTY=
+SASL decodificado: 'y,,n=alice,r=6132471960108216'
+Cuerpo del mensaje: HOLA-BOB-SIN-TLS-2026

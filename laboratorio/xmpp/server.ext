@@ -1,0 +1,12 @@
+# Extensiones X.509 para el certificado del servidor XMPP endurecido.
+authorityKeyIdentifier = keyid, issuer
+basicConstraints = CA:FALSE
+keyUsage = digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = lab.local
+DNS.2 = localhost
+IP.1 = 172.28.50.31
+IP.2 = 127.0.0.1

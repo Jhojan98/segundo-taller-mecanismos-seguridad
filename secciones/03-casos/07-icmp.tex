@@ -2,30 +2,60 @@
 \label{caso:icmp}
 
 \begin{situacion}
-Se observa una tasa de ICMP mayor de lo habitual o paquetes con tamaños o patrones repetitivos. ICMP se especifica en el RFC~792 \parencite{rfc792}.
+En una red de laboratorio se observa tráfico ICMP con mayor frecuencia de la habitual y con tamaños de carga que no corresponden a un diagnóstico común.
+\textbf{Objetivo:} \par
+Caracterizar el uso de ICMP en tres escenarios controlados---una línea base de diagnóstico, un barrido de reconocimiento y un túnel simulado---, comparar el comportamiento observado frente a la línea base y proponer indicadores y reglas de detección que permitan distinguir el uso legítimo del abusivo. \par
+\textbf{Fundamento teórico:} \par
+ICMP (\textit{Internet Control Message Protocol}) se define en el RFC~792 \parencite{rfc792}. Es un protocolo de mensajes de control que viaja directamente sobre IP y cubre dos grandes funciones:
+\begin{itemize}
+	\item \textbf{Notificación de errores:} destino inalcanzable (tipo~3), tiempo excedido (tipo~11) y redirección (tipo~5), entre otros.
+	\item \textbf{Diagnóstico y control:} petición y respuesta de eco (tipos~8 y~0), y descubrimiento de MTU de ruta, que es indispensable para el funcionamiento correcto de la fragmentación.
+\end{itemize}
+El campo \texttt{data} de un mensaje de eco puede transportar carga arbitraria; por eso ICMP puede usarse como canal encubierto cuando el firewall permite su tránsito sin inspección de contenido. El reto defender es distinguir el eco de diagnóstico de un canal de datos sin bloquear las funciones que la red necesita.
 \end{situacion}
 
 \paragraph{Procedimiento.}
-\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
-	\item En Wireshark, filtrar \texttt{icmp} y agrupar por IP de origen/destino, tipo, código, longitud y tiempo.
-	\item Establecer una línea base de ping de diagnóstico legítimo y compararla con la captura analizada.
-	\item Usar PCAP sintético o didáctico para estudiar payloads; no transmitir información sensible por ICMP.
-\end{itemize}
+El laboratorio se desplegó sobre una red Docker puente aislada (\texttt{172.28.50.0/24}, opción \texttt{internal: true}, sin salida a Internet), con los roles de la Figura~\ref{fig:c7_topologia}: analista en \texttt{172.28.50.10} y víctima en \texttt{172.28.50.20}. Todas las capturas se realizaron con \texttt{tcpdump} dentro del contenedor del analista y se analizaron con \texttt{tshark} y \texttt{Suricata 7.0.7}. El procedimiento fue el siguiente:
 
-\paragraph{Indicadores que deben buscarse.}
-Ráfagas de echo request/reply, longitudes inusuales, periodicidad repetitiva o volumen no explicado por tareas de diagnóstico.
-
-\paragraph{Mitigación y defensa.}
-Permitir solo los tipos ICMP necesarios para la operación y el diagnóstico; aplicar límites proporcionados; monitorizar sin bloquear indiscriminadamente mensajes requeridos por la red.
-
-\paragraph{Evidencias que se entregan.}
-Dashboard por IP, filtro aplicado, tabla de tamaños y frecuencias, y propuesta de regla.
-
-\paragraph{Preguntas de análisis.}
-\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=2pt]
-	\item ¿Qué funciones legítimas cumple ICMP?
-	\item ¿Qué impacto tendría bloquearlo completamente?
+\begin{enumerate}
+	\item \textbf{Verificación de integridad:} antes de abrir cualquier captura se calculó su huella SHA-256 y se conservó una copia original sin modificar (Figura~\ref{fig:c7_hashes}).
+	\item \textbf{Línea base de diagnóstico:} se ejecutó \texttt{ping} contra la víctima y se capturó \texttt{CU7\_01\_baseline\_icmp.pcap} (4 peticiones de eco y 4 respuestas).
+	\item \textbf{Barrido ICMP:} se enviaron peticiones de eco a 40 direcciones consecutivas del segmento (\texttt{172.28.50.1} a \texttt{172.28.50.40}) y se capturó \texttt{CU7\_02\_icmp\_sweep.pcap}.
+	\item \textbf{Payload atípico / túnel simulado:} se enviaron 15 peticiones de eco con carga de 900~bytes de texto codificado en Base64 al mismo destino y se capturó \texttt{CU7\_03\_icmp\_tunnel.pcap}. El tráfico es sintético y no transporta información sensible.
+	\item \textbf{Análisis de metadatos:} con \texttt{tshark} se agruparon los paquetes por origen, destino, tipo, código, longitud y tiempo relativo, y se calculó la entropía y la proporción de caracteres imprimibles de la carga (Figura~\ref{fig:c7_metricas}).
+	\item \textbf{Validación con IDS:} se reprocesaron las tres capturas con Suricata aplicando el archivo \texttt{laboratorio/suricata/local.rules} y se revisó la salida \texttt{fast.log} (Figura~\ref{fig:c7_suricata}).
 \end{enumerate}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\textwidth]{imagenes/Evidencias CU-7/01_topologia_lab.png}
+	\caption{Topología del laboratorio aislado empleada en el Caso 7.}
+	\label{fig:c7_topologia}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.92\textwidth]{imagenes/Evidencias CU-7/02_hashes_sha256.png}
+	\caption{Verificación de integridad de las capturas del Caso 7 mediante SHA-256.}
+	\label{fig:c7_hashes}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.98\textwidth]{imagenes/Evidencias CU-7/03_paquetes_barrido.png}
+	\caption{Lista de paquetes del barrido ICMP (extracto de \texttt{CU7\_02\_icmp\_sweep.pcap}).}
+	\label{fig:c7_barrido}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.98\textwidth]{imagenes/Evidencias CU-7/04_paquetes_tunel.png}
+	\caption{Lista de paquetes del túnel ICMP simulado (extracto de \texttt{CU7\_03\_icmp\_tunnel.pcap}).}
+	\label{fig:c7_tunel}
+\end{figure}
+
+\paragraph{Resultados obtenidos.}
+El análisis cuantitativo de las tres capturas se resume en la Tabla~\ref{tab:icmp}. Cada cifra proviene del script de análisis \texttt{laboratorio/scripts/analyze\_cu7.py} sobre los mismos archivos cuya integridad se verificó.
 
 \begin{table}[H]
 	\caption{Distribución de tráfico ICMP por tipo y longitud}
@@ -33,17 +63,123 @@ Dashboard por IP, filtro aplicado, tabla de tamaños y frecuencias, y propuesta 
 	\centering
 	\footnotesize
 	\renewcommand{\arraystretch}{1.25}
-	\begin{tabularx}{\textwidth}{@{}c c c >{\raggedright\arraybackslash}p{0.17\textwidth} >{\raggedright\arraybackslash}p{0.17\textwidth} Y@{}}
+	\begin{tabularx}{\textwidth}{@{}c c c >{\raggedright\arraybackslash}p{0.15\textwidth} >{\raggedright\arraybackslash}p{0.15\textwidth} Y@{}}
 		\toprule
-		\textbf{Tipo} & \textbf{Código} & \textbf{Longitud} & \textbf{Origen} & \textbf{Destino} & \textbf{Frecuencia / observación} \\
-		\midrule
-		& & & & & \\
-		& & & & & \\
-		& & & & & \\
-		& & & & & \\
-		& & & & & \\
+		\textbf{Tipo} & \textbf{Código} & \textbf{Longitud} & \textbf{Origen} & \textbf{Destino} & \textbf{Frecuencia / observación} \\ \midrule
+		8 & 0 & 98 & 172.28.50.10 & 172.28.50.20 & 4 peticiones/0,88~s, carga de 40~bytes (línea base). \\ \hline
+		0 & 0 & 98 & 172.28.50.20 & 172.28.50.10 & 4 respuestas simétricas, latencia media 121~ms. \\ \hline
+		8 & 0 & 42 & 172.28.50.10 & 172.28.50.1--40 & 40 destinos únicos en 0,7~s, carga vacía (barrido). \\ \hline
+		0 & 0 & 42 & 172.28.50.1--4 & 172.28.50.10 & Solo 4 respuestas; el resto no contesta. \\ \hline
+		8 & 0 & 942 & 172.28.50.10 & 172.28.50.20 & 15 peticiones cada 0,62~s, carga de 900~bytes (túnel). \\ \hline
+		0 & 0 & 942 & 172.28.50.20 & 172.28.50.10 & 15 respuestas que replican la misma carga Base64. \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
 
-\registrohallazgo{Caso 7}
+\begin{itemize}
+	\item \textbf{Línea base (\texttt{CU7\_01}):} 8 paquetes, 4 peticiones y 4 respuestas con carga constante de 40~bytes, intervalo medio de 0,88~s y entropía de 5,322~bits/byte. Es el patrón esperado de un \texttt{ping} de diagnóstico.
+	\item \textbf{Barrido (\texttt{CU7\_02}):} 84 paquetes capturados; 80 peticiones de eco que corresponden a 40 destinos únicos (cada paquete aparece duplicado por la réplica del puente virtual de Docker), con carga vacía y un intervalo medio de 0,016~s. Solo 4 direcciones respondieron.
+	\item \textbf{Túnel (\texttt{CU7\_03}):} 30 paquetes, 15 peticiones y 15 respuestas con carga de 900~bytes, todos hacia el mismo destino, a intervalo fijo de 0,62~s, con proporción de caracteres imprimibles y de Base64 igual a 1,0.
+\end{itemize}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.98\textwidth]{imagenes/Evidencias CU-7/05_linea_tiempo.png}
+	\caption{Distribución temporal de las peticiones de eco en los tres escenarios.}
+	\label{fig:c7_timeline}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.92\textwidth]{imagenes/Evidencias CU-7/06_longitud_entropia.png}
+	\caption{Longitud y entropía de la carga ICMP por escenario.}
+	\label{fig:c7_metricas}
+\end{figure}
+
+\paragraph{Análisis de resultados.}
+Las tres capturas muestran perfiles claramente distintos. La línea base presenta periodicidad regular, tamaño pequeño y constante, y un único destino: es el uso legítimo de ICMP. El barrido invierte la cardinalidad de destinos en muy poco tiempo (40 destinos en 0,7~s y un paquete cada 16~ms) con carga vacía, lo que corresponde a reconocimiento y no a diagnóstico operativo. El tercer escenario combina tres señales que, juntas, no se explican por un \texttt{ping} normal: payload muy grande y constante (900~bytes), contenido codificado en Base64 en su totalidad y cadencia fija por más de 9~segundos hacia un único host.
+
+Conviene subrayar que la entropía observada (5,95~bits/byte) \emph{no} supera el umbral típico de contenido cifrado o comprimido (cercano a 7,2). La carga es texto Base64, cuya entropía teórica ronda los 6~bits por carácter; por tanto, un detector basado únicamente en entropía fallaría. El indicador robusto es la combinación de longitud anómala, alta proporción de caracteres imprimibles, cadencia regular y baja diversidad de destinos. En entornos donde ICMP solo se usa para diagnóstico, esta combinación es un fuerte indicio de canal encubierto.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.98\textwidth]{imagenes/Evidencias CU-7/07_suricata_alertas.png}
+	\caption{Alertas de Suricata 7.0.7 al reprocesar las capturas del Caso 7.}
+	\label{fig:c7_suricata}
+\end{figure}
+
+\paragraph{Indicadores de detección.}
+\begin{itemize}
+	\item \textbf{Cardinalidad de destinos:} más de 20 destinos distintos con peticiones de eco desde un mismo origen en menos de 5~s (barrido).
+	\item \textbf{Tamaño de carga:} peticiones de eco con más de 500~bytes de carga de forma sostenida.
+	\item \textbf{Cadencia:} intervalo entre peticiones casi constante durante varios segundos hacia un mismo destino.
+	\item \textbf{Contenido:} proporción de caracteres imprimibles o de Base64 cercana a 1,0 en el campo \texttt{data}.
+	\item \textbf{Asimetría:} relación desproporcionada entre peticiones enviadas y respuestas recibidas.
+\end{itemize}
+
+\paragraph{Regla de detección propuesta.}
+Las dos reglas de la Tabla~\ref{tab:icmp} se implementaron en Suricata y se validaron contra las capturas. La primera detecta el barrido por umbral de peticiones; la segunda, el payload grande con umbral de tres eventos en diez segundos.
+
+\begin{verbatim}
+alert icmp 172.28.50.0/24 any -> 172.28.50.0/24 any (
+  msg:"CU7 rafaga de echo requests (posible barrido ICMP)";
+  itype:8; threshold:type threshold, track by_src, count 20, seconds 5;
+  classtype:attempted-recon; sid:1007002; rev:1;)
+
+alert icmp 172.28.50.0/24 any -> 172.28.50.20 any (
+  msg:"CU7 ICMP echo request con payload grande (posible tunel)";
+  itype:8; dsize:>500;
+  threshold:type threshold, track by_src, count 3, seconds 10;
+  classtype:policy-violation; sid:1007001; rev:1;)
+\end{verbatim}
+
+Al reprocesar la línea base no se generó ninguna alerta; el barrido produjo 4 alertas (SID~1007002) y el túnel 5 alertas (SID~1007001), evidencia de que las reglas distinguen el diagnóstico legítimo de la actividad sospechosa sin marcarla como ataque.
+
+\paragraph{Mitigación y defensa.}
+\begin{itemize}
+	\item \textbf{Permitir lo necesario:} autorizar los tipos ICMP requeridos (0, 3, 8, 11 y los tipos de ICMPv6 usados por el descubrimiento de vecinos) y limitar el resto.
+	\item \textbf{Control de tasa:} limitar la frecuencia de peticiones de eco por origen para contener barridos y canales de baja velocidad.
+	\item \textbf{Inspección de tamaño y contenido:} alertar ante cargas inusualmente grandes y perfiles de texto codificado; registrar el tamaño de carga en la telemetría.
+	\item \textbf{Defensa en profundidad:} combinar IDS/IPS, segmentación y filtrado de egreso para que un túnel que logre salir no supere los controles siguientes.
+	\item \textbf{Monitorización:} vigilar la relación peticiones/respuestas y la aparición de destinos nuevos desde equipos que normalmente no usan ICMP.
+\end{itemize}
+Ninguna medida debe impedir el descubrimiento de MTU ni el diagnóstico autorizado, pues un bloqueo indiscriminado de ICMP degrada la red.
+
+\paragraph{Preguntas de análisis.}
+\begin{enumerate}
+	\item \textbf{¿Qué funciones legítimas cumple ICMP?}\par
+	ICMP notifica errores de entrega (destino inalcanzable, tiempo excedido, redirección, necesidad de fragmentar), permite el descubrimiento de la MTU de la ruta, soporta el diagnóstico mediante eco y traza de ruta, y en IPv6 sustituye parte de la señalización de ARP con el descubrimiento de vecinos. Sin él, una red sana no puede informar a los emisores por qué un paquete no llegó.
+	\item \textbf{¿Qué impacto tendría bloquearlo completamente?}\par
+	Bloquear todo ICMP rompe el descubrimiento de MTU y crea ``agujeros negros'' donde las conexiones grandes fallan silenciosamente; también oculta errores útiles para el diagnóstico y, en IPv6, inhabilita el descubrimiento de vecinos y la autoconfiguración. Por eso la recomendación es filtrar por tipo, tamaño y tasa, no de forma indiscriminada.
+\end{enumerate}
+
+\paragraph{Conclusiones.}
+\begin{itemize}
+	\item Se verificó la integridad de las tres capturas con SHA-256 y se documentó la topología aislada del laboratorio.
+	\item La línea base permitió definir el comportamiento legítimo de ICMP y sirvió de referencia para las demás fases.
+	\item El barrido se identificó por la alta cardinalidad de destinos en un intervalo muy corto, con carga vacía.
+	\item El escenario de túnel se distinguió por la combinación de carga grande, Base64 y cadencia constante; la entropía por sí sola no habría bastado.
+	\item Las reglas propuestas se validaron con Suricata: cero alertas en la línea base y detección en las fases anómalas.
+	\item Las limitaciones incluyen la escala reducida del laboratorio, el uso de tráfico sintético y la duplicación de paquetes por el puente virtual.
+\end{itemize}
+
+\begin{table}[H]
+	\centering
+	\caption{Ficha de registro del hallazgo. Caso 7}
+	\footnotesize
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.23\textwidth} Y@{}}
+		\toprule
+		\textbf{Campo} & \textbf{Registro} \\ \midrule
+		Identificador & Caso 7 (ICMP), evidencias \texttt{01\_topologia\_lab.png} a \texttt{07\_suricata\_alertas.png}. Analista: Yader Ibraldo Quiroga Torres. \\ \hline
+		Fecha y hora & 10 de noviembre de 2026, 11:47 (UTC$-$5); \texttt{CU7\_01}, \texttt{CU7\_02} y \texttt{CU7\_03}. \\ \hline
+		Origen/destino & Analista \texttt{172.28.50.10} hacia la víctima \texttt{172.28.50.20} y hacia \texttt{172.28.50.1--40} en el barrido. \\ \hline
+		Observación & Tres perfiles de ICMP: diagnóstico de 40~bytes, barrido con 40 destinos y carga vacía, y túnel simulado de 900~bytes en Base64. \\ \hline
+		Hipótesis & Un uso abusivo de ICMP se manifestará por mayor cardinalidad de destinos, tamaños de carga inusuales o cadencia y contenido repetitivos. \\ \hline
+		Validación & Análisis con \texttt{tshark} y Suricata 7.0.7: sin alertas en la línea base, 4 alertas en el barrido y 5 en el túnel. \\ \hline
+		Severidad & Media el barrido y alta el túnel simulado en un entorno productivo; informativa en el laboratorio aislado. \\ \hline
+		Acción & Documentar los indicadores, proponer control de tasa e inspección de tamaño, y evitar el bloqueo indiscriminado de ICMP. \\ \hline
+		Integridad & \texttt{CU7\_02}: \texttt{95c75cdf\dots273c2d}; \texttt{CU7\_03}: \texttt{7d32a148\dots11c8c} (SHA-256 truncado; el valor completo está en el Anexo~A). \\
+		\bottomrule
+	\end{tabularx}
+\end{table}

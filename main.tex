@@ -53,12 +53,35 @@
 \hypersetup{hidelinks}
 
 % ---------------------------------------------------------------------
+% Justificación robusta
+% Las líneas con comandos \texttt largos (nmap, tshark, rutas) tienen
+% pocos puntos donde partirse. Sin holgura adicional, TeX comprime la
+% glue interpalabra hasta cero y las palabras quedan pegadas. Con
+% emergencystretch solo se relajan las líneas que de otro modo
+% desbordarían el margen.
+% ---------------------------------------------------------------------
+\usepackage{microtype}
+% Deben fijarse al comenzar el documento: las asignaciones hechas en el
+% preámbulo quedan dentro del grupo que LaTeX cierra en \begin{document}.
+\AtBeginDocument{%
+	\setlength{\emergencystretch}{3em}%
+	\tolerance=9999
+	\pretolerance=-1
+	\hbadness=10000
+}
+% Algunas cajas y entornos restauran \tolerance a 200. Reafirmarlo al
+% inicio de cada párrafo garantiza que las líneas con \texttt largos
+% puedan optar por una línea holgada en lugar de desbordar el margen.
+\AddToHook{para/begin}{\tolerance=9999 \emergencystretch=3em \pretolerance=-1\relax}
+
+% ---------------------------------------------------------------------
 % Ajustes de formato
 % ---------------------------------------------------------------------
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 
 % Casilla vacía para listas de verificación (sin depender de amssymb).
-\newcommand{\checkbox}{\framebox[1.1ex]{\rule{0pt}{1.1ex}}}
+% El \fboxsep se reduce para que la casilla quede cuadrada y discreta.
+\newcommand{\checkbox}{{\setlength{\fboxsep}{1pt}\framebox[6pt]{\rule{0pt}{4pt}}}}
 
 % Numeración de secciones y subsecciones: "1", "1.1", "1.2", ...
 \setcounter{secnumdepth}{2}
@@ -147,7 +170,7 @@
 	Mecanismos de seguridad Informática%
 }
 
-\authorsnames{Juan David Orduz Sastoque, Integrante 2, Integrante 3, Integrante 4}
+\authorsnames{Juan David Orduz Sastoque (20221020096), Jhojan Aragon Ramirez (20221020060), Yader Ibraldo Quiroga Torres (20222020034), Arlo Nicolas Ocampo Gallego (20221020104)}
 
 \authorsaffiliations{{Ingeniería de Sistemas, Facultad de Ingeniería\\Universidad Distrital Francisco José de Caldas}}
 
@@ -160,6 +183,17 @@
 \duedate{14 de noviembre de 2026\\Bogotá, D.C.}
 
 \authornote{Trabajo académico desarrollado en un laboratorio aislado y autorizado. Las pruebas se realizan con equipos propios o máquinas virtuales, direcciones privadas y tráfico de prueba; no se genera tráfico hacia Internet, redes institucionales en producción ni direcciones de terceros.}
+
+% ---------------------------------------------------------------------
+% La portada necesita algo menos de aire en el encabezado para que la
+% Nota del Autor quepa en la página 1. Se reduce solo el espacio inicial
+% que la clase apa7 reserva antes del título (4 -> 2 líneas base).
+% ---------------------------------------------------------------------
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\maketitle}{\vspace*{4\baselineskip}}{\vspace*{2\baselineskip}}{}{%
+	\ClassWarning{apa7}{No se pudo reducir el espacio superior de la portada}}
+\makeatother
 
 % =====================================================================
 \begin{document}

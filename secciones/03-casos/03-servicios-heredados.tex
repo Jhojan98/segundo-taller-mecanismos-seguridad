@@ -24,7 +24,7 @@ Las actividades desarrolladas durante la práctica comprendieron:
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.85\textwidth]{imagenes/Evidencias CU-3/01_puertos_escucha.png}
+\includegraphics[width=0.85\textwidth,height=0.78\textheight,keepaspectratio]{imagenes/Evidencias CU-3/01_puertos_escucha.png}
 \caption{Inventario de puertos TCP en estado de escucha y procesos asociados.}
 \label{fig:01_puertos_escucha}
 \end{figure}
@@ -78,9 +78,11 @@ A partir del análisis de las evidencias gráficas, se obtuvieron los siguientes
 
 \begin{table}[H]
 \centering
+\footnotesize
 \caption{Inventario de servicios expuestos}
 \label{tab:servicios_expuestos}
-\footnotesize 
+\scriptsize
+\setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.2} 
 \begin{tabularx}{\textwidth}{|c|l|l|c|l|Y|}
 \hline
@@ -109,6 +111,8 @@ Se evaluaron los indicadores de la guía frente a las evidencias:
 
 \begin{table}[H]
 \centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
 \caption{Matriz de riesgo y criticidad del Caso 3}
 \label{tab:matriz_riesgo}
 \begin{tabular}{|p{2cm}|p{2.5cm}|p{3cm}|c|c|c|p{3.5cm}|}
@@ -126,6 +130,7 @@ C3-H02 & Cuentas de Servicios & Uso extendido de la cuenta \texttt{LocalSystem} 
 
 \begin{table}[H]
 \centering
+\footnotesize
 \caption{Plan de remediación y defensa propuesto}
 \label{tab:remediacion}
 \begin{tabular}{|p{3cm}|p{4cm}|c|p{2.5cm}|p{3cm}|}

@@ -1,31 +1,36 @@
 \section*{Anexos}
 \addcontentsline{toc}{section}{Anexos}
 
+\begin{landscape}
 \subsection*{Anexo A. Registro de evidencias y cadena de custodia}
 \addcontentsline{toc}{subsection}{Anexo A. Registro de evidencias y cadena de custodia}
 
-Conserve la evidencia original sin modificaciones y analice una copia de trabajo. Registre el hash SHA-256 de la copia original antes de abrirla con cualquier herramienta de análisis.
+La Tabla~\ref{tab:evidencias} reproduce el registro de integridad de las capturas. Conserve la copia original sin modificaciones, analice una copia de trabajo y verifique el SHA-256 antes de abrirla; el manifiesto completo está en \texttt{laboratorio/evidencias\_sha256.txt}.
 
-\begin{landscape}
 	\begin{table}[H]
 		\caption{Registro de evidencias y cadena de custodia}
 		\label{tab:evidencias}
 		\centering
-		\footnotesize
-		\renewcommand{\arraystretch}{1.35}
+		\scriptsize
+		\renewcommand{\arraystretch}{1.0}
 		\setlength{\tabcolsep}{4pt}
-		\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.15\textwidth} >{\raggedright\arraybackslash}p{0.09\textwidth} >{\raggedright\arraybackslash}p{0.08\textwidth} >{\raggedright\arraybackslash}p{0.11\textwidth} >{\ttfamily\scriptsize\raggedright\arraybackslash}p{0.32\textwidth} >{\raggedright\arraybackslash}p{0.10\textwidth}@{}}
+		\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.185\textwidth} >{\raggedright\arraybackslash}p{0.06\textwidth} >{\raggedright\arraybackslash}p{0.08\textwidth} >{\raggedright\arraybackslash}p{0.115\textwidth} >{\ttfamily\scriptsize\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{0.13\textwidth}@{}}
 			\toprule
-			\textbf{Archivo} & \textbf{Tipo} & \textbf{Tamaño} & \textbf{Fecha/hora} & \textbf{SHA-256} & \textbf{Analista} \\
+			\textbf{Archivo} & \textbf{Tipo} & \textbf{Tamaño} & \textbf{Fecha/hora} & \normalfont\bfseries SHA-256 & \textbf{Analista} \\
 			\midrule
-			& & & & & \\ \hline
-			& & & & & \\ \hline
-			& & & & & \\ \hline
-			& & & & & \\ \hline
-			& & & & & \\ \hline
-			& & & & & \\ \hline
-			& & & & & \\ \hline
-			& & & & & \\
+			\makecell[l]{\texttt{CU7\_01\_baseline\_}\\\texttt{icmp.pcap}} & PCAP & 936 B & 2026-11-10 11:47 & \makecell[l]{c3af28d1df0ac1a248bd6361f8a7898e\\e241a1cf5fb4d827c87643e5268caee5} & Yader Ibraldo Quiroga Torres \\ \hline
+			\makecell[l]{\texttt{CU7\_02\_icmp\_}\\\texttt{sweep.pcap}} & PCAP & 4.896 B & 2026-11-10 11:47 & \makecell[l]{95c75cdfd7b4be61f00493ba50ade17c\\5b03c6ec9dbf3051a7b289f829273c2d} & Yader Ibraldo Quiroga Torres \\ \hline
+			\makecell[l]{\texttt{CU7\_03\_icmp\_}\\\texttt{tunnel.pcap}} & PCAP & 28.764 B & 2026-11-10 11:47 & \makecell[l]{7d32a148c00de6aa0a98d03aab3954d6\\e44e1d805a1370ade2250c813c111c8c} & Yader Ibraldo Quiroga Torres \\ \hline
+			\makecell[l]{\texttt{CU8\_01\_syn\_}\\\texttt{scan.pcap}} & PCAP & 147.776 B & 2026-11-10 11:58 & \makecell[l]{9fef801cadf8b5f1cc0cfe0496f8999c\\cd05dc6fb2a1a09220a4e194b555130c} & Yader Ibraldo Quiroga Torres \\ \hline
+			\makecell[l]{\texttt{CU8\_02\_service\_}\\\texttt{scan.pcap}} & PCAP & 395.648 B & 2026-11-10 11:58 & \makecell[l]{41a5fab713dbf711276a8f6098a87c4e\\16e033db05c25ef31fe32f5316bf5a09} & Yader Ibraldo Quiroga Torres \\ \hline
+			\makecell[l]{\texttt{CU8\_03\_udp\_}\\\texttt{scan.pcap}} & PCAP & 3.616 B & 2026-11-10 11:58 & \makecell[l]{f1f094daf14a5bcfc7b31e8deb75f4a1\\57122134e0747168d8bc4ddd36bbb89d} & Yader Ibraldo Quiroga Torres \\ \hline
+			\makecell[l]{\texttt{CU10\_01\_xmpp\_}\\\texttt{insecure.pcap}} & PCAP & 5.105 B & 2026-11-10 11:51 & \makecell[l]{3400d740daf0d9f3d75fe6ccdc69d23f\\24e0984a6ec67ebfa0a1853095b87bda} & Yader Ibraldo Quiroga Torres \\ \hline
+			\makecell[l]{\texttt{CU10\_02\_xmpp\_}\\\texttt{secure.pcap}} & PCAP & 5.362 B & 2026-11-10 11:51 & \makecell[l]{3e2f0b6938aa4b06bcd9e1762c4183db\\5471acaf3b87603198394e902b6fef6d} & Yader Ibraldo Quiroga Torres \\ \hline
+			\makecell[l]{\texttt{CU10\_03\_xmpp\_}\\\texttt{message.pcap}} & PCAP & 21.373 B & 2026-11-10 11:52 & \makecell[l]{267df8e580e63a9f0202be4667ba0500\\1b8ac695b05b56c18edf288f4eaf1b66} & Yader Ibraldo Quiroga Torres \\ \hline
+			\makecell[l]{\texttt{CU10\_05\_xmpp\_}\\\texttt{plaintext.pcap}} & PCAP & 4.346 B & 2026-11-10 11:52 & \makecell[l]{79c12243f3a5fcf51694e7edf355e2cb\\80d2fc52bf8c1e535b15e11ebe7c1c76} & Yader Ibraldo Quiroga Torres \\ \hline
+			\makecell[l]{\texttt{CU10\_06\_https\_}\\\texttt{insecure.pcap}} & PCAP & 9.319 B & 2026-11-10 11:54 & \makecell[l]{62315796d2ba7687ad3247b2d9b0d176\\838924bec228622e94ebb27773e86dad} & Yader Ibraldo Quiroga Torres \\ \hline
+			\makecell[l]{\texttt{CU10\_07\_https\_}\\\texttt{tls12\_insecure.}\\\texttt{pcap}} & PCAP & 8.442 B & 2026-11-10 11:55 & \makecell[l]{163f557c1cd60c86efbc7c259caeaa2e\\ade2ae6c973ae32b35db8fff1a5479ea} & Yader Ibraldo Quiroga Torres \\ \hline
+			\makecell[l]{\texttt{CU10\_08\_https\_}\\\texttt{tls12\_secure.pcap}} & PCAP & 8.864 B & 2026-11-10 11:55 & \makecell[l]{5679faae98540281908ff5e6fbddbda5\\d2b8e2e7aedc9f085fb354dc3f331afa} & Yader Ibraldo Quiroga Torres \\
 			\bottomrule
 		\end{tabularx}
 	\end{table}

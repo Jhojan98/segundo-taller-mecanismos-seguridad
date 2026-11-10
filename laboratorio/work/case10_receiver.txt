@@ -1,0 +1,6 @@
+Using slower stringprep, consider compiling the faster cython/libidn one.
+RECEIVED:HOLA-BOB-SIN-TLS-2026
+RECEIVER_READY
+RECEIVED:HOLA-BOB-MENSAJE-CONFIDENCIAL-2026
+Task was destroyed but it is pending!
+task: <Task pending name='Task-1' coro=<XMLStream.run_filters() running at /usr/lib/python3.12/site-packages/slixmpp/xmlstream/xmlstream.py:1263> wait_for=<Future cancelled>>

@@ -64,6 +64,7 @@ A partir de la inspección de las evidencias proporcionadas por las capturas de 
 
 \begin{table}[htbp]
     \centering
+    \footnotesize
     \caption{Resumen de flujos TCP analizados en la captura.}
     \label{tab:flujos_rst}
     \begin{tabularx}{\textwidth}{ccccccY} % Se añade \textwidth y la última columna es Y
@@ -121,9 +122,11 @@ El análisis detallado de la captura de tráfico \texttt{200722\_tcp\_anon.pcapn
 
 \begin{table}[htbp]
     \centering
+    \footnotesize
     \caption{Ficha técnica de registro del hallazgo para el Caso 5.}
     \label{tab:ficha_caso_5}
-    \begin{tabular}{ll}
+    \renewcommand{\arraystretch}{1.15}
+    \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.24\textwidth} Y@{}}
         \toprule
         \textbf{Campo} & \textbf{Registro} \\
         \midrule
@@ -135,7 +138,7 @@ El análisis detallado de la captura de tráfico \texttt{200722\_tcp\_anon.pcapn
         Validación & Filtrado mediante \texttt{tcp.flags.reset == 1} (0 resultados) y revisión de flujos TCP. \\
         Severidad & Baja / Informativa \\
         Acción & Documentar el comportamiento normal y mantener monitoreo preventivo de red. \\
-        Integridad & SHA-256: \texttt{5295B16EA117FA8BB1A65418FCA81E709BEA58D3A830BC3BB5C4A2ED0466EA9C} \\
+        Integridad & \parbox[t]{\hsize}{\raggedright SHA-256: \texttt{5295B16EA117FA8BB1A65418FC}\\ \texttt{A81E709BEA58D3A830BC3BB5C4A2ED}\\ \texttt{0466EA9C}} \\
         \bottomrule
-    \end{tabular}
+    \end{tabularx}
 \end{table}

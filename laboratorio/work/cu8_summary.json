@@ -1,0 +1,45 @@
+[
+  {
+    "archivo": "CU8_01_syn_scan.pcap",
+    "paquetes_tcp": 2052,
+    "syn_enviados": 1024,
+    "synack_recibidos": 4,
+    "rst_recibidos": 1020,
+    "puertos_destino_unicos": 1024,
+    "puertos_abiertos": [
+      21,
+      22,
+      23,
+      80
+    ],
+    "duracion_s": 0.059,
+    "paquetes_por_segundo": 34817.4
+  },
+  {
+    "archivo": "CU8_02_service_scan.pcap",
+    "paquetes_tcp": 4214,
+    "puertos_destino_unicos": 6,
+    "bytes_totales": 328200,
+    "puertos": [
+      21,
+      22,
+      23,
+      80,
+      4444,
+      8080
+    ]
+  },
+  {
+    "archivo": "CU8_03_udp_scan.pcap",
+    "paquetes_udp": 28,
+    "icmp_port_unreachable": 7,
+    "puertos_destino_unicos": 5,
+    "puertos": [
+      53,
+      123,
+      161,
+      500,
+      5353
+    ]
+  }
+]

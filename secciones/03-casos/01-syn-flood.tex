@@ -82,7 +82,7 @@ El análisis forense y de tráfico se llevó a cabo siguiendo una serie de pasos
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.75\textwidth]{imagenes/Evidencias CU-1/08_conexiones_netstat.png}
+    \includegraphics[width=0.75\textwidth,height=0.72\textheight,keepaspectratio]{imagenes/Evidencias CU-1/08_conexiones_netstat.png}
     \caption{Inspección de estados de conexiones de red locales mediante comandos de diagnóstico.}
     \label{fig:08_conexiones_netstat}
 \end{figure}
@@ -97,15 +97,16 @@ A partir de la inspección de las evidencias proporcionadas por las capturas de 
 
 \begin{table}[htbp]
     \centering
+    \footnotesize
     \caption{Tabla de conversaciones TCP extraídas de la evidencia.}
     \label{tab:conversaciones_tcp}
-    \begin{tabular}{cccccccc}
+    \begin{tabular}{ccccccc}
         \toprule
         \textbf{IP Origen} & \textbf{Puerto A} & \textbf{IP Destino} & \textbf{Puerto B} & \textbf{Paquetes Totales} & \textbf{Bytes Totales} & \textbf{Duración (s)} \\
         \midrule
         192.168.200.135 & 7875 & 192.168.200.21 & 2000 & 8 & 348 bytes & 2.7421 \\
         192.168.200.135 & 7876 & 192.168.200.21 & 2000 & 27 & 11 kB & 18.6292 \\
-        \bottomrule>
+        \bottomrule
     \end{tabular}
 \end{table}
 
