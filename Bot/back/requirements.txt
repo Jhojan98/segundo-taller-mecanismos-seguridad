@@ -1,0 +1,9 @@
+# Dependencias de producción del backend (versiones fijadas)
+fastapi==0.162.4
+uvicorn[standard]==0.54.0
+SQLAlchemy==2.1.8
+psycopg2-binary==2.9.13
+pydantic==2.14.3
+pydantic-settings==2.16.2
+PyJWT==2.15.1
+python-telegram-bot==22.8

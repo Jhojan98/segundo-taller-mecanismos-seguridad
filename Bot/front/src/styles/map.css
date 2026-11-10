@@ -1,0 +1,78 @@
+/* ==========================================================================
+   Mapa Leaflet y leyenda
+   ========================================================================== */
+
+.map-frame {
+  position: relative;
+  /* Crea un contexto de apilamiento: contiene los z-index internos de Leaflet
+     y evita que los paneles del mapa tapen la barra lateral. */
+  z-index: 0;
+}
+
+.map-frame__canvas {
+  width: 100%;
+  height: 440px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #e2e8f0;
+}
+
+/* Marcadores personalizados (divIcon) */
+.map-pin__dot {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ffffff;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.45);
+}
+
+/* Leyenda superpuesta */
+.map-legend {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 500;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.45rem 0.65rem;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  font-size: 0.78rem;
+  box-shadow: var(--shadow);
+}
+
+.legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.legend__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend__dot--green {
+  background: var(--green);
+}
+
+.legend__dot--blue {
+  background: var(--primary);
+}
+
+@media (max-width: 900px) {
+  .map-frame__canvas {
+    height: 320px;
+  }
+
+  .map-legend {
+    left: 10px;
+    right: auto;
+  }
+}
