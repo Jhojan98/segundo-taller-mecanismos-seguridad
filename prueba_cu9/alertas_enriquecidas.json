@@ -1,0 +1,84 @@
+[
+  {
+    "host": "172.28.50.20",
+    "window_start": "2026-11-10T15:00:00+00:00",
+    "score": 90.0,
+    "prioridad": "ALTA",
+    "desglose": {
+      "severidad_maxima": 25,
+      "convergencia_fuentes": 30,
+      "firmas_distintas": 15,
+      "volumen": 5,
+      "anomalia_ML": 0
+    },
+    "multiplicador_criticidad": 1.2,
+    "fuentes": [
+      "suricata",
+      "windows",
+      "zeek"
+    ],
+    "firmas": [
+      "2100001",
+      "2100002",
+      "conn_S0",
+      "sysmon_3"
+    ],
+    "eventos": 26,
+    "evidencia": {
+      "2100001": [
+        "suricata:1",
+        "suricata:2",
+        "suricata:3",
+        "suricata:4",
+        "suricata:5"
+      ],
+      "2100002": [
+        "suricata:13",
+        "suricata:14",
+        "suricata:15",
+        "suricata:16",
+        "suricata:17"
+      ],
+      "conn_S0": [
+        "zeek:18",
+        "zeek:19",
+        "zeek:20",
+        "zeek:21",
+        "zeek:22"
+      ],
+      "sysmon_3": [
+        "windows:26"
+      ]
+    },
+    "accion_sugerida": "REVISION HUMANA; no bloquear automaticamente"
+  },
+  {
+    "host": "172.28.50.53",
+    "window_start": "2026-11-10T15:00:00+00:00",
+    "score": 13.0,
+    "prioridad": "BAJA",
+    "desglose": {
+      "severidad_maxima": 10,
+      "convergencia_fuentes": 0,
+      "firmas_distintas": 0,
+      "volumen": 0,
+      "anomalia_ML": 0
+    },
+    "multiplicador_criticidad": 1.3,
+    "fuentes": [
+      "suricata"
+    ],
+    "firmas": [
+      "2100003"
+    ],
+    "eventos": 3,
+    "evidencia": {
+      "2100003": [
+        "suricata:27",
+        "suricata:28",
+        "suricata:29"
+      ]
+    },
+    "accion_sugerida": "REVISION HUMANA; no bloquear automaticamente"
+  }
+]

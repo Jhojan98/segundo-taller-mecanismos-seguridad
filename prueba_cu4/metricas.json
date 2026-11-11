@@ -1,0 +1,35 @@
+{
+  "prevalencia_ataque_en_test": 0.21428571428571427,
+  "baseline_3sigma": {
+    "precision": 0.5714285714285714,
+    "recall": 1.0,
+    "f1": 0.7272727272727273,
+    "pr_auc": 1.0,
+    "recall_at_fpr_1pct": 1.0,
+    "tn": 175,
+    "fp": 45,
+    "fn": 0,
+    "tp": 60
+  },
+  "isolation_forest": {
+    "precision": 0.5825242718446602,
+    "recall": 1.0,
+    "f1": 0.7361963190184049,
+    "pr_auc": 1.0,
+    "recall_at_fpr_1pct": 1.0,
+    "tn": 177,
+    "fp": 43,
+    "fn": 0,
+    "tp": 60
+  },
+  "fp_rate_benigno": {
+    "baseline_3sigma": 0.027777777777777776,
+    "isolation_forest": 0.016666666666666666
+  },
+  "fp_rate_flash_crowd": {
+    "baseline_3sigma": 1.0,
+    "isolation_forest": 1.0
+  },
+  "n_train": 420,
+  "n_test": 280
+}
