@@ -1,0 +1,292 @@
+[
+  {
+    "host": "172.28.50.20",
+    "window_start": "2026-11-10T16:46:00+00:00",
+    "score": 93.6,
+    "prioridad": "ALTA",
+    "desglose": {
+      "severidad_maxima": 40,
+      "convergencia_fuentes": 0,
+      "firmas_distintas": 10,
+      "volumen": 8,
+      "anomalia_ML": 20
+    },
+    "multiplicador_criticidad": 1.2,
+    "fuentes": [
+      "suricata"
+    ],
+    "firmas": [
+      "1007001",
+      "1007002",
+      "1008001"
+    ],
+    "eventos": 40,
+    "evidencia": {
+      "suricata:1007002": [
+        "suricata:eve.json:1"
+      ],
+      "suricata:1007001": [
+        "suricata:eve.json:0",
+        "suricata:eve.json:1",
+        "suricata:eve.json:2",
+        "suricata:eve.json:3",
+        "suricata:eve.json:4"
+      ],
+      "suricata:1008001": [
+        "suricata:eve.json:0",
+        "suricata:eve.json:2",
+        "suricata:eve.json:4",
+        "suricata:eve.json:6",
+        "suricata:eve.json:8",
+        "suricata:eve.json:10",
+        "suricata:eve.json:12",
+        "suricata:eve.json:14",
+        "suricata:eve.json:16",
+        "suricata:eve.json:18",
+        "suricata:eve.json:20",
+        "suricata:eve.json:22",
+        "suricata:eve.json:24",
+        "suricata:eve.json:26",
+        "suricata:eve.json:28",
+        "suricata:eve.json:30",
+        "suricata:eve.json:32",
+        "suricata:eve.json:34",
+        "suricata:eve.json:36",
+        "suricata:eve.json:38",
+        "suricata:eve.json:40",
+        "suricata:eve.json:42",
+        "suricata:eve.json:44",
+        "suricata:eve.json:46",
+        "suricata:eve.json:48",
+        "suricata:eve.json:50",
+        "suricata:eve.json:52",
+        "suricata:eve.json:54",
+        "suricata:eve.json:56",
+        "suricata:eve.json:58",
+        "suricata:eve.json:60",
+        "suricata:eve.json:62",
+        "suricata:eve.json:64",
+        "suricata:eve.json:66"
+      ]
+    },
+    "accion_sugerida": "REVISION HUMANA; no bloquear automaticamente"
+  },
+  {
+    "host": "172.28.50.20",
+    "window_start": "2026-11-11T05:18:00+00:00",
+    "score": 81.6,
+    "prioridad": "ALTA",
+    "desglose": {
+      "severidad_maxima": 25,
+      "convergencia_fuentes": 15,
+      "firmas_distintas": 5,
+      "volumen": 3,
+      "anomalia_ML": 20
+    },
+    "multiplicador_criticidad": 1.2,
+    "fuentes": [
+      "suricata",
+      "webserver"
+    ],
+    "firmas": [
+      "1008001",
+      "http_burst"
+    ],
+    "eventos": 16,
+    "evidencia": {
+      "webserver:http_burst": [
+        "nginx:cu4_nginx_flash_access.log:172.28.50.10:14953119"
+      ],
+      "suricata:1008001": [
+        "suricata:eve.json:41",
+        "suricata:eve.json:116",
+        "suricata:eve.json:176",
+        "suricata:eve.json:235",
+        "suricata:eve.json:301",
+        "suricata:eve.json:363",
+        "suricata:eve.json:422",
+        "suricata:eve.json:479",
+        "suricata:eve.json:541",
+        "suricata:eve.json:607",
+        "suricata:eve.json:653",
+        "suricata:eve.json:723",
+        "suricata:eve.json:785",
+        "suricata:eve.json:841",
+        "suricata:eve.json:912"
+      ]
+    },
+    "accion_sugerida": "REVISION HUMANA; no bloquear automaticamente"
+  },
+  {
+    "host": "172.28.50.20",
+    "window_start": "2026-11-11T05:42:00+00:00",
+    "score": 66.0,
+    "prioridad": "MEDIA",
+    "desglose": {
+      "severidad_maxima": 25,
+      "convergencia_fuentes": 0,
+      "firmas_distintas": 0,
+      "volumen": 10,
+      "anomalia_ML": 20
+    },
+    "multiplicador_criticidad": 1.2,
+    "fuentes": [
+      "suricata"
+    ],
+    "firmas": [
+      "1004001"
+    ],
+    "eventos": 54,
+    "evidencia": {
+      "suricata:1004001": [
+        "suricata:eve.json:283"
+      ]
+    },
+    "accion_sugerida": "REVISION HUMANA; no bloquear automaticamente"
+  },
+  {
+    "host": "127.0.0.1",
+    "window_start": "2026-11-10T16:54:00+00:00",
+    "score": 40.0,
+    "prioridad": "MEDIA",
+    "desglose": {
+      "severidad_maxima": 40,
+      "convergencia_fuentes": 0,
+      "firmas_distintas": 0,
+      "volumen": 0,
+      "anomalia_ML": 0
+    },
+    "multiplicador_criticidad": 1.0,
+    "fuentes": [
+      "suricata"
+    ],
+    "firmas": [
+      "1001002"
+    ],
+    "eventos": 1,
+    "evidencia": {
+      "suricata:1001002": [
+        "suricata:eve.json:1"
+      ]
+    },
+    "accion_sugerida": "REVISION HUMANA; no bloquear automaticamente"
+  },
+  {
+    "host": "172.28.50.10",
+    "window_start": "2026-11-10T16:46:00+00:00",
+    "score": 37.0,
+    "prioridad": "BAJA",
+    "desglose": {
+      "severidad_maxima": 25,
+      "convergencia_fuentes": 0,
+      "firmas_distintas": 5,
+      "volumen": 7,
+      "anomalia_ML": 0
+    },
+    "multiplicador_criticidad": 1.0,
+    "fuentes": [
+      "suricata"
+    ],
+    "firmas": [
+      "1007002",
+      "1008002"
+    ],
+    "eventos": 35,
+    "evidencia": {
+      "suricata:1007002": [
+        "suricata:eve.json:0"
+      ],
+      "suricata:1008002": [
+        "suricata:eve.json:1",
+        "suricata:eve.json:3",
+        "suricata:eve.json:5",
+        "suricata:eve.json:7",
+        "suricata:eve.json:9",
+        "suricata:eve.json:11",
+        "suricata:eve.json:13",
+        "suricata:eve.json:15",
+        "suricata:eve.json:17",
+        "suricata:eve.json:19",
+        "suricata:eve.json:21",
+        "suricata:eve.json:23",
+        "suricata:eve.json:25",
+        "suricata:eve.json:27",
+        "suricata:eve.json:29",
+        "suricata:eve.json:31",
+        "suricata:eve.json:33",
+        "suricata:eve.json:35",
+        "suricata:eve.json:37",
+        "suricata:eve.json:39",
+        "suricata:eve.json:41",
+        "suricata:eve.json:43",
+        "suricata:eve.json:45",
+        "suricata:eve.json:47",
+        "suricata:eve.json:49",
+        "suricata:eve.json:51",
+        "suricata:eve.json:53",
+        "suricata:eve.json:55",
+        "suricata:eve.json:57",
+        "suricata:eve.json:59",
+        "suricata:eve.json:61",
+        "suricata:eve.json:63",
+        "suricata:eve.json:65",
+        "suricata:eve.json:67"
+      ]
+    },
+    "accion_sugerida": "REVISION HUMANA; no bloquear automaticamente"
+  },
+  {
+    "host": "172.28.50.30",
+    "window_start": "2026-11-10T16:46:00+00:00",
+    "score": 25.0,
+    "prioridad": "BAJA",
+    "desglose": {
+      "severidad_maxima": 25,
+      "convergencia_fuentes": 0,
+      "firmas_distintas": 0,
+      "volumen": 0,
+      "anomalia_ML": 0
+    },
+    "multiplicador_criticidad": 1.0,
+    "fuentes": [
+      "suricata"
+    ],
+    "firmas": [
+      "1007002"
+    ],
+    "eventos": 1,
+    "evidencia": {
+      "suricata:1007002": [
+        "suricata:eve.json:2"
+      ]
+    },
+    "accion_sugerida": "REVISION HUMANA; no bloquear automaticamente"
+  },
+  {
+    "host": "172.28.50.40",
+    "window_start": "2026-11-10T16:46:00+00:00",
+    "score": 25.0,
+    "prioridad": "BAJA",
+    "desglose": {
+      "severidad_maxima": 25,
+      "convergencia_fuentes": 0,
+      "firmas_distintas": 0,
+      "volumen": 0,
+      "anomalia_ML": 0
+    },
+    "multiplicador_criticidad": 1.0,
+    "fuentes": [
+      "suricata"
+    ],
+    "firmas": [
+      "1007002"
+    ],
+    "eventos": 1,
+    "evidencia": {
+      "suricata:1007002": [
+        "suricata:eve.json:3"
+      ]
+    },
+    "accion_sugerida": "REVISION HUMANA; no bloquear automaticamente"
+  }
+]

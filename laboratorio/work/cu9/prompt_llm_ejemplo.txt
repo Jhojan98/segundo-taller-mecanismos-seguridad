@@ -1,0 +1,22 @@
+Eres un asistente de triage SOC. Resume en 5 lineas y sugiere pasos de INVESTIGACION (no de bloqueo). Si algo no esta en los datos, di 'no determinable'. Datos anonimizados:
+{
+  "score": 93.6,
+  "prioridad": "ALTA",
+  "desglose": {
+    "severidad_maxima": 40,
+    "convergencia_fuentes": 0,
+    "firmas_distintas": 10,
+    "volumen": 8,
+    "anomalia_ML": 20
+  },
+  "fuentes": [
+    "suricata"
+  ],
+  "eventos": 40,
+  "host": "LAB_0cd6b412d0de791d",
+  "firmas": [
+    "SIG_de7d8ff1bf6a",
+    "SIG_7c68529b0e8f",
+    "SIG_ac037519c7e7"
+  ]
+}

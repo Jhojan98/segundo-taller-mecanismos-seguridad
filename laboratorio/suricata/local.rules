@@ -12,3 +12,6 @@ alert tcp 172.28.50.20 any -> 172.28.50.10 any (msg:"CU8 respuestas RST multiple
 # --- Caso 10: XMPP/TLS ---
 alert tls any any -> any any (msg:"CU10 certificado autofirmado CN=localhost"; tls.cert_subject; content:"CN=localhost"; classtype:policy-violation; sid:1001002; rev:1;)
 alert tcp any any -> any 5280 (msg:"CU10 BOSH XMPP sobre HTTP sin cifrar"; flow:to_server,established; content:"POST"; content:"/http-bind"; distance:0; classtype:policy-violation; sid:1001003; rev:1;)
+
+# --- Caso 4 / 9: ráfaga de SYN hacia el servidor web (umbral inicial a CALIBRAR con CU4_01 y CU4_02) ---
+alert tcp any any -> 172.28.50.20 80 (msg:"CU4 rafaga de SYN hacia el servidor web (posible SYN flood)"; flags:S; threshold: type threshold, track by_dst, count 200, seconds 5; classtype:attempted-dos; sid:1004001; rev:1;)

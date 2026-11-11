@@ -1,0 +1,8 @@
+host,ventana,score,prioridad,analista,decision,evidencia_verificada,falso_positivo,reversible,notas
+172.28.50.20,2026-11-10T16:46:00+00:00,93.6,ALTA,Arlo Ocampo,escalar,sí,no,Remover IP de lista negra / WAF,Convergencia de múltiples firmas (1007001/2/1008001) y anomalía ML. Confirmado en eve.json.
+172.28.50.20,2026-11-11T05:18:00+00:00,81.6,ALTA,Arlo Ocampo,investigar,sí,indeterminado,Ajuste de rate-limiting en Nginx,Coincidencia entre Nginx access.log y Suricata. Posible ráfaga legítima (Flash Crowd).
+172.28.50.20,2026-11-11T05:42:00+00:00,66.0,MEDIA,Arlo Ocampo,descartar,sí,sí,N/A (sin acción aplicada),Disparo aislado de regla por umbral SYN (1004001). Sin impacto ni ráfaga persistente.
+127.0.0.1,2026-11-10T16:54:00+00:00,40.0,MEDIA,Arlo Ocampo,descartar,sí,sí,N/A (sin acción aplicada),Tráfico interno de loopback (1001002). Evento benigno local sin riesgo de red.
+172.28.50.10,2026-11-10T16:46:00+00:00,37.0,BAJA,Arlo Ocampo,descartar,sí,sí,N/A (sin acción aplicada),Evento aislado de baja prioridad. Sin convergencia con otras fuentes.
+172.28.50.30,2026-11-10T16:46:00+00:00,25.0,BAJA,Arlo Ocampo,descartar,sí,sí,N/A (sin acción aplicada),Firma única (1007002) de un solo evento. Ruido de fondo en captura.
+172.28.50.40,2026-11-10T16:46:00+00:00,25.0,BAJA,Arlo Ocampo,descartar,sí,sí,N/A (sin acción aplicada),Firma única (1007002) de un solo evento. Ruido de fondo en captura.

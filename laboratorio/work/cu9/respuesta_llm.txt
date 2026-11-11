@@ -1,0 +1,7 @@
+Modelo: Gemini 2.5 Pro / Fecha: 2026-11-11
+--------------------------------------------------------------------------------
+1. RESUMEN: Evento de prioridad ALTA (score 93.6) sobre el host LAB_0cd6b412d0de791d generado exclusivamente por Suricata (40 eventos).
+2. ANÁLISIS: Presenta alta diversidad de firmas (10 distintas, incluyendo SIG_de7d8ff1bf6a, SIG_7c68529b0e8f, SIG_ac037519c7e7) y una anomalía detectada por ML (score 20).
+3. DATO NO DETERMINABLE: Las direcciones IP de origen, puertos involucrados, tipo de protocolo (TCP/UDP/HTTP) y marcas de tiempo no son determinables en los datos provistos.
+4. PASO INVESTIGACIÓN 1: Extraer del NIDS/SIEM el desglose completo de las 10 firmas activadas y los identificadores de flujo (flow_ids) asociados al host afectado.
+5. PASO INVESTIGACIÓN 2: Inspeccionar los registros del sistema operativo/endpoint del host LAB_0cd6b412d0de791d durante el periodo del evento para correlacionar anomalías de procesos o conexiones.

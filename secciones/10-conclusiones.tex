@@ -43,3 +43,5 @@ Las conclusiones deben sintetizar los hallazgos, reconocer las limitaciones de l
 	\item \textbf{Limitaciones del prototipo:} cobertura de dispositivos, precisión del GPS, disponibilidad de APIs, consumo de batería y dependencia de servicios de terceros.
 	\item \looseness=-1 \textbf{Trabajo futuro:} ampliar la línea base, automatizar la correlación con reglas explicables, evaluar la deriva del modelo, incorporar pruebas de carga y mejorar los mecanismos de consentimiento y borrado.
 \end{itemize}
+
+Los Casos 4 y 9 muestran que los prototipos son útiles para priorizar y explicar señales, pero no bastan como mecanismo autónomo de bloqueo. En el Caso 4 se debe ampliar la línea base con más cambios legítimos de carga, vigilar la deriva y proteger los datos de entrenamiento; en el Caso 9 se debe incorporar la telemetría ausente, validar las reglas de correlación en Wazuh y mantener la revisión humana. En ambos casos, la mejora prioritaria es ampliar la evidencia y validar el comportamiento fuera de las capturas controladas.

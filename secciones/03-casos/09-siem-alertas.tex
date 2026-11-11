@@ -3,48 +3,257 @@
 
 \begin{situacion}
 El centro de monitoreo recibe múltiples alertas que deben agruparse y priorizarse.
+
+\textbf{Objetivo:} \par
+Normalizar las alertas disponibles, deduplicarlas sin perder trazabilidad, correlacionarlas por host y ventana temporal, calcular un puntaje explicable y entregar una alerta enriquecida para revisión humana. El LLM se utiliza únicamente como apoyo para resumir información anonimizada y proponer pasos de investigación.
+
+\textbf{Fundamento teórico:} \par
+La normalización transforma eventos de fuentes heterogéneas a un esquema común para que puedan compararse. La deduplicación reduce repeticiones, pero debe conservar identificadores y referencias para permitir la auditoría. La correlación por destino y ventana temporal permite observar señales que pertenecen al mismo contexto operativo. Un puntaje explicable descompone la prioridad en severidad, fuentes, firmas, volumen, anomalía y criticidad, de modo que el analista pueda revisar qué componente elevó el resultado.
+
+El uso del LLM debe estar acotado: no ejecuta bloqueos, no sustituye la evidencia y debe indicar cuando un dato no es determinable. La decisión final corresponde a una persona y debe quedar registrada.
 \end{situacion}
 
 \paragraph{Procedimiento.}
 \begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
-	\item Normalizar eventos de firewall, servidor, Zeek/Suricata y sistema operativo; eliminar duplicados sin perder trazabilidad.
-	\item Definir características agregadas por host y ventana temporal, y probar un detector de anomalías con datos controlados.
-	\item Usar un LLM únicamente para resumir alertas anonimizadas y sugerir el triage; verificar toda recomendación contra la evidencia.
+\item Normalizar eventos de firewall, servidor, Zeek/Suricata y sistema operativo; eliminar duplicados sin perder trazabilidad.
+\item Definir características agregadas por host y ventana temporal, y probar un detector de anomalías con datos controlados.
+\item Usar un LLM únicamente para resumir alertas anonimizadas y sugerir el triage; verificar toda recomendación contra la evidencia.
 \end{itemize}
 
-\paragraph{Indicadores que deben buscarse.}
-Alertas correlacionadas por host/tiempo, puntuación de riesgo explicable y señales convergentes en varias fuentes.
+El procedimiento reproducido fue el siguiente:
+
+\begin{enumerate}
+\item \textbf{Fuentes disponibles:} se procesaron alertas de Suricata y un evento agregado del servidor web. El detector ML del Caso 4 se incorporó como componente de puntuación cuando correspondía. Firewall, Zeek, sistema operativo y Wazuh no están disponibles en los artefactos de este caso.
+\item \textbf{Esquema común:} cada evento se normalizó con identificador, fuente, marca temporal, origen, destino, firma, severidad y referencia. La implementación está en \texttt{from\_suricata()}, \texttt{from\_zeek\_conn()} y \texttt{from\_nginx()} de \texttt{laboratorio/scripts/analyze\_cu9.py}.
+\item \textbf{Deduplicación:} se agruparon eventos por fuente, origen, destino, firma y ventana fija de 120 segundos; se conservaron \texttt{event\_id}, referencias, primer evento, último evento y conteo. La salida mantiene esos punteros en el campo \texttt{evidencia}.
+\item \textbf{Correlación:} los grupos se asociaron por host destino y ventana temporal. La correlación se implementó en \texttt{correlate()}.
+\item \textbf{Puntaje explicable:} se sumaron severidad, convergencia de fuentes, firmas distintas, volumen y anomalía ML; después se aplicó el multiplicador de criticidad del host.
+\item \textbf{Anonimización:} el prompt empleó un pseudónimo para el host y no se usó como mecanismo de bloqueo. El archivo de prompt no se toma como fuente de cifras o alertas en este informe.
+\item \textbf{Validación humana:} cada alerta se registró con analista, decisión, evidencia verificada, posibilidad de falso positivo, reversibilidad y notas.
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\usetikzlibrary{positioning,arrows.meta}
+\begin{tikzpicture}[node distance=6mm,
+	box/.style={draw, rounded corners, align=center, font=\scriptsize, minimum width=31mm, minimum height=11mm},
+	arr/.style={-{Stealth}, thick}]
+	\node[box] (src) {\texttt{main()}\\entradas: EVE, Zeek, Nginx\\y \texttt{--anomaly-hosts}};
+	\node[box, right=of src] (norm) {1. Normalizar\\ \texttt{from\_suricata()}\\ \texttt{from\_zeek\_conn()}\\ \texttt{from\_nginx()}};
+	\node[box, right=of norm] (dedup) {2. Deduplicar\\ \texttt{dedup()} con trazabilidad};
+	\node[box, below=of dedup] (corr) {3--4. Correlacionar y puntuar\\ \texttt{correlate()} por host/ventana\\ produce la alerta enriquecida};
+	\node[box, left=of corr] (llm) {5. Anonimizar y construir prompt\\ \texttt{pseudo()} / \texttt{llm\_prompt()}\\ sin llamar a un LLM};
+	\node[box, below=of corr] (human) {6. Validación humana y registro\\ \texttt{write\_validation\_log()}};
+	\draw[arr] (src)--(norm); \draw[arr] (norm)--(dedup); \draw[arr] (dedup)--(corr);
+	\draw[arr] (corr)--(llm); \draw[arr] (llm)--(human);
+	\draw[arr, dashed] (corr)--(human);
+\end{tikzpicture}
+\caption{Pipeline de correlación y priorización de alertas del Caso 9.}
+\label{fig:c9_pipeline}
+\end{figure}
+
+\begin{table}[H]
+\caption{Fuentes de eventos del pipeline de correlación}
+\label{tab:fuentes-siem}
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.22\textwidth} Y >{\raggedright\arraybackslash}p{0.16\textwidth} >{\raggedright\arraybackslash}p{0.18\textwidth}@{}}
+\toprule
+\textbf{Fuente} & \textbf{Tipo de evento} & \textbf{Formato} & \textbf{Responsable} \\
+\midrule
+Firewall & no disponible & no disponible & no disponible \\
+Servidor web & nginx access.log & combined & Persona 3 \\
+Zeek / Suricata & Suricata eve.json (Suricata 7.0.7) & JSON & Analista del Caso 9 \\
+Sistema operativo & no disponible & no disponible & no disponible \\
+SIEM / Wazuh & no disponible & no disponible & no disponible \\
+Detector ML del Caso 4 & anomalías por host/ventana & salida del análisis & Analista del Caso 9 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Resultados obtenidos.}
+El archivo \texttt{alertas\_enriquecidas.json} contiene siete objetos de alerta. La suma de sus campos \texttt{eventos} es 148. El número exacto de eventos crudos antes de deduplicar y el número exacto de grupos intermedios no están guardados en los archivos autorizados; por tanto, la reducción completa se registra como \textbf{TODO} $\rightarrow$ \textbf{TODO} $\rightarrow$ 7 alertas.
+
+\begin{table}[H]
+\caption{Prioridades y desglose de las alertas enriquecidas}
+\label{tab:c9_prioridades}
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.18}
+\begin{tabularx}{\textwidth}{@{}l l r l X@{}}
+\toprule
+\textbf{Host} & \textbf{Ventana} & \textbf{Score} & \textbf{Prioridad} & \textbf{Desglose} \\
+\midrule
+\texttt{172.28.50.20} & \texttt{16:46} & 93.6 & ALTA & severidad 40; fuentes 0; firmas 10; volumen 8; ML 20; criticidad 1.2 \\
+\texttt{172.28.50.20} & \texttt{05:18} & 81.6 & ALTA & severidad 25; fuentes 15; firmas 5; volumen 3; ML 20; criticidad 1.2 \\
+\texttt{172.28.50.20} & \texttt{05:42} & 66.0 & MEDIA & severidad 25; fuentes 0; firmas 0; volumen 10; ML 20; criticidad 1.2 \\
+\texttt{127.0.0.1} & \texttt{16:54} & 40.0 & MEDIA & severidad 40; fuentes 0; firmas 0; volumen 0; ML 0; criticidad 1.0 \\
+\texttt{172.28.50.10} & \texttt{16:46} & 37.0 & BAJA & severidad 25; fuentes 0; firmas 5; volumen 7; ML 0; criticidad 1.0 \\
+\texttt{172.28.50.30} & \texttt{16:46} & 25.0 & BAJA & severidad 25; fuentes 0; firmas 0; volumen 0; ML 0; criticidad 1.0 \\
+\texttt{172.28.50.40} & \texttt{16:46} & 25.0 & BAJA & severidad 25; fuentes 0; firmas 0; volumen 0; ML 0; criticidad 1.0 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+El desglose de la primera alerta es el siguiente fragmento real de \texttt{alertas\_enriquecidas.json}:
+
+\begin{verbatim}
+{
+  "host": "172.28.50.20",
+  "window_start": "2026-11-10T16:46:00+00:00",
+  "score": 93.6,
+  "prioridad": "ALTA",
+  "desglose": {
+    "severidad_maxima": 40,
+    "convergencia_fuentes": 0,
+    "firmas_distintas": 10,
+    "volumen": 8,
+    "anomalia_ML": 20
+  },
+  "multiplicador_criticidad": 1.2,
+  "fuentes": ["suricata"],
+  "eventos": 40,
+  "accion_sugerida": "REVISION HUMANA; no bloquear automaticamente"
+}
+\end{verbatim}
+
+\paragraph{Criterios de prioridad.}
+Los pesos siguientes son los valores reales definidos en \texttt{laboratorio/scripts/analyze\_cu9.py}; no son cifras tomadas de los archivos de resultados.
+
+\begin{table}[H]
+\caption{Pesos y umbrales del puntaje explicable}
+\label{tab:c9_criterios}
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{}l r X@{}}
+\toprule
+\textbf{Componente} & \textbf{Valor} & \textbf{Interpretación} \\
+\midrule
+\texttt{SEV\_W[1]} & 40 & Severidad Suricata alta \\
+\texttt{SEV\_W[2]} & 25 & Severidad Suricata media \\
+\texttt{SEV\_W[3]} & 10 & Severidad Suricata baja \\
+Severidad desconocida & 5 & Valor de respaldo usado por el script \\
+\texttt{SOURCE\_BONUS} & 15 & Por cada fuente independiente adicional \\
+\texttt{SIG\_BONUS} & 5 & Por cada firma distinta adicional \\
+Tope de volumen & 20 & El volumen no puede aportar más de este valor \\
+\texttt{ANOMALY\_BONUS} & 20 & Si el detector ML marca el host o la ventana \\
+\texttt{CRITICAL} & 1.3, 1.2, 1.0 & Multiplicador según el host; los valores observados en las alertas son 1.2 y 1.0 \\
+\midrule
+ALTA & $\geq 70$ & Prioridad alta \\
+MEDIA & $\geq 40$ y $<70$ & Prioridad media \\
+BAJA & $<40$ & Prioridad baja \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+No existe en \texttt{laboratorio/work/cu9} un experimento de sensibilidad que varíe la ventana, los pesos o los umbrales. La sensibilidad sistemática es, por tanto, \textbf{TODO/no disponible}.
+
+\paragraph{Registro de validación humana.}
+La tabla reproduce las filas reales de \texttt{laboratorio/work/cu9/registro\_validacion\_humana.csv}.
+
+\begin{table}[H]
+\caption{Registro de validación humana del Caso 9}
+\label{tab:c9_validacion}
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{@{}l r l l l l l X@{}}
+\toprule
+\textbf{Host} & \textbf{Score} & \textbf{Prioridad} & \textbf{Analista} & \textbf{Decisión} & \textbf{Evidencia} & \textbf{FP} & \textbf{Notas} \\
+\midrule
+\texttt{172.28.50.20} & 93.6 & ALTA & Arlo Ocampo & escalar & sí & no & Convergencia de firmas y anomalía ML. \\
+\texttt{172.28.50.20} & 81.6 & ALTA & Arlo Ocampo & investigar & sí & indeterminado & Coincidencia Nginx/Suricata; posible Flash Crowd. \\
+\texttt{172.28.50.20} & 66.0 & MEDIA & Arlo Ocampo & descartar & sí & sí & Disparo aislado de 1004001. \\
+\texttt{127.0.0.1} & 40.0 & MEDIA & Arlo Ocampo & descartar & sí & sí & Tráfico interno de loopback. \\
+\texttt{172.28.50.10} & 37.0 & BAJA & Arlo Ocampo & descartar & sí & sí & Evento aislado. \\
+\texttt{172.28.50.30} & 25.0 & BAJA & Arlo Ocampo & descartar & sí & sí & Ruido de fondo. \\
+\texttt{172.28.50.40} & 25.0 & BAJA & Arlo Ocampo & descartar & sí & sí & Ruido de fondo. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La tabla de verificación de afirmaciones del LLM no se reconstruye con cifras inventadas: el archivo autorizado de resultados no contiene el texto de las afirmaciones ni sus estados de verificación. Por ello, cada afirmación del LLM y su estado documental quedan como \textbf{TODO}; las alertas observables sí se contrastan con \texttt{alertas\_enriquecidas.json} y las decisiones con el CSV anterior.
+
+\begin{table}[H]
+\caption{Verificación de afirmaciones del LLM}
+\label{tab:c9_llm_verificacion}
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{@{}c X X l@{}}
+\toprule
+\textbf{N.} & \textbf{Afirmación del LLM} & \textbf{Evidencia autorizada} & \textbf{Estado} \\
+\midrule
+TODO & TODO & \texttt{alertas\_enriquecidas.json} y \texttt{registro\_validacion\_humana.csv} & TODO \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Análisis de resultados.}
+La alerta de score 93.6 subió por la severidad 40, diez firmas distintas, volumen 8, anomalía ML 20 y multiplicador 1.2. La alerta de score 81.6 subió además por la convergencia entre \texttt{suricata} y \texttt{webserver}, que aporta 15 puntos.
+
+La alerta de 66.0 quedó en MEDIA porque tuvo severidad 25, volumen 10 y anomalía ML 20, pero no tuvo convergencia de fuentes ni firmas distintas adicionales. Las alertas de 25.0 no subieron porque solo presentaron una fuente, una firma, volumen 0 y ninguna anomalía ML.
+
+La ráfaga legítima no fue resuelta automáticamente: para la alerta de score 81.6 el registro humano indica decisión \texttt{investigar}, falso positivo \texttt{indeterminado} y posible Flash Crowd. Por ello, no se debe declarar que fue definitivamente benigna o maliciosa.
+
+\paragraph{Regla de correlación propuesta (Wazuh).}
+La siguiente regla se presenta únicamente como propuesta conceptual, no desplegada ni validada:
+
+\begin{verbatim}
+<group name="caso9,correlacion,">
+  <rule id="TODO" level="TODO">
+    <if_matched_sid>TODO</if_matched_sid>
+    <description>Correlación Caso 9 por host y ventana temporal</description>
+    <group>caso9_correlacion,</group>
+  </rule>
+</group>
+\end{verbatim}
+
+No hay una instancia de Wazuh disponible en los artefactos del laboratorio y no se ejecutó \texttt{wazuh-logtest}. La sintaxis, los SID de entrada y el nivel de la regla quedan como \textbf{TODO}; no debe afirmarse que la regla está desplegada o validada.
 
 \paragraph{Mitigación y defensa.}
 Revisión humana antes de acciones disruptivas; control de acceso a los registros; evaluación de sesgo y deriva; registro de decisiones y posibilidad de reversión.
 
-\paragraph{Evidencias que se entregan.}
-Diagrama del pipeline, ejemplo de alerta enriquecida, criterios de prioridad y registro de validación humana.
+Además, las decisiones reales muestran que el score debe contextualizarse: la primera alerta se escaló, la segunda se investigó y las restantes se descartaron. La acción sugerida por el JSON es siempre \texttt{REVISION HUMANA; no bloquear automaticamente}. Se recomienda conservar las referencias de evidencia, investigar la coincidencia entre Nginx y Suricata, aplicar cambios reversibles y no desplegar una regla Wazuh sin validación.
 
 \paragraph{Preguntas de análisis.}
 \begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=2pt]
-	\item ¿Cómo explicar una alerta a un analista?
-	\item ¿Qué riesgo supone automatizar bloqueos basados solo en una puntuación?
+\item ¿Cómo explicar una alerta a un analista?\par
+La alerta de mayor score corresponde a \texttt{172.28.50.20}, ventana \texttt{2026-11-10T16:46:00+00:00}, score 93.6, prioridad ALTA, 40 eventos, diez firmas distintas y anomalía ML de 20 puntos. La explicación debe separar los hechos observados del contexto que todavía no está disponible y conducir a revisión de la evidencia.
+\item ¿Qué riesgo supone automatizar bloqueos basados solo en una puntuación?\par
+El registro muestra que un score 81.6 quedó para investigar por posible Flash Crowd y que el score 66.0 fue descartado como falso positivo. Automatizar bloqueos podría interrumpir tráfico legítimo, eliminar la reversibilidad y convertir una puntuación explicable en una decisión incorrecta.
 \end{enumerate}
 
-\begin{table}[H]
-	\caption{Fuentes de eventos del pipeline de correlación}
-	\label{tab:fuentes-siem}
-	\centering
-	\footnotesize
-	\renewcommand{\arraystretch}{1.25}
-	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.22\textwidth} Y >{\raggedright\arraybackslash}p{0.16\textwidth} >{\raggedright\arraybackslash}p{0.18\textwidth}@{}}
-		\toprule
-		\textbf{Fuente} & \textbf{Tipo de evento} & \textbf{Formato} & \textbf{Responsable} \\
-		\midrule
-		Firewall & & & \\
-		Servidor web & & & \\
-		Zeek / Suricata & & & \\
-		Sistema operativo & & & \\
-		SIEM / Wazuh & & & \\
-		& & & \\
-		\bottomrule
-	\end{tabularx}
-\end{table}
+\paragraph{Conclusiones.}
+\begin{itemize}
+\item El pipeline produjo 7 alertas finales con una suma de 148 eventos agrupados según el campo \texttt{eventos} del JSON.
+\item La alerta de mayor prioridad obtuvo score 93.6 por la combinación de severidad, firmas, volumen, anomalía ML y criticidad.
+\item La convergencia de fuentes elevó la segunda alerta a score 81.6, pero su validación humana quedó como investigación por posible Flash Crowd.
+\item Las decisiones humanas no siguieron automáticamente el score: hubo escalamiento, investigación y descarte.
+\item El LLM debe limitarse a resumir y proponer investigación; no debe bloquear ni sustituir la verificación humana.
+\item Las limitaciones principales son una sola fuente real de alertas de red, Suricata; ausencia de Zeek, firewall, sistema operativo y Wazuh; falta de sensibilidad sistemática; y el hecho de que CU7, CU8 y CU10 provienen de capturas separadas.
+\end{itemize}
 
-\registrohallazgo{Caso 9}
+\begin{table}[H]
+\centering
+\caption{Ficha de registro del hallazgo. Caso 9}
+\label{tab:ficha-c9}
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.23\textwidth} Y@{}}
+\toprule
+\textbf{Campo} & \textbf{Registro} \\
+\midrule
+Identificador & Caso 9, correlación y priorización de alertas. \\\hline
+Fecha y hora & Ventanas registradas en \texttt{alertas\_enriquecidas.json}; fecha de registro humano: TODO. \\\hline
+Origen/destino & Hosts y ventanas según \texttt{alertas\_enriquecidas.json}; fuentes disponibles: Suricata y servidor web. \\\hline
+Observación & Siete alertas enriquecidas, con scores entre 25.0 y 93.6 y suma de 148 eventos agrupados. \\\hline
+Hipótesis & La convergencia de firmas, fuentes, volumen y anomalía ML puede indicar un incidente, pero una ráfaga legítima requiere investigación antes de bloquear. \\\hline
+Validación & Siete filas de \texttt{registro\_validacion\_humana.csv}; decisiones: escalar, investigar y descartar. \\\hline
+Severidad & ALTA, MEDIA o BAJA según los umbrales del script y los scores del JSON. \\\hline
+Acción & Revisión humana; escalar, investigar o descartar según el registro; no bloquear automáticamente. \\\hline
+Integridad & TODO; no hay hash de los artefactos de CU9 en los archivos autorizados. \\
+\bottomrule
+\end{tabularx}
+\end{table}
