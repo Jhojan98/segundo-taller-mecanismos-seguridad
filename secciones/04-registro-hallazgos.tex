@@ -38,8 +38,8 @@ Cada hallazgo debe registrarse con los campos de la Tabla~\ref{tab:formato-regis
 		\toprule
 		\textbf{No.} & \textbf{Caso} & \textbf{Fecha/hora} & \textbf{Origen/destino} & \textbf{Observación} & \textbf{Severidad} & \textbf{Acción} \\
 		\midrule
-		& & & & & & \\
-		& & & & & & \\
+		2 & Caso 2 & 2026-11-10 16:51 & \texttt{172.28.50.10} $\to$ \texttt{172.28.50.53} UDP/53 & 80 consultas TXT de 121 caracteres con 100 caracteres Base32; entropía 4,49; 0 alertas en la línea base y 82 en el túnel. & Media & Forzar el resolver interno, registrar consultas, limitar la tasa y alertar por longitud y entropía. \\ \hline
+		6 & Caso 6 & 2026-11-10 16:52 & \texttt{172.28.50.20} (falsificado) $\to$ \texttt{172.28.50.53} UDP/53, 123 y 1900 & Amplificación DNS 34,7$\times$, NTP 5,1$\times$ y SSDP 10,4$\times$; 379.320~bytes recibidos por la víctima sin consultas propias. & Alta & Cerrar la recursión, deshabilitar monlist, restringir SSDP, aplicar RRL y filtrado de origen. \\ \hline
 		& & & & & & \\
 		& & & & & & \\
 		& & & & & & \\

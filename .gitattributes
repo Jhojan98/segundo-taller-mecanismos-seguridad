@@ -1,0 +1,10 @@
+# Los scripts del laboratorio se ejecutan dentro de contenedores Linux.
+# Sin esta regla, Git en Windows los convierte a CRLF y el shebang falla
+# con "no such file or directory" al hacer `docker compose exec`.
+* text=auto
+*.sh    text eol=lf
+*.py    text eol=lf
+*.rules text eol=lf
+*.yml   text eol=lf
+*.tex   text eol=lf
+*.bib   text eol=lf

@@ -2,29 +2,192 @@
 \label{caso:dns-tunneling}
 
 \begin{situacion}
-Se observa tráfico DNS con consultas repetitivas o nombres de dominio inusualmente largos. El DNS se define en el RFC~1035 \parencite{rfc1035}.
+Se observa tráfico DNS con consultas repetitivas o nombres de dominio inusualmente largos. El DNS se define en el RFC~1035 \parencite{rfc1035} y, al ser un protocolo imprescindible, casi nunca se bloquea por completo; esa misma necesidad lo convierte en un canal atractivo para transportar datos sin llamar la atención.
+
+\textbf{Objetivo:} \par
+Caracterizar el uso legítimo de DNS en una red de laboratorio, reproducir un túnel DNS didáctico y una ráfaga legítima de consultas, medir longitud, entropía, cadencia y volumen, y proponer reglas de detección que separen el túnel de una carga normal sin bloquear el servicio.
+
+\textbf{Fundamento teórico:} \par
+Una consulta DNS transporta un nombre (\textit{qname}) dividido en etiquetas de hasta 63~caracteres y un total de 253~\parencite{rfc1035}. Un túnel codifica datos en esas etiquetas y recibe la respuesta por el mismo canal; el cliente consulta, por ejemplo, \texttt{dato.exfil.ejemplo} y el servidor del atacante responde con el siguiente bloque. El canal es lento y ruidoso, pero atraviesa firewalls que permiten UDP/53 y no inspeccionan el contenido. No existe una firma única: la detección se apoya en un conjunto de atributos, como la longitud y la frecuencia de caracteres del nombre, la proporción entre consultas y respuestas, la cadencia y la concentración en un mismo dominio \parencite{amirov2025dns,born2010character,petrov2025domainator}. El reto es que una ráfaga legítima de resoluciones puede parecerse en frecuencia a un túnel, de modo que un umbral aislado produce falsos positivos.
 \end{situacion}
 
 \paragraph{Procedimiento.}
-\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
-	\item Aplicar en Wireshark el filtro \texttt{udp.port == 53} y, cuando corresponda, \texttt{dns}.
-	\item Examinar la longitud y la entropía aproximada de las etiquetas, la frecuencia, el volumen por cliente y los dominios consultados.
-	\item Correlacionar con el resolver autorizado y los registros DNS; usar únicamente dominios de prueba o PCAP de entrenamiento.
-\end{itemize}
+El laboratorio se desplegó sobre la red Docker aislada \texttt{172.28.50.0/24} (opción \texttt{internal: true}, sin salida a Internet), con un resolver propio en \texttt{172.28.50.53}, el analista en \texttt{172.28.50.10} y un host pasivo en \texttt{172.28.50.20}. Las consultas se dirigieron siempre al resolver del laboratorio y los nombres terminaron en \texttt{lab.local}; no se resolvió ningún dominio de terceros. El procedimiento fue:
 
-\paragraph{Indicadores que deben buscarse.}
-Subdominios largos o de alta entropía, alta frecuencia, respuestas o tamaños atípicos y destinos no habituales; verificar explicaciones legítimas como telemetría o CDN.
-
-\paragraph{Mitigación y defensa.}
-Forzar el uso de resolvers autorizados; registrar las consultas; aplicar filtrado DNS y políticas de salida; investigar el host de origen antes de bloquear.
-
-\paragraph{Evidencias que se entregan.}
-Capturas filtradas, tabla por host/dominio, hipótesis y verificación con registros.
-
-\paragraph{Preguntas de análisis.}
-\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=2pt]
-	\item ¿Por qué el carácter sin conexión de UDP no significa que todo DNS sea malicioso?
-	\item ¿Qué atributos ayudan a distinguir una anomalía?
+\begin{enumerate}
+	\item \textbf{Integridad:} se calculó el SHA-256 de cada captura antes de analizarla y se conservó una copia sin modificar (Figura~\ref{fig:c2_hashes}).
+	\item \textbf{Línea base:} se enviaron 24 consultas A, AAAA y TXT a cinco nombres cortos (\texttt{www}, \texttt{mail}, \texttt{api}, \texttt{cdn} y \texttt{portal}), con intervalos irregulares, y se capturó \texttt{CU2\_01\_dns\_baseline.pcap}.
+	\item \textbf{Túnel didáctico:} se enviaron 80 consultas TXT con 100~caracteres Base32 repartidos en dos etiquetas de 50, un contador de secuencia y el dominio \texttt{exfil.lab.local}; el nombre completo midió 121~caracteres y la cadencia fue de 250~ms (Figura~\ref{fig:c2_paquetes}). La carga es sintética, generada con semilla fija, y no contiene información real.
+	\item \textbf{Ráfaga legítima:} se resolvieron 60 nombres cortos (\texttt{host001} a \texttt{host060}) en 3,4~s para obtener una carga de alta frecuencia pero sin contenido codificado (control de falsos positivos).
+	\item \textbf{Análisis:} con \texttt{tshark} se exportaron los campos de cada consulta y el script \texttt{analyze\_cu2.py} calculó longitud del nombre, número de etiquetas, entropía de Shannon de la primera etiqueta, unicidad, tasa, variabilidad del intervalo y tamaños de consulta y respuesta.
+	\item \textbf{Validación con IDS:} las tres capturas se reprocesaron con Suricata~7.0.7 y las reglas de \texttt{laboratorio/suricata/local.rules}.
 \end{enumerate}
 
-\registrohallazgo{Caso 2}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\textwidth]{imagenes/Evidencias CU-2/01_topologia_lab.png}
+	\caption{Topología del laboratorio empleada en el Caso 2.}
+	\label{fig:c2_topologia}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.92\textwidth]{imagenes/Evidencias CU-2/02_hashes_sha256.png}
+	\caption{Verificación de integridad de las capturas del Caso 2 mediante SHA-256.}
+	\label{fig:c2_hashes}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.98\textwidth]{imagenes/Evidencias CU-2/03_paquetes_tunel.png}
+	\caption{Consultas del túnel DNS didáctico (extracto de \texttt{CU2\_02\_dns\_tunnel.pcap}).}
+	\label{fig:c2_paquetes}
+\end{figure}
+
+\paragraph{Resultados obtenidos.}
+La Tabla~\ref{tab:c2_metricas} resume las tres fases. Cada cifra proviene del mismo script y de las capturas cuya integridad se verificó.
+
+\begin{table}[H]
+	\caption{Métricas de las consultas DNS por escenario}
+	\label{tab:c2_metricas}
+	\centering
+	\footnotesize
+	\setlength{\tabcolsep}{4pt}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.13\textwidth} c c c c c c >{\raggedright\arraybackslash}p{0.14\textwidth}@{}}
+		\toprule
+		\textbf{Fase} & \textbf{Cons.} & \textbf{Únicas} & \textbf{qname (med./máx.)} & \textbf{Entropía} & \textbf{Tasa (q/s)} & \textbf{Intervalo (ms)} & \textbf{Bytes cons./resp.} \\
+		\midrule
+		Línea base & 24 & 5 & 14,1 / 16 & 1,56 & 3,91 & 266,7 $\pm$ 66,7 & 74,1 / 88,7 \\
+		Túnel & 80 & 80 & 121,0 / 121 & 4,49 & 3,55 & 285,2 $\pm$ 8,3 & 181,0 / 201,0 \\
+		Ráfaga & 60 & 60 & 17,0 / 17 & 2,71 & 16,61 & 61,2 $\pm$ 8,7 & 77,0 / 77,0 \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\begin{itemize}
+	\item \textbf{Línea base:} 24 consultas y 24 respuestas; solo cinco nombres distintos, una etiqueta izquierda de 4,1~caracteres en promedio y entropía de 1,56~bits por carácter. El intervalo entre consultas varía de forma natural ($\sigma = 66,7$~ms) porque el cliente espera la respuesta antes de la siguiente.
+	\item \textbf{Túnel:} 80 consultas TXT y 80 respuestas; 80 nombres distintos (100\,\% de unicidad), etiquetas de 50~caracteres, entropía de 4,49~bits por carácter en la primera etiqueta y 5,01 en el subdominio completo. La entropía de Base32 tiene un techo teórico de 5~bits por carácter, por lo que el valor observado es alto para esa codificación.
+	\item \textbf{Ráfaga legítima:} 60 consultas A en 3,4~s (16,61~consultas/s), nombres de 17~caracteres y entropía de 2,71. Es la fase más rápida de las tres y, aun así, no es un túnel.
+\end{itemize}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.92\textwidth]{imagenes/Evidencias CU-2/05_longitud_entropia.png}
+	\caption{Longitud y entropía de los nombres consultados en cada escenario.}
+	\label{fig:c2_metricas}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.98\textwidth]{imagenes/Evidencias CU-2/06_linea_tiempo.png}
+	\caption{Distribución temporal de las consultas DNS en las tres fases.}
+	\label{fig:c2_timeline}
+\end{figure}
+
+\paragraph{Análisis de resultados.}
+Las tres fases se separan por atributos distintos, y esa es la observación central del caso. El túnel multiplica por 8,6 la longitud del nombre de la línea base (121 frente a 14,1~caracteres), por 2,9 la entropía de la primera etiqueta (4,49 frente a 1,56) y concentra el 100\,\% de sus consultas en el tipo TXT, mientras que la línea base usa sobre todo A y AAAA. Sin embargo, su tasa es \emph{menor} que la de la línea base (3,55 frente a 3,91~consultas/s) y muy inferior a la de la ráfaga (16,61~consultas/s). Un detector basado solo en frecuencia habría marcado la ráfaga legítima y habría dejado pasar el túnel.
+
+La cadencia también exige matices. El túnel presenta un intervalo muy estable (285,2 $\pm$ 8,3~ms), pero la ráfaga legítima es igual de estable (61,2 $\pm$ 8,7~ms) porque también la genera un programa. La regularidad, por sí sola, no distingue: lo que distingue es la combinación de regularidad con nombres largos y de alta entropía.
+
+Un segundo matiz es la asimetría. En una exfiltración clásica la consulta es grande y la respuesta pequeña; aquí la respuesta (201~bytes) es incluso mayor que la consulta (181~bytes) porque el servidor repite el \textit{qname} de 121~caracteres en la sección de pregunta. El canal de subida existe, pero el volumen de bytes no lo delata: lo delata el contenido del nombre. La literatura sobre frecuencia de caracteres insiste en el mismo punto: conviene comparar la distribución observada con la esperada para la codificación, no con un umbral universal de entropía \parencite{born2010character}. Un valor de 4,49~bits por carácter sería bajo para un flujo cifrado (cercano a 7,2) y es alto para Base32; el umbral de referencia de 3,5 usado en la Figura~\ref{fig:c2_metricas} se calibró entre la ráfaga (2,71) y el túnel (4,49), no se tomó de una constante universal.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.80\textwidth]{imagenes/Evidencias CU-2/07_tasa_longitud.png}
+	\caption{Relación entre tasa de consultas y longitud del nombre.}
+	\label{fig:c2_dispersion}
+\end{figure}
+
+La Figura~\ref{fig:c2_dispersion} muestra por qué la decisión no puede apoyarse en una sola variable. La ráfaga se aleja por la tasa, la línea base por ambas y el túnel por la longitud; solo la combinación de longitud, entropía y tipo de registro ubica al túnel en una región propia.
+
+\paragraph{Indicadores de detección.}
+\begin{itemize}
+	\item \textbf{Longitud del nombre:} \textit{qname} superior a 100~caracteres de forma sostenida (la línea base no pasó de 16).
+	\item \textbf{Etiquetas largas:} etiquetas de 40~caracteres o más, en especial si usan un alfabeto restringido como Base32 o hexadecimal.
+	\item \textbf{Entropía calibrada:} entropía de la etiqueta por encima del máximo observado en el tráfico legítimo del mismo cliente; en este laboratorio, 3,5~bits por carácter separó la ráfaga del túnel.
+	\item \textbf{Tipo de registro:} predominio anómalo de TXT, NULL o CNAME para un mismo cliente.
+	\item \textbf{Unicidad:} proporción de nombres únicos cercana a 1,0 con volumen sostenido (80 de 80 en el túnel).
+	\item \textbf{Cadencia y duración:} intervalos regulares durante minutos, no una ráfaga corta.
+	\item \textbf{Concentración:} muchas consultas distintas bajo un mismo dominio base, incluso cuando el número de dominios base es bajo.
+\end{itemize}
+
+\paragraph{Regla de detección propuesta.}
+Las reglas se implementaron en Suricata y se validaron contra las tres capturas. La regla 1002001 detecta consultas grandes por umbral; la 1002002 reconoce la firma Base32 en la etiqueta; la 1002003 es una regla de solo frecuencia que se incluye a propósito para discutir el falso positivo.
+
+\begin{verbatim}
+alert udp any any -> any 53 (
+  msg:"CU2 consulta DNS mayor a 100 bytes (posible tunel)"; dsize:>100;
+  threshold: type threshold, track by_src, count 20, seconds 10;
+  classtype:policy-violation; sid:1002001; rev:1;)
+
+alert dns any any -> any any (
+  msg:"CU2 etiqueta DNS larga tipo Base32 (posible tunel)";
+  dns_query; pcre:"/^[A-Z2-7]{40,}\./";
+  classtype:policy-violation; sid:1002002; rev:1;)
+
+alert udp any any -> any 53 (
+  msg:"CU2 rafaga de consultas DNS por origen";
+  threshold: type threshold, track by_src, count 50, seconds 10;
+  classtype:policy-violation; sid:1002003; rev:1;)
+\end{verbatim}
+
+El reprocesamiento produjo cero alertas en la línea base, 82 en el túnel (80 de la regla 1002002 y 2 de la 1002001) y una en la ráfaga legítima, generada por la regla de frecuencia 1002003 (Figura~\ref{fig:c2_suricata}). Ese último resultado es el falso positivo que se buscaba documentar: la regla de tasa, sola, no distingue una carga normal de un túnel. La combinación de las reglas 1002001 y 1002002 sí lo hace en este escenario.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.98\textwidth]{imagenes/Evidencias CU-2/08_suricata_alertas.png}
+	\caption{Alertas de Suricata 7.0.7 al reprocesar las capturas del Caso 2.}
+	\label{fig:c2_suricata}
+\end{figure}
+
+\paragraph{Mitigación y defensa.}
+\begin{itemize}
+	\item \textbf{Resolver autorizado:} forzar el uso del resolver interno y bloquear en el borde el DNS directo hacia Internet, de modo que todo el tráfico quede registrado.
+	\item \textbf{Registro y retención:} conservar consultas y respuestas con cliente, nombre, tipo, tamaño y hora; sin ese registro no hay forma de investigar después.
+	\item \textbf{Política de egreso:} permitir solo los dominios y tipos necesarios; restringir TXT, NULL y consultas con nombres largos hacia destinos no inventariados.
+	\item \textbf{Limitación de tasa:} acotar consultas por cliente y por dominio, con umbrales calibrados contra la línea base.
+	\item \textbf{Inspección y correlación:} alertar por longitud y entropía, y correlacionar con el proceso que originó la consulta en el equipo, no solo con la IP.
+	\item \textbf{Respuesta:} investigar el host de origen antes de bloquear el dominio; un bloqueo inmediato puede cortar el canal y también la evidencia.
+	\item \textbf{Defensa en profundidad:} segmentación, filtrado de egreso y monitoreo de flujos; el DNS tunneling es un problema de canal encubierto, no solo de firma.
+\end{itemize}
+Ninguna medida debe impedir la resolución legítima: bloquear DNS de forma indiscriminada rompe la navegación y oculta el problema.
+
+\paragraph{Preguntas de análisis.}
+\begin{enumerate}
+	\item \textbf{¿Por qué el carácter sin conexión de UDP no significa que todo DNS sea malicioso?}\par
+	Porque UDP es solo el transporte: DNS lo usa porque la resolución debe ser rápida y tolerante a la pérdida, y la enorme mayoría de las consultas son legítimas. Que un protocolo no establezca conexión no lo vuelve sospechoso; lo que permite el abuso es que casi todas las redes necesitan DNS y suelen permitirlo sin inspección. La detección debe mirar el comportamiento (longitud, entropía, cadencia, tipo, volumen) y no la mera presencia del protocolo.
+	\item \textbf{¿Qué atributos ayudan a distinguir una anomalía?}\par
+	La combinación de longitud del nombre, entropía relativa a la codificación esperada, número y tamaño de etiquetas, tipo de registro, proporción de nombres únicos, concentración bajo un dominio base, cadencia, relación entre consulta y respuesta y desviación frente a la línea base del propio cliente. En este caso, la longitud y la entropía separaron el túnel; la frecuencia, sola, marcó la ráfaga legítima. Ningún atributo aislado fue suficiente.
+\end{enumerate}
+
+\paragraph{Conclusiones.}
+\begin{itemize}
+	\item Se verificó la integridad de las tres capturas y se documentó un laboratorio sin salida a Internet.
+	\item La línea base definió el perfil legítimo: nombres cortos, baja entropía, mezcla de tipos y cadencia irregular.
+	\item El túnel se distinguió por nombres de 121~caracteres, etiquetas de 50, entropía de 4,49~bits por carácter y 100\,\% de consultas TXT.
+	\item La ráfaga legítima fue la fase más rápida y, aun así, la regla de frecuencia la marcó: el falso positivo quedó documentado y cuantificado.
+	\item Las reglas 1002001 y 1002002 detectaron el túnel sin alertar en la línea base; la 1002003 evidenció el límite de detectar solo por tasa.
+	\item Limitaciones: el túnel es sintético, de un solo cliente y sin cifrado adicional; la entropía depende de la codificación y debe recalibrarse en cada red. No se probó evasión ni tráfico real de malware.
+\end{itemize}
+
+\begin{table}[H]
+	\centering
+	\caption{Ficha de registro del hallazgo. Caso 2}
+	\footnotesize
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.23\textwidth} Y@{}}
+		\toprule
+		\textbf{Campo} & \textbf{Registro} \\ \midrule
+		Identificador & Caso 2 (DNS tunneling), evidencias \texttt{01\_topologia\_lab.png} a \texttt{08\_suricata\_alertas.png}. Analista: equipo de laboratorio. \\ \hline
+		Fecha y hora & 10 de noviembre de 2026, 16:51 (UTC$-$5); \texttt{CU2\_01}, \texttt{CU2\_02} y \texttt{CU2\_03}. \\ \hline
+		Origen/destino & Analista \texttt{172.28.50.10} hacia el resolver \texttt{172.28.50.53}, puerto UDP/53. \\ \hline
+		Observación & Tres perfiles de consulta: 24 consultas cortas, 80 consultas TXT de 121~caracteres con 100~caracteres Base32 y 60 consultas cortas en 3,4~s. \\ \hline
+		Hipótesis & Un túnel DNS se manifestará por nombres largos, alta entropía, predominio de TXT y concentración bajo un dominio, no necesariamente por una tasa alta. \\ \hline
+		Validación & \texttt{tshark} y el script de análisis: longitud 121 frente a 14,1; entropía 4,49 frente a 1,56; 80/80 nombres únicos. Suricata: 0, 82 y 1 alertas en línea base, túnel y ráfaga. \\ \hline
+		Severidad & Media en producción (fuga potencial de datos y persistencia del canal); informativa en el laboratorio aislado. \\ \hline
+		Acción & Forzar el resolver interno, registrar consultas, limitar la tasa, alertar por longitud y entropía y correlacionar con el proceso de origen. \\ \hline
+		Integridad & \texttt{CU2\_01}: \texttt{df8c9557\dots4b5d64}; \texttt{CU2\_02}: \texttt{83608c14\dots842663}; \texttt{CU2\_03}: \texttt{e0b41a22\dots{}ff4a5c} (SHA-256 truncado; el valor completo está en el Anexo~A). \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
