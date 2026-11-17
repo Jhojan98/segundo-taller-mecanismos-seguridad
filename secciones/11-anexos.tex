@@ -5,15 +5,13 @@
 \subsection*{Anexo A. Registro de evidencias y cadena de custodia}
 \addcontentsline{toc}{subsection}{Anexo A. Registro de evidencias y cadena de custodia}
 
-La Tabla~\ref{tab:evidencias} reproduce el registro de integridad de las capturas. Conserve la copia original sin modificaciones, analice una copia de trabajo y verifique el SHA-256 antes de abrirla; el manifiesto completo está en \texttt{laboratorio/evidencias\_sha256.txt}.
-
 	\begin{table}[H]
 		\caption{Registro de evidencias y cadena de custodia}
 		\label{tab:evidencias}
 		\centering
 		\scriptsize
-		\renewcommand{\arraystretch}{1.0}
-		\setlength{\tabcolsep}{4pt}
+		\renewcommand{\arraystretch}{0.8}
+		\setlength{\tabcolsep}{2pt}
 		\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.185\textwidth} >{\raggedright\arraybackslash}p{0.06\textwidth} >{\raggedright\arraybackslash}p{0.08\textwidth} >{\raggedright\arraybackslash}p{0.115\textwidth} >{\ttfamily\scriptsize\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{0.13\textwidth}@{}}
 			\toprule
 			\textbf{Archivo} & \textbf{Tipo} & \textbf{Tamaño} & \textbf{Fecha/hora} & \normalfont\bfseries SHA-256 & \textbf{Analista} \\
@@ -29,10 +27,10 @@ La Tabla~\ref{tab:evidencias} reproduce el registro de integridad de las captura
 			\makecell[l]{\texttt{CU10\_03\_xmpp\_}\\\texttt{message.pcap}} & PCAP & 21.373 B & 2026-11-10 11:52 & \makecell[l]{267df8e580e63a9f0202be4667ba0500\\1b8ac695b05b56c18edf288f4eaf1b66} & Yader Ibraldo Quiroga Torres \\ \hline
 			\makecell[l]{\texttt{CU10\_05\_xmpp\_}\\\texttt{plaintext.pcap}} & PCAP & 4.346 B & 2026-11-10 11:52 & \makecell[l]{79c12243f3a5fcf51694e7edf355e2cb\\80d2fc52bf8c1e535b15e11ebe7c1c76} & Yader Ibraldo Quiroga Torres \\ \hline
 			\makecell[l]{\texttt{CU10\_06\_https\_}\\\texttt{insecure.pcap}} & PCAP & 9.319 B & 2026-11-10 11:54 & \makecell[l]{62315796d2ba7687ad3247b2d9b0d176\\838924bec228622e94ebb27773e86dad} & Yader Ibraldo Quiroga Torres \\ \hline
-			\makecell[l]{\texttt{CU10\_07\_https\_}\\\texttt{tls12\_insecure.}\\\texttt{pcap}} & PCAP & 8.442 B & 2026-11-10 11:55 & \makecell[l]{163f557c1cd60c86efbc7c259caeaa2e\\ade2ae6c973ae32b35db8fff1a5479ea} & Yader Ibraldo Quiroga Torres \\ \hline
+			\makecell[l]{\texttt{CU10\_07\_https\_tls12\_}\\\texttt{insecure.pcap}} & PCAP & 8.442 B & 2026-11-10 11:55 & \makecell[l]{163f557c1cd60c86efbc7c259caeaa2e\\ade2ae6c973ae32b35db8fff1a5479ea} & Yader Ibraldo Quiroga Torres \\ \hline
 			\makecell[l]{\texttt{CU10\_08\_https\_}\\\texttt{tls12\_secure.pcap}} & PCAP & 8.864 B & 2026-11-10 11:55 & \makecell[l]{5679faae98540281908ff5e6fbddbda5\\d2b8e2e7aedc9f085fb354dc3f331afa} & Yader Ibraldo Quiroga Torres \\
 			\makecell[l]{\texttt{CU4\_01\_benign.pcap}} & PCAP & 9.602.286 B & 2026-11-11 12:17 & \makecell[l]{f6b0e062733f740f4fe15e9b15ec84b1\\bbf8bcdbfc818d22c3c56c37c6fb99c1} & Arlo Nicolas Ocampo Gallego \\\hline
-			\makecell[l]{\texttt{CU4\_02\_flash\_crowd.pcap}} & PCAP & 542.724 B & 2026-11-11 12:19 & \makecell[l]{5db5b885af7f5a8ba340d39eb93ea0d3\\6f07e9f59f8d3c2908172a678dd3d32d} & Arlo Nicolas Ocampo Gallego \\
+			\makecell[l]{\texttt{CU4\_02\_flash\_crowd.}\\\texttt{pcap}} & PCAP & 542.724 B & 2026-11-11 12:19 & \makecell[l]{5db5b885af7f5a8ba340d39eb93ea0d3\\6f07e9f59f8d3c2908172a678dd3d32d} & Arlo Nicolas Ocampo Gallego \\
 			\bottomrule
 		\end{tabularx}
 	\end{table}
@@ -74,16 +72,16 @@ La Tabla~\ref{tab:evidencias} reproduce el registro de integridad de las captura
 		\toprule
 		\textbf{Entregable} & \textbf{¿Incluido?} & \textbf{Observaciones} & \textbf{Responsable} \\
 		\midrule
-		Informe técnico con resumen ejecutivo y alcance. & \checkbox & & \\
-		Diez fichas de caso completas. & \checkbox & & \\
-		Capturas legibles y PCAP de laboratorio. & \checkbox & & \\
-		Hashes SHA-256 y cadena de custodia. & \checkbox & & \\
-		Reglas de detección propuestas. & \checkbox & & \\
-		Conclusiones y limitaciones. & \checkbox & & \\
-		Código fuente y README de la Parte~II. & \checkbox & & \\
-		Diagrama de arquitectura y modelo de datos. & \checkbox & & \\
-		Demostración con datos sintéticos. & \checkbox & & \\
-		Política de privacidad y consentimiento. & \checkbox & & \\
+		Informe técnico con resumen ejecutivo y alcance. & \checkedbox & Informe completo en PDF. & Juan D. Orduz S. \\
+		Diez fichas de caso completas. & \checkedbox & Casos 1 a 10. & Equipo completo \\
+		Capturas legibles y PCAP de laboratorio. & \checkedbox & 15 capturas en el Anexo A. & Yader I. Quiroga T. \\
+		Hashes SHA-256 y cadena de custodia. & \checkedbox & Verificados en el Anexo A. & Yader I. Quiroga T. \\
+		Reglas de detección propuestas. & \checkedbox & Suricata y modelos de ML. & Arlo N. Ocampo G. \\
+		Conclusiones y limitaciones. & \checkedbox & Sección~\ref{sec:conclusiones}. & Jhojan Aragón R. \\
+		Código fuente y README de la Parte~II. & \checkedbox & Carpeta \texttt{Bot/}. & Arlo N. Ocampo G. \\
+		Diagrama de arquitectura y modelo de datos. & \checkedbox & Figura~\ref{fig:arquitectura} y Tabla~\ref{tab:modelo-datos}. & Arlo N. Ocampo G. \\
+		Demostración con datos sintéticos. & \checkedbox & Recorrido de 13 pasos. & Equipo completo \\
+		Política de privacidad y consentimiento. & \checkedbox & Sección~\ref{sec:etica-parte2}. & Jhojan Aragón R. \\
 		\bottomrule
 	\end{tabularx}
 \end{table}

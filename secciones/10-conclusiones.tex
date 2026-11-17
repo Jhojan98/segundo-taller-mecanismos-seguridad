@@ -1,39 +1,54 @@
 \section{Conclusiones}
+\label{sec:conclusiones}
 
-Las conclusiones deben sintetizar los hallazgos, reconocer las limitaciones de la evidencia y proponer un plan de mejora priorizado. No repita el procedimiento de cada caso: interprete qué demuestra la evidencia, qué no demuestra y qué control reduce el riesgo.
+Las conclusiones sintetizan qué demostró la evidencia de los diez casos, qué quedó sin resolver y qué controles reducen el riesgo con mayor impacto. La Tabla~\ref{tab:sintesis-conclusiones} resume cada caso; los apartados siguientes interpretan los patrones comunes y el aporte de la Parte~II.
 
 \begin{table}[H]
 	\caption{Síntesis de hallazgos y controles por caso}
 	\label{tab:sintesis-conclusiones}
 	\centering
-	\footnotesize
+	\scriptsize
 	\setlength{\tabcolsep}{3pt}
-	\renewcommand{\arraystretch}{1.2}
+	\renewcommand{\arraystretch}{1.1}
 	\begin{tabularx}{\textwidth}{@{}c >{\raggedright\arraybackslash}p{0.20\textwidth} Y >{\raggedright\arraybackslash}p{0.22\textwidth} >{\raggedright\arraybackslash}p{0.16\textwidth}@{}}
 		\toprule
 		\textbf{Caso} & \textbf{Hallazgo principal} & \textbf{Evidencia que lo sustenta} & \textbf{Control recomendado} & \textbf{Limitación} \\
 		\midrule
-		1 & & & & \\
-		2 & & & & \\
-		3 & & & & \\
-		4 & & & & \\
-		5 & & & & \\
-		6 & & & & \\
-		7 & & & & \\
-		8 & & & & \\
-		9 & & & & \\
-		10 & & & & \\
+		1 & Handshake TCP completo y simétrico; sin conexiones \emph{half-open} ni desbalance SYN/SYN-ACK. & PCAP \texttt{200722\_tcp\_anon.pcapng}, tramas 1--2 y 9--10; conversaciones de 8 y 27 paquetes; \texttt{netstat} con estados \texttt{Established} y \texttt{TimeWait}. & \textit{SYN Cookies}, control de tasa, reducción de exposición y monitoreo del \emph{backlog}. & Muestra de laboratorio pequeña; no reproduce saturación ni un ataque real. \\
+		2 & Túnel DNS sobre consultas TXT de 121 caracteres, 100 de ellos en Base32. & 80 consultas con entropía 4,49; 0 alertas en la línea base y 82 en el túnel con Suricata. & Forzar el resolver interno, registrar consultas, limitar la tasa y alertar por longitud y entropía. & Túnel sintético de un solo cliente, sin evasión ni \emph{malware} real. \\
+		3 & Puertos SMB/NetBIOS (139 y 445) en escucha y servicios ejecutados como \texttt{LocalSystem}. & Inventario de puertos \texttt{LISTEN}, pruebas con \texttt{Test-NetConnection} e inspección de cuentas de servicio. & Filtrado perimetral de SMB, cierre de servicios innecesarios y mínimo privilegio. & No se determinaron versiones ni tráfico de aplicación; sin hashes de las imágenes. \\
+		4 & Isolation Forest detectó el 100\,\% de los ataques con 6 falsos positivos frente a 21 de la línea base $3\sigma$. & F1 de 0,9677 frente a 0,8955; 90 verdaderos positivos y 0 falsos negativos; regla de 200 SYN/5~s. & Revisión humana, monitoreo de deriva, calibración periódica y correlación con WAF y registros. & Prevalencia de prueba de 24,79\,\% y 66,67\,\% de falsos positivos en ráfagas legítimas. \\
+		5 & Ausencia total de paquetes RST; las sesiones cierran de forma ordenada con FIN/ACK. & Filtro \texttt{tcp.flags.reset == 1} sin coincidencias y revisión de dos flujos en la misma PCAP del Caso~1. & TLS con validación de certificados, segmentación, IDS/IPS y correlación de registros. & Captura de laboratorio sin registros simultáneos en ambos extremos. \\
+		6 & Amplificación DNS, NTP y SSDP contra una víctima que no envió consultas. & Factores de 34,7$\times$, 5,1$\times$ y 10,4$\times$; 379.320 bytes recibidos y captura del tráfico entrante. & Cerrar la recursión, deshabilitar \texttt{monlist}, restringir SSDP, aplicar RRL y filtrado de origen. & Reflectores emulados y abiertos a propósito; escala pequeña y no distribuida. \\
+		7 & Barrido ICMP de 40 destinos y túnel con carga Base64 de 900 bytes y cadencia fija. & 84 paquetes de barrido con 4 respuestas; 30 paquetes de túnel con 5,95 bits/byte y Base64 igual a 1,0; 4 y 5 alertas de Suricata. & Limitar tipos ICMP, control de tasa, alerta por tamaño y contenido, y filtrado de egreso. & Laboratorio pequeño, tráfico sintético y duplicación de paquetes del puente Docker. \\
+		8 & Escaneo SYN de 1024 puertos en 59~ms con 99,6\,\% de RST y cuatro puertos abiertos. & 2052 paquetes TCP, unos 17.400 SYN/s, \emph{fingerprinting} de versiones y 34 alertas por cada regla de Suricata. & Cerrar FTP, Telnet y el puerto 4444; migrar a SFTP/SSH con MFA, denegar por defecto y limitar la tasa. & Red virtual con latencia casi nula y sin técnicas de evasión. \\
+		9 & Siete alertas priorizadas; solo dos fueron ALTA y cinco se descartaron como falsos positivos. & \texttt{alertas\_enriquecidas.json} con puntajes 93,6 y 81,6 y \texttt{registro\_validacion\_humana.csv}. & Puntaje explicable, revisión humana obligatoria, convergencia de fuentes y supresión de ruido. & Una sola fuente real de alertas y ausencia de análisis de sensibilidad. \\
+		10 & TLS protege el tránsito, pero el archivo MAM conserva los mensajes en claro y un certificado no validado permite MITM. & Cero coincidencias en la sesión cifrada; credenciales y cuerpo legibles sin TLS; MAM en claro; OpenSSL falla solo con \texttt{-CAfile}. & TLS~1.2 o superior, certificado de una CA confiable, validación estricta, E2EE y cifrado del archivo MAM. & CA local, tráfico sintético y ausencia de usuarios reales. \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
 
 \subsection{Conclusiones de la Parte I}
 
-\textit{[Redacte entre tres y cinco párrafos. Indique qué patrones se repitieron entre casos, qué controles tuvieron mayor impacto y qué indicadores resultaron más fiables. Diferencie los hallazgos confirmados de las hipótesis no resueltas.]}
+La primera conclusión de la Parte~I es que distinguir una anomalía de un ataque exige evidencia y no solo una impresión. En los Casos~1 y~5 la captura mostró un \emph{handshake} completo, simétrico y con cierre ordenado; en el Caso~3 se confirmó la escucha de servicios heredados, pero no su explotación. Descartar una hipótesis con evidencia es un resultado técnico válido y evita dos errores costosos: bloquear tráfico legítimo y declarar un incidente que la captura no sostiene.
+
+El patrón que más se repite es la configuración insegura, no el exploit sofisticado. La recursión DNS abierta del Caso~2, los reflectores NTP y SSDP del Caso~6, el SMB y el Telnet expuestos de los Casos~3 y~8, y la validación laxa de certificados del Caso~10 habilitan el abuso sin necesidad de vulnerar software. Por eso los controles de mayor impacto fueron los más simples y verificables: denegar por defecto, cerrar servicios innecesarios, limitar la recursión y los reflectores, exigir TLS con validación estricta y aplicar mínimo privilegio.
+
+Ningún indicador aislado resultó fiable. El volumen por sí solo confunde una ráfaga legítima con un ataque: en el Caso~4 el 66,67\,\% de las ráfagas autorizadas se marcaron como anomalía. La entropía tampoco basta: el túnel del Caso~7 alcanzó 5,95 bits/byte, por debajo del umbral típico de contenido cifrado, porque su carga era Base64. La dirección IP no atribuye por sí sola, como advierte el Caso~8. Los indicadores robustos fueron las combinaciones: proporción SYN/RST con puertos destino únicos (Caso~8), tamaño de carga con proporción de caracteres imprimibles y cadencia (Caso~7), y puntaje explicable con convergencia de fuentes (Caso~9).
+
+Quedan hipótesis sin resolver que conviene declarar. No se determinaron las versiones de software del Caso~3 ni se capturó tráfico de aplicación; en el Caso~9 una alerta de 81,6 puntos quedó como posible \emph{flash crowd} y la sensibilidad de los pesos no se evaluó; la prevalencia real de ataque es desconocida y las cifras del Caso~4 describen solo el conjunto de prueba. La evidencia demuestra lo observado en capturas controladas, no la ausencia de riesgo en producción.
+
+El plan de mejora se prioriza así: primero, reducir superficie y cerrar servicios y reflectores; segundo, asegurar el canal con TLS, validación de certificados y cifrado de extremo a extremo cuando la confidencialidad lo exija; tercero, calibrar la detección contra la línea base y mantener revisión humana antes de cualquier bloqueo; cuarto, ampliar la evidencia, conservar los hashes y documentar las explicaciones benignas que no se descartaron.
 
 \subsection{Conclusiones de la Parte II}
 
-\textit{[Explique qué solución se propuso, por qué es viable, qué requisitos de seguridad y privacidad se priorizaron y qué límites tiene el prototipo. Diferencie el rastreo con consentimiento del rastreo encubierto y justifique por qué este último queda fuera del alcance.]}
+La Parte~II propuso \emph{Ubicación Compartida}, un MVP académico con bot de Telegram y panel web. La solución es viable porque se apoya en una acción explícita del usuario ---el botón nativo de ubicación--- y en componentes gratuitos y reproducibles: FastAPI, PostgreSQL~16, React con Leaflet y OpenStreetMap, y Docker Compose. No depende de claves de API de mapas ni de servicios de pago, se levanta con tres contenedores y su funcionamiento se verificó con 55 pruebas automatizadas y un recorrido de extremo a extremo de 13 pasos.
+
+Los requisitos de seguridad y privacidad que se priorizaron fueron el doble consentimiento, la identidad derivada del token, la vigencia corta de códigos y credenciales, la revocación inmediata y la minimización de datos. El propietario debe autorizar la relación y mantener habilitada la compartición; si falta una condición, la API responde \texttt{403} sin revelar si existen datos. El panel no elige a quién consultar: la identidad sale del JWT, cuyo sujeto es el \texttt{telegram\_id}. Estas decisiones se alinean con la Ley~1581 de 2012 y con el principio de finalidad limitada.
+
+El prototipo tiene límites deliberados: la ubicación solo se actualiza cuando el usuario la envía, no hay captura en segundo plano ni aplicación móvil nativa, el esquema no usa migraciones versionadas, la autenticación web no incorpora segundo factor, la purga no está programada y el cifrado en reposo se delega en PostgreSQL. Son límites coherentes con el alcance académico y con el diseño ético, no fallas ocultas.
+
+La diferencia central es el consentimiento. El sistema pide la ubicación y no la toma; el rastreo encubierto exige engaño, captura silenciosa o acceso a datos de terceros, y queda fuera del alcance por razones éticas y legales. El taller demuestra que una aplicación útil para compartir ubicación no necesita vigilar a nadie: basta con que el propietario decida qué comparte, con quién y hasta cuándo.
 
 \subsection{Limitaciones y trabajo futuro}
 
@@ -44,4 +59,4 @@ Las conclusiones deben sintetizar los hallazgos, reconocer las limitaciones de l
 	\item \looseness=-1 \textbf{Trabajo futuro:} ampliar la línea base, automatizar la correlación con reglas explicables, evaluar la deriva del modelo, incorporar pruebas de carga y mejorar los mecanismos de consentimiento y borrado.
 \end{itemize}
 
-Los Casos 4 y 9 muestran que los prototipos son útiles para priorizar y explicar señales, pero no bastan como mecanismo autónomo de bloqueo. En el Caso 4 se debe ampliar la línea base con más cambios legítimos de carga, vigilar la deriva y proteger los datos de entrenamiento; en el Caso 9 se debe incorporar la telemetría ausente, validar las reglas de correlación en Wazuh y mantener la revisión humana. En ambos casos, la mejora prioritaria es ampliar la evidencia y validar el comportamiento fuera de las capturas controladas.
+La evidencia de la Parte~I muestra que los controles preventivos y la calibración de la detección reducen el riesgo más que cualquier regla aislada, pero las capturas de laboratorio no sustituyen una línea base de producción: los Casos~4 y~9 deben ampliar su telemetría y validar la sensibilidad de sus umbrales antes de automatizar bloqueos. En la Parte~II, la mejora prioritaria es completar el ciclo de vida de los datos ---migraciones, segundo factor, purga programada y cifrado--- sin relajar el doble consentimiento que sostiene la confianza del usuario.

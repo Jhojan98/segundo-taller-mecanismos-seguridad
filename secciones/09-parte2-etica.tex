@@ -1,16 +1,17 @@
-\section{Consideraciones éticas, legales y de privacidad}
+\section{Consideraciones éticas, legales y de privacidad}\label{sec:etica-parte2}
 
-El diseño y la implementación de la solución deben cumplir los principios de consentimiento, finalidad, minimización, seguridad y transparencia. En Colombia, el tratamiento de datos personales se rige, entre otras normas, por la Ley~1581 de 2012 \parencite{ley1581}. La ubicación geográfica es un dato personal y su tratamiento requiere autorización previa, expresa e informada del titular, salvo las excepciones legales.
+El diseño y la implementación de la solución cumplen los principios de consentimiento, finalidad, minimización, seguridad y transparencia. En Colombia, el tratamiento de datos personales se rige, entre otras normas, por la Ley~1581 de 2012 \parencite{ley1581}. La ubicación geográfica es un dato personal y su tratamiento requiere autorización previa, expresa e informada del titular, salvo las excepciones legales.
 
 \subsection{Principios de tratamiento}
 
 \begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
-	\item \textbf{Consentimiento informado:} el usuario debe conocer quién recibe la ubicación, para qué, durante cuánto tiempo y cómo revocar la autorización.
-	\item \textbf{Finalidad limitada:} los datos solo se usan para el propósito académico declarado; no se reutilizan para marketing, vigilancia o perfilamiento.
-	\item \textbf{Minimización:} se recolectan únicamente los datos necesarios; se evita la ubicación continua cuando basta una captura periódica.
-	\item \textbf{Seguridad:} TLS en tránsito, cifrado en reposo, control de acceso, tokens con expiración y registros de auditoría.
-	\item \textbf{Retención y borrado:} se define un plazo de conservación y un mecanismo de eliminación verificable.
-	\item \textbf{Transparencia:} el usuario puede consultar qué datos se almacenan, corregirlos y solicitar su eliminación.
+	\item \textbf{Consentimiento informado:} el usuario conoce quién recibe la ubicación, para qué, durante cuánto tiempo y cómo revocar la autorización. En el MVP el consentimiento se materializa con el botón nativo de Telegram y con la autorización entre contactos.
+	\item \textbf{Doble consentimiento:} el propietario debe autorizar la relación y mantener habilitada la compartición; si desactiva cualquiera de las dos, el acceso cesa de inmediato.
+	\item \textbf{Finalidad limitada:} los datos solo se usan para el propósito académico declarado; no se reutilizan para marketing, vigilancia ni perfilamiento.
+	\item \textbf{Minimización:} se guardan latitud, longitud, precisión (solo si Telegram la informa) y fecha; el teléfono es opcional y no se solicita para localizar a nadie.
+	\item \textbf{Seguridad:} autenticación por JWT, códigos de un solo uso, CORS restringido, PostgreSQL fuera de la red pública y secretos por variables de entorno.
+	\item \textbf{Retención y borrado:} se define un plazo de conservación y existe la función de purga; el historial puede eliminarse por completo con la instrucción documentada.
+	\item \textbf{Transparencia:} el usuario consulta qué datos se almacenan, quién puede verlos y cómo revocar el permiso desde el bot o el panel.
 	\item \textbf{No discriminación:} la ubicación no se usa para tomar decisiones automatizadas sobre personas.
 \end{itemize}
 
@@ -18,6 +19,7 @@ El diseño y la implementación de la solución deben cumplir los principios de 
 
 \begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
 	\item Rastrear a una persona sin su consentimiento o mediante engaño, coerción o suplantación.
+	\item Localizar números telefónicos o contactos que no participen del sistema.
 	\item Interceptar comunicaciones, vulnerar plataformas o usar APIs no oficiales.
 	\item Compartir ubicaciones con terceros no autorizados o publicarlas en el repositorio.
 	\item Usar los datos para vigilar, acosar, discriminar o tomar represalias.
@@ -30,23 +32,27 @@ El taller no solicita vulnerar, atacar ni hackear escenarios domésticos o empre
 
 \subsection{Matriz de riesgos éticos y legales}
 
+La Tabla~\ref{tab:riesgos-eticos} relaciona los riesgos con las medidas implementadas en el MVP. Todas las medidas son verificables en el código o en las pruebas descritas en la Sección~\ref{sec:pruebas-parte2}.
+
 \begin{table}[H]
 	\caption{Riesgos éticos y legales de la solución}
 	\label{tab:riesgos-eticos}
 	\centering
 	\footnotesize
+	\setlength{\tabcolsep}{3pt}
 	\renewcommand{\arraystretch}{1.2}
-	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.26\textwidth} >{\raggedright\arraybackslash}p{0.16\textwidth} Y@{}}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.24\textwidth} >{\raggedright\arraybackslash}p{0.10\textwidth} Y@{}}
 		\toprule
-		\textbf{Riesgo} & \textbf{Impacto} & \textbf{Medida de mitigación} \\
+		\textbf{Riesgo} & \textbf{Impacto} & \textbf{Medida de mitigación implementada} \\
 		\midrule
-		Rastreo sin consentimiento & Alto & Consentimiento explícito, registro de fecha y revocación; bloqueo del servicio sin autorización. \\
-		Exposición de ubicaciones & Alto & Cifrado, control de acceso, minimización y auditoría de consultas. \\
-		Uso secundario de los datos & Medio & Política de finalidad limitada y prohibición de reutilización. \\
-		Retención excesiva & Medio & Plazo de conservación definido y borrado programado. \\
-		Acceso no autorizado & Alto & Autenticación fuerte, tokens con expiración y principio de mínimo privilegio. \\
-		Sesgo o error del modelo & Medio & Revisión humana, métricas de falsos positivos y explicabilidad. \\
-		& & \\
+		Rastreo sin consentimiento & Alto & La ubicación solo llega con el botón nativo de Telegram; no hay captura en segundo plano ni localización de números. \\
+		Exposición de ubicaciones & Alto & Doble consentimiento, JWT con identidad del token, CORS restringido y respuestas \texttt{403} sin filtrar datos. \\
+		Uso secundario de los datos & Medio & Finalidad académica declarada, sin integraciones publicitarias ni exportación de datos. \\
+		Retención excesiva & Medio & Función de purga por antigüedad y eliminación total del historial documentada. \\
+		Acceso no autorizado & Alto & Códigos de un solo uso, tokens con expiración, revocación inmediata y PostgreSQL no publicado. \\
+		Suplantación en el panel & Alto & El código \texttt{/web} se emite solo desde la cuenta de Telegram y caduca en cinco minutos; el JWT queda ligado al \texttt{telegram\_id}. \\
+		Reutilización de invitaciones & Medio & Códigos aleatorios de un solo uso, con caducidad de 15 minutos y estado pendiente hasta la aceptación. \\
+		Dependencia de Telegram & Bajo & El sistema es académico; si el bot no arranca, la API y el panel siguen funcionando y el \emph{health check} lo reporta. \\
 		\bottomrule
 	\end{tabularx}
 \end{table}

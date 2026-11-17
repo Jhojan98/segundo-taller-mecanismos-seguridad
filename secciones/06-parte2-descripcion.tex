@@ -1,6 +1,8 @@
 \section{Descripción y alcance de la solución}
 
-La Parte~II propone una aplicación, programa o bot que permita registrar un número telefónico, solicitar la ubicación del dispositivo asociado y visualizarla en un mapa, en tiempo real o por intervalos. La solución debe operar con consentimiento informado del usuario y con datos anonimizados; el objetivo es académico y no comercial.
+La Parte~II implementa \emph{Ubicación Compartida}, un producto mínimo viable (MVP) académico formado por un bot de Telegram y un panel web. El sistema permite que una persona comparta su ubicación de forma voluntaria y explícita con contactos que ella misma autoriza, y que esas posiciones se visualicen sobre un mapa. El bot no rastrea dispositivos ni localiza números telefónicos: la posición solo se registra cuando el propietario pulsa el botón nativo de ubicación de Telegram y confirma el envío.
+
+La Tabla~\ref{tab:niveles-rastreo} resume por qué se eligió Telegram frente a otras alternativas. La decisión prioriza un mecanismo en el que el consentimiento sea visible, verificable y revocable, aunque ello implique renunciar al rastreo continuo.
 
 \begin{table}[H]
 	\caption{Niveles de viabilidad del rastreo según el servicio}
@@ -8,36 +10,41 @@ La Parte~II propone una aplicación, programa o bot que permita registrar un nú
 	\centering
 	\footnotesize
 	\renewcommand{\arraystretch}{1.25}
-	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.18\textwidth} >{\raggedright\arraybackslash}p{0.20\textwidth} Y >{\raggedright\arraybackslash}p{0.20\textwidth}@{}}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.16\textwidth} >{\raggedright\arraybackslash}p{0.18\textwidth} Y >{\raggedright\arraybackslash}p{0.19\textwidth}@{}}
 		\toprule
 		\textbf{Servicio} & \textbf{Fuente de ubicación} & \textbf{Viabilidad y límites} & \textbf{Requisito de consentimiento} \\
 		\midrule
-		WhatsApp & Ubicación compartida manualmente & Limitada e indirecta: la aplicación no expone la ubicación en tiempo real ni permite rastrear a un contacto sin su acción. & El usuario debe compartir su ubicación de forma explícita. \\
-		Telegram & Bot y ubicación enviada por el usuario & Un bot puede solicitar la ubicación mediante botones, pero no puede rastrear automáticamente sin que el usuario la envíe. & El usuario debe iniciar el chat y autorizar el envío. \\
-		Celular directamente & GPS del dispositivo & Requiere una aplicación instalada en el dispositivo objetivo y permisos de localización. & Consentimiento expreso durante la instalación y uso. \\
+		WhatsApp & Ubicación compartida manualmente & Limitada e indirecta: no expone la posición en tiempo real ni permite rastrear a un contacto sin su acción. & El usuario debe compartir su ubicación de forma explícita. \\
+		Telegram (elegido) & Bot con botón \texttt{request\_location} & Un bot recibe coordenadas solo cuando el usuario las envía; no puede solicitarlas en segundo plano. & El usuario inicia el chat, pulsa el botón y confirma el envío. \\
+		Aplicación móvil & GPS del dispositivo & Requiere instalar una aplicación y conceder permisos de localización; habilita rastreo continuo, con mayor riesgo de abuso. & Consentimiento expreso durante la instalación y el uso. \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
 
-\subsection{Alcance propuesto}
+\subsection{Alcance implementado}
 
 \begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
-	\item Prototipo funcional con registro por número telefónico, autenticación y visualización de ubicaciones en un mapa.
-	\item Actualización periódica de la ubicación, con intervalo configurable (por ejemplo, cada 10 minutos).
-	\item Historial de ubicaciones y, como funcionalidad opcional, alertas por geofencing.
-	\item Documentación técnica, modelo de datos, API, plan de pruebas y análisis de riesgos.
-	\item Demostración con datos sintéticos o de laboratorio; no se utilizarán personas reales ni dispositivos de terceros.
+	\item Registro de usuarios por \texttt{telegram\_id}, sin duplicados, con menú principal y comandos de ayuda.
+	\item Vinculación entre contactos mediante códigos aleatorios de ocho caracteres, de un solo uso y con caducidad de 15 minutos.
+	\item Recepción de ubicaciones enviadas con el botón nativo de Telegram, con latitud, longitud, precisión horizontal (cuando existe) y fecha y hora en UTC.
+	\item API REST en FastAPI con documentación OpenAPI (Swagger UI) y autenticación por JWT emitida tras un código \texttt{/web} de un solo uso.
+	\item Panel web en React con mapa Leaflet/OpenStreetMap, historial de posiciones y gestión de autorizaciones.
+	\item Doble consentimiento: autorización activa y compartición habilitada por el propietario; revocación inmediata desde el bot o el panel.
+	\item Persistencia en PostgreSQL~16 con seis entidades y despliegue reproducible con Docker Compose.
+	\item Verificación con 55 pruebas automatizadas y un recorrido de extremo a extremo de 13 pasos sobre la pila real.
 \end{itemize}
 
 \subsection{Fuera de alcance}
 
 \begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
-	\item Rastrear personas sin consentimiento, interceptar comunicaciones o vulnerar la seguridad de WhatsApp, Telegram o de un operador móvil.
-	\item Utilizar APIs no oficiales, ingeniería inversa o técnicas que incumplan los términos de servicio de las plataformas.
-	\item Almacenar datos personales reales, credenciales o ubicaciones de terceros en el repositorio o en el informe.
-	\item Automatizar bloqueos, decisiones disciplinarias o acciones sobre personas a partir de una puntuación de riesgo.
+	\item Rastrear personas sin consentimiento, capturar GPS en segundo plano o enviar actualizaciones silenciosas.
+	\item Localizar números telefónicos o contactos que no participen del sistema.
+	\item Interceptar comunicaciones, usar APIs no oficiales o vulnerar plataformas de mensajería.
+	\item Emplear Google Maps o claves de API de terceros: el mapa usa teselas públicas de OpenStreetMap.
+	\item Almacenar datos personales reales, credenciales o ubicaciones de terceros en el repositorio o en este informe.
+	\item Operar como servicio de producción: el MVP no incluye segundo factor, migraciones de esquema ni cifrado en reposo a nivel de aplicación.
 \end{itemize}
 
 \begin{nota}{Principio de diseño}
-La solución debe pedir la ubicación, no tomarla por la fuerza. El usuario objetivo debe conocer quién recibe sus datos, para qué se usan, durante cuánto tiempo se conservan y cómo puede revocar el consentimiento.
+La solución pide la ubicación, no la toma por la fuerza. El propietario conoce quién recibe sus datos, para qué se usan, durante cuánto tiempo se conservan y cómo revocar el permiso. Ningún tercero puede consultar una posición si falta una de las dos condiciones de consentimiento.
 \end{nota}

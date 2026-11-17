@@ -1,100 +1,180 @@
-\section{Arquitectura de referencia}
+\section{Arquitectura de la solución}\label{sec:arquitectura-parte2}
 
-La arquitectura de referencia separa la captura de ubicación, la autenticación, el almacenamiento y la visualización. La Figura~\ref{fig:arquitectura} es un espacio para que el equipo incluya su diagrama; la Tabla~\ref{tab:componentes-arquitectura} describe las responsabilidades de cada componente.
-
-\begin{figure}[H]
-	\centering
-	\fbox{%
-		\parbox[c][6.2cm][c]{0.92\textwidth}{%
-			\centering
-			\textbf{[Insertar aquí el diagrama de arquitectura de la solución]}\\[0.4cm]
-			\footnotesize
-			Incluya la aplicación móvil, el bot de Telegram, la API REST, el servicio de autenticación,\\
-			la base de datos, el servicio de mapas y el panel administrativo.\\
-			Señale con flechas el sentido del flujo y los controles TLS en cada tramo.
-		}%
-	}
-	\caption{Arquitectura de referencia de la solución}
-	\label{fig:arquitectura}
-\end{figure}
+La arquitectura concentra la API REST y el bot en un único servicio: el bot se inicia y se detiene en el \emph{lifespan} de FastAPI, comparte el mismo bucle de eventos y usa los mismos servicios de negocio y la misma base de datos. El panel web se sirve como contenido estático desde Nginx, que además actúa como proxy inverso de \texttt{/api} hacia el backend. La Tabla~\ref{tab:componentes-arquitectura} describe los componentes y la Figura~\ref{fig:arquitectura} resume el flujo.
 
 \begin{table}[H]
 	\caption{Componentes de la arquitectura y responsabilidades}
 	\label{tab:componentes-arquitectura}
 	\centering
 	\footnotesize
+	\setlength{\tabcolsep}{3pt}
 	\renewcommand{\arraystretch}{1.2}
-	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.17\textwidth} Y >{\raggedright\arraybackslash}p{0.16\textwidth} >{\raggedright\arraybackslash}p{0.15\textwidth} >{\raggedright\arraybackslash}p{0.15\textwidth}@{}}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.16\textwidth} Y >{\raggedright\arraybackslash}p{0.24\textwidth}@{}}
 		\toprule
-		\textbf{Componente} & \textbf{Función} & \textbf{Entrada} & \textbf{Salida} & \textbf{Tecnología} \\
+		\textbf{Componente} & \textbf{Responsabilidad} & \textbf{Comunicación} \\
 		\midrule
-		Aplicación móvil & Captura y envía la ubicación con consentimiento. & GPS, usuario & Coordenadas, estado & \\
-		Bot de Telegram & Solicita la ubicación de forma manual. & Comando del usuario & Coordenadas & \\
-		API REST & Valida, autentica y registra las solicitudes. & Peticiones HTTPS & Respuestas JSON & \\
-		Autenticación & Verifica identidad y permisos. & Número, token & Sesión / JWT & \\
-		Base de datos & Persiste usuarios, dispositivos, ubicaciones y consentimientos. & Datos validados & Consultas & \\
-		Servicio de mapas & Representa las ubicaciones y resuelve direcciones. & Coordenadas & Mapa / dirección & \\
-		Panel administrativo & Consulta y audita el sistema. & Credenciales & Reportes & \\
+		Bot de Telegram & Comandos, teclados, recepción de ubicación y códigos de acceso. & \emph{Polling} contra la Bot API de Telegram. \\
+		API FastAPI & Validación, autenticación, reglas de consentimiento y documentación OpenAPI. & HTTP/JSON desde el panel; llamadas internas desde el bot. \\
+		Servicios & Lógica de usuarios, invitaciones, autorizaciones y ubicaciones. & Funciones Python dentro del mismo proceso. \\
+		PostgreSQL & Persistencia de las seis entidades y restricciones de integridad. & SQLAlchemy sobre la red interna de Compose; puerto no publicado. \\
+		Panel React & Login, mapa, historial y gestión de permisos. & \texttt{/api} a través del proxy de Nginx. \\
+		Nginx & Sirve el panel y redirige \texttt{/api} a \texttt{backend:8000}. & HTTP interno y publicación del puerto 3000. \\
+		OpenStreetMap & Teselas del mapa, sin claves de API. & HTTPS desde el navegador a \path{tile.openstreetmap.org}. \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
 
-\section{Modelo de datos propuesto}
+\begin{figure}[H]
+	\centering
+	\fbox{%
+		\parbox[c][5.4cm][c]{0.92\textwidth}{%
+			\centering
+			\footnotesize
+			\textbf{Usuario de Telegram} $\longrightarrow$ \textbf{Bot (polling)}\\[0.15cm]
+			$\downarrow$ comandos y ubicación enviada con el botón nativo\\[0.15cm]
+			\textbf{Backend FastAPI} (API + bot en el mismo proceso)\\[0.15cm]
+			$\downarrow$ SQLAlchemy \hspace{1.2cm} $\uparrow$ HTTP/JSON\\[0.15cm]
+			\textbf{PostgreSQL} (volumen \texttt{pgdata}, puerto no publicado)
+			\hspace{1.2cm} \textbf{Nginx + React}\\[0.3cm]
+			\textbf{Navegador} $\longleftrightarrow$ \textbf{Panel web} $\longleftrightarrow$ \texttt{/api}
+			$\longleftrightarrow$ \textbf{Backend}\\[0.3cm]
+			\textbf{Panel} $\longrightarrow$ teselas HTTPS $\longrightarrow$ \textbf{OpenStreetMap}
+		}%
+	}
+	\caption{Flujo de la arquitectura implementada}
+	\label{fig:arquitectura}
+\end{figure}
 
-La Tabla~\ref{tab:modelo-datos} propone las entidades mínimas. El equipo debe ajustar los campos a su implementación y documentar las claves primarias, foráneas e índices.
+El recorrido de una posición es el siguiente:
+
+\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item El usuario abre el chat del bot, se registra con \texttt{/start} y vincula a un contacto con un código de invitación.
+	\item El propietario autoriza la relación desde el bot; la autorización pasa de \emph{pendiente} a \emph{activa}.
+	\item Con \texttt{/compartir}, Telegram muestra el selector nativo y solo transmite las coordenadas si el usuario confirma.
+	\item El bot valida los datos y los guarda en \texttt{ubicaciones} mediante los servicios compartidos.
+	\item El panel solicita \texttt{/api/locations/shared} o \texttt{/history/\{id\}} con su JWT.
+	\item El backend exige autorización activa y compartición habilitada; si falta una, responde \texttt{403}.
+	\item El panel dibuja las posiciones autorizadas y el historial sobre el mapa.
+\end{enumerate}
+
+\section{Modelo de datos}
+
+La Tabla~\ref{tab:modelo-datos} describe las seis entidades implementadas. El modelo aplica restricciones en la base de datos: unicidad de \texttt{telegram\_id}, códigos únicos, un solo registro de configuración por usuario, límites de latitud y longitud, y una sola autorización por par propietario--autorizado.
 
 \begin{table}[H]
 	\caption{Entidades y campos principales del modelo de datos}
 	\label{tab:modelo-datos}
 	\centering
 	\footnotesize
+	\setlength{\tabcolsep}{3pt}
 	\renewcommand{\arraystretch}{1.2}
-	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.17\textwidth} Y >{\raggedright\arraybackslash}p{0.25\textwidth}@{}}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.17\textwidth} Y >{\raggedright\arraybackslash}p{0.28\textwidth}@{}}
 		\toprule
-		\textbf{Entidad} & \textbf{Campos principales} & \textbf{Relaciones} \\
+		\textbf{Entidad} & \textbf{Campos principales} & \textbf{Relaciones y restricciones} \\
 		\midrule
-		Usuario & Identificador, nombre, número telefónico, correo, hash de contraseña, estado. & Uno a muchos con dispositivos y consentimientos. \\
-		Dispositivo & Identificador, usuario, número, plataforma, token, estado. & Muchos a uno con usuario; uno a muchos con ubicaciones. \\
-		Ubicación & Identificador, dispositivo, latitud, longitud, precisión, fecha/hora, fuente. & Muchos a uno con dispositivo. \\
-		Consentimiento & Identificador, usuario, finalidad, alcance, fecha, estado, fecha de revocación. & Muchos a uno con usuario. \\
-		Zona & Identificador, usuario, nombre, centro, radio. & Uno a muchos con alertas. \\
-		Alerta & Identificador, zona, dispositivo, tipo, fecha, estado. & Muchos a uno con zona y dispositivo. \\
-		& & \\
+		\texttt{usuarios} & \texttt{id}, \texttt{telegram\_id} único, nombre visible, teléfono opcional, fechas de alta y actualización. & Uno a muchos con ubicaciones, invitaciones y autorizaciones. \\
+		\texttt{configuraciones} & \texttt{usuario\_id} único, \texttt{compartir\_ubicacion}, notificaciones, fecha de actualización. & Uno a uno con usuario; actúa como interruptor de consentimiento. \\
+		\texttt{ubicaciones} & \texttt{id}, \texttt{usuario\_id}, latitud, longitud, precisión opcional, \texttt{fecha\_hora}. & Muchos a uno con usuario; \texttt{CHECK} de rango e índice por usuario y fecha. \\
+		\texttt{autorizaciones} & \texttt{propietario\_id}, \texttt{autorizado\_id}, estado, fecha de autorización y de revocación. & Única por par; estados pendiente, activa, rechazada y revocada. \\
+		\texttt{invitaciones} & \texttt{código} único, emisor, receptor opcional, expiración y marca de uso. & Muchos a uno con el emisor; un solo uso. \\
+		\texttt{codigos\_web} & \texttt{código} único, \texttt{usuario\_id}, expiración y marca de uso. & Muchos a uno con usuario; un solo uso y cinco minutos. \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
 
-\section{Plan de trabajo}
+\section{Control de acceso y consentimiento}
 
-El plan de la Tabla~\ref{tab:plan-trabajo} distribuye las tres semanas del taller. Ajuste las fechas y los responsables según la disponibilidad del equipo; conserve los hitos de revisión y la entrega final.
+La regla central se implementa en el backend, nunca en el cliente: para entregar la ubicación de un tercero deben cumplirse dos condiciones simultáneas.
+
+\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item Existir una autorización con estado \emph{activa} entre el propietario y el consultante.
+	\item Tener el propietario la compartición habilitada (\texttt{compartir\_ubicacion = true}).
+\end{enumerate}
+
+Si falta cualquiera de las dos, la API responde \texttt{403} sin revelar si existen datos. La identidad del consultante se toma del JWT, cuyo campo \texttt{sub} es el \texttt{telegram\_id}; el panel no puede elegir otro usuario. Revocar una autorización o pulsar \texttt{/detener} surte efecto inmediato, sin borrar el historial.
+
+\section{Despliegue}
+
+La Tabla~\ref{tab:servicios-docker} resume los tres servicios de Docker Compose. Solo el backend y el frontend publican puertos; PostgreSQL queda en la red interna.
 
 \begin{table}[H]
-	\caption{Plan de trabajo sugerido}
-	\label{tab:plan-trabajo}
+	\caption{Servicios del despliegue con Docker Compose}
+	\label{tab:servicios-docker}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.13\textwidth} Y c c@{}}
+		\toprule
+		\textbf{Servicio} & \textbf{Función} & \textbf{Puerto} & \textbf{Persistencia} \\
+		\midrule
+		\texttt{postgres} & Base de datos con \emph{healthcheck}. & No publicado & Volumen \texttt{pgdata} \\
+		\texttt{backend} & API REST y bot en el mismo proceso. & 8000 & — \\
+		\texttt{frontend} & Panel React servido por Nginx y proxy \texttt{/api}. & 3000 & — \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+La configuración se realiza con variables de entorno documentadas en \texttt{.env.example}: el token del bot, las credenciales de PostgreSQL, la clave de firma JWT, las vigencias de acceso y de los códigos, los orígenes CORS permitidos, la URL del panel y los días de retención de ubicaciones. El archivo \texttt{.env} está excluido del repositorio y solo se versiona la plantilla con valores de ejemplo.
+
+\section{Pruebas y verificación}\label{sec:pruebas-parte2}
+
+Se ejecutaron dos suites completas y un recorrido de extremo a extremo sobre la pila real. La Tabla~\ref{tab:pruebas-parte2} resume los resultados.
+
+\begin{table}[H]
+	\caption{Resultados de las pruebas de la Parte II}
+	\label{tab:pruebas-parte2}
 	\centering
 	\footnotesize
 	\setlength{\tabcolsep}{3pt}
 	\renewcommand{\arraystretch}{1.2}
-	\begin{tabularx}{\textwidth}{@{}c >{\raggedright\arraybackslash}p{0.12\textwidth} Y >{\raggedright\arraybackslash}p{0.20\textwidth} >{\raggedright\arraybackslash}p{0.12\textwidth}@{}}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.22\textwidth} >{\raggedright\arraybackslash}p{0.24\textwidth} Y c@{}}
 		\toprule
-		\textbf{Semana} & \textbf{Fechas} & \textbf{Actividades} & \textbf{Entregable} & \textbf{Responsable} \\
+		\textbf{Suite} & \textbf{Entorno} & \textbf{Comando} & \textbf{Resultado} \\
 		\midrule
-		1 & 26 oct -- 1 nov & Marco del laboratorio, topología, casos 1 a 3 y diseño inicial de la Parte~II. & Fichas 1--3 y propuesta inicial. & \\
-		2 & 2 -- 8 nov & Casos 4 a 7, arquitectura, modelo de datos y API. & Fichas 4--7 y arquitectura. & \\
-		3 & 9 -- 14 nov & Casos 8 a 10, implementación, pruebas, informe final y hashes. & Versión final y anexos. & \\
+		Completa con SQLite & Contenedor \texttt{bot-backend} & \texttt{docker run --rm bot-backend pytest -q} & 53 superadas, 2 omitidas \\
+		Completa con PostgreSQL & Pila levantada & \texttt{docker compose exec backend pytest -q} & 55 superadas \\
+		Extremo a extremo por API & Pila levantada & Recorrido de 13 pasos & 13/13 correctos \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
 
+Las dos pruebas omitidas en SQLite corresponden a \texttt{tests/test\_postgres.py}, que solo se ejecutan cuando existe \texttt{TEST\_DATABASE\_URL}; en la suite con PostgreSQL se ejecutaron y pasaron. El recorrido de extremo a extremo cubre registro, código \texttt{/web}, invitación, rechazo \texttt{403} mientras la autorización está pendiente, envío de ubicación, autorización, consulta \texttt{200}, detención de la compartición, revocación y \texttt{403} final. También se verificó el \emph{health check} con la base de datos y el bot en ejecución.
+
+\section{Limitaciones y trabajo futuro}
+
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+	\item La ubicación solo se actualiza cuando el usuario la envía: no hay rastreo continuo ni captura en segundo plano.
+	\item No existe aplicación móvil nativa ni integración con los servicios de localización del sistema operativo.
+	\item El esquema se crea con \texttt{Base.metadata.create\_all}; no hay migraciones versionadas (por ejemplo, Alembic).
+	\item La autenticación web es adecuada para un MVP, pero no sustituye un sistema de identidad con segundo factor y revocación de sesiones.
+	\item La retención se documenta y existe la función de purga, pero no hay una tarea programada que la ejecute automáticamente.
+	\item El cifrado en reposo se delega en PostgreSQL; no hay cifrado a nivel de aplicación.
+	\item Telegram rechaza \texttt{localhost} en los botones de URL: en local el enlace al panel se envía como texto y los botones solo aparecen con una URL pública.
+\end{itemize}
+
 \section{Entregables de la Parte II}
 
-\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=4pt, label=\checkbox]
-	\item Código fuente funcional en un repositorio con historial de commits.
-	\item README con requisitos, instalación, configuración, ejecución y pruebas.
-	\item Diagrama de arquitectura y modelo de datos.
-	\item Documentación de la API REST (OpenAPI o equivalente).
-	\item Demostración con datos sintéticos o de laboratorio (video, capturas o ejecución en vivo).
-	\item Plan de pruebas y resultados de los casos felices y de error.
-	\item Política de privacidad, consentimiento informado y mecanismo de revocación.
-	\item Análisis de riesgos, limitaciones y trabajo futuro.
-\end{itemize}
+La Tabla~\ref{tab:entregables-parte2} relaciona los entregables con su estado y la evidencia que los respalda en el repositorio.
+
+\begin{table}[H]
+	\caption{Entregables de la Parte II y evidencia}
+	\label{tab:entregables-parte2}
+	\centering
+	\footnotesize
+	\setlength{\tabcolsep}{4pt}
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.34\textwidth} c Y@{}}
+		\toprule
+		\textbf{Entregable} & \textbf{Estado} & \textbf{Evidencia} \\
+		\midrule
+		Código fuente funcional & Cumplido & Carpeta \texttt{Bot/} con backend, bot y panel. \\
+		README de instalación y uso & Cumplido & \texttt{Bot/README.md}. \\
+		Documento técnico & Cumplido & \texttt{Bot/bot.md} y esta Parte~II. \\
+		Arquitectura y modelo de datos & Cumplido & Tablas~\ref{tab:componentes-arquitectura} y~\ref{tab:modelo-datos}. \\
+		Documentación de la API & Cumplido & Swagger UI en \texttt{/docs}. \\
+		Plan y resultados de pruebas & Cumplido & Tabla~\ref{tab:pruebas-parte2}. \\
+		Política de privacidad y revocación & Cumplido & Sección~\ref{sec:etica-parte2} y comandos \texttt{/permisos} y \texttt{/detener}. \\
+		Análisis de riesgos y limitaciones & Cumplido & Sección~\ref{sec:etica-parte2} y limitaciones de esta sección. \\
+		\bottomrule
+	\end{tabularx}
+\end{table}

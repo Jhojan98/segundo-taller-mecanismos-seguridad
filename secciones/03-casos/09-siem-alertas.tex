@@ -73,7 +73,7 @@ Detector ML del Caso 4 & anomalías por host/ventana & salida del análisis & An
 \end{table}
 
 \paragraph{Resultados obtenidos.}
-El archivo \texttt{alertas\_enriquecidas.json} contiene siete objetos de alerta. La suma de sus campos \texttt{eventos} es 148. El número exacto de eventos crudos antes de deduplicar y el número exacto de grupos intermedios no están guardados en los archivos autorizados; por tanto, la reducción completa se registra como \textbf{TODO} $\rightarrow$ \textbf{TODO} $\rightarrow$ 7 alertas.
+El archivo \texttt{alertas\_enriquecidas.json} contiene siete objetos de alerta. La suma de sus campos \texttt{eventos} es 148. El número exacto de eventos crudos antes de deduplicar y el número exacto de grupos intermedios no están guardados en los archivos autorizados; por tanto, la reducción completa se registra como \emph{sin dato} $\rightarrow$ \emph{sin dato} $\rightarrow$ 7 alertas.
 
 \begin{table}[H]
 \caption{Prioridades y desglose de las alertas enriquecidas}
@@ -148,7 +148,7 @@ BAJA & $<40$ & Prioridad baja \\
 \end{tabularx}
 \end{table}
 
-No existe en \texttt{laboratorio/work/cu9} un experimento de sensibilidad que varíe la ventana, los pesos o los umbrales. La sensibilidad sistemática es, por tanto, \textbf{TODO/no disponible}.
+No existe en \texttt{laboratorio/work/cu9} un experimento de sensibilidad que varíe la ventana, los pesos o los umbrales. La sensibilidad sistemática es, por tanto, \emph{no disponible}.
 
 \paragraph{Registro de validación humana.}
 La tabla reproduce las filas reales de \texttt{laboratorio/work/cu9/registro\_validacion\_humana.csv}.
@@ -174,21 +174,7 @@ La tabla reproduce las filas reales de \texttt{laboratorio/work/cu9/registro\_va
 \end{tabularx}
 \end{table}
 
-La tabla de verificación de afirmaciones del LLM no se reconstruye con cifras inventadas: el archivo autorizado de resultados no contiene el texto de las afirmaciones ni sus estados de verificación. Por ello, cada afirmación del LLM y su estado documental quedan como \textbf{TODO}; las alertas observables sí se contrastan con \texttt{alertas\_enriquecidas.json} y las decisiones con el CSV anterior.
-
-\begin{table}[H]
-\caption{Verificación de afirmaciones del LLM}
-\label{tab:c9_llm_verificacion}
-\centering
-\footnotesize
-\begin{tabularx}{\textwidth}{@{}c X X l@{}}
-\toprule
-\textbf{N.} & \textbf{Afirmación del LLM} & \textbf{Evidencia autorizada} & \textbf{Estado} \\
-\midrule
-TODO & TODO & \texttt{alertas\_enriquecidas.json} y \texttt{registro\_validacion\_humana.csv} & TODO \\
-\bottomrule
-\end{tabularx}
-\end{table}
+Las afirmaciones del LLM no se pudieron verificar una por una: el archivo autorizado de resultados no conserva el texto de las afirmaciones ni sus estados de verificación. Por ello, este informe no reproduce una tabla de verificación que no puede sustentar; en cambio, contrasta las alertas observables con \texttt{alertas\_enriquecidas.json} y las decisiones con \texttt{registro\_validacion\_humana.csv}.
 
 \paragraph{Análisis de resultados.}
 La alerta de score 93.6 subió por la severidad 40, diez firmas distintas, volumen 8, anomalía ML 20 y multiplicador 1.2. La alerta de score 81.6 subió además por la convergencia entre \texttt{suricata} y \texttt{webserver}, que aporta 15 puntos.
@@ -200,17 +186,7 @@ La ráfaga legítima no fue resuelta automáticamente: para la alerta de score 8
 \paragraph{Regla de correlación propuesta (Wazuh).}
 La siguiente regla se presenta únicamente como propuesta conceptual, no desplegada ni validada:
 
-\begin{verbatim}
-<group name="caso9,correlacion,">
-  <rule id="TODO" level="TODO">
-    <if_matched_sid>TODO</if_matched_sid>
-    <description>Correlación Caso 9 por host y ventana temporal</description>
-    <group>caso9_correlacion,</group>
-  </rule>
-</group>
-\end{verbatim}
-
-No hay una instancia de Wazuh disponible en los artefactos del laboratorio y no se ejecutó \texttt{wazuh-logtest}. La sintaxis, los SID de entrada y el nivel de la regla quedan como \textbf{TODO}; no debe afirmarse que la regla está desplegada o validada.
+La regla propuesta correlacionaría alertas del mismo host dentro de una ventana temporal y heredaría la severidad máxima de las firmas que la alimentan. No se incluye el XML definitivo porque no hay una instancia de Wazuh en los artefactos del laboratorio y no se ejecutó \texttt{wazuh-logtest}; por tanto, la regla no está desplegada ni validada.
 
 \paragraph{Mitigación y defensa.}
 Revisión humana antes de acciones disruptivas; control de acceso a los registros; evaluación de sesgo y deriva; registro de decisiones y posibilidad de reversión.
@@ -246,14 +222,14 @@ El registro muestra que un score 81.6 quedó para investigar por posible Flash C
 \textbf{Campo} & \textbf{Registro} \\
 \midrule
 Identificador & Caso 9, correlación y priorización de alertas. \\\hline
-Fecha y hora & Ventanas registradas en \texttt{alertas\_enriquecidas.json}; fecha de registro humano: TODO. \\\hline
+Fecha y hora & Ventanas registradas en \texttt{alertas\_enriquecidas.json}; la fecha de la revisión humana no quedó registrada en el CSV. \\\hline
 Origen/destino & Hosts y ventanas según \texttt{alertas\_enriquecidas.json}; fuentes disponibles: Suricata y servidor web. \\\hline
 Observación & Siete alertas enriquecidas, con scores entre 25.0 y 93.6 y suma de 148 eventos agrupados. \\\hline
 Hipótesis & La convergencia de firmas, fuentes, volumen y anomalía ML puede indicar un incidente, pero una ráfaga legítima requiere investigación antes de bloquear. \\\hline
 Validación & Siete filas de \texttt{registro\_validacion\_humana.csv}; decisiones: escalar, investigar y descartar. \\\hline
 Severidad & ALTA, MEDIA o BAJA según los umbrales del script y los scores del JSON. \\\hline
 Acción & Revisión humana; escalar, investigar o descartar según el registro; no bloquear automáticamente. \\\hline
-Integridad & TODO; no hay hash de los artefactos de CU9 en los archivos autorizados. \\
+Integridad & No disponible: no hay hash de los artefactos de CU9 en los archivos autorizados. \\
 \bottomrule
 \end{tabularx}
 \end{table}

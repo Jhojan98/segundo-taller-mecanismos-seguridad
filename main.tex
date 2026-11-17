@@ -82,6 +82,7 @@
 % Casilla vacía para listas de verificación (sin depender de amssymb).
 % El \fboxsep se reduce para que la casilla quede cuadrada y discreta.
 \newcommand{\checkbox}{{\setlength{\fboxsep}{1pt}\framebox[6pt]{\rule{0pt}{4pt}}}}
+\newcommand{\checkedbox}{{\setlength{\fboxsep}{1pt}\framebox[6pt][c]{\rule{0pt}{4pt}\raisebox{0.4pt}{\tiny\checkmark}}}}
 
 % Numeración de secciones y subsecciones: "1", "1.1", "1.2", ...
 \setcounter{secnumdepth}{2}
@@ -204,11 +205,6 @@
 \justifying
 
 % ---------------------------------------------------------------------
-% Introducción y datos del equipo
-% ---------------------------------------------------------------------
-\input{secciones/01-introduccion}
-
-% ---------------------------------------------------------------------
 % PARTE I. ANÁLISIS DE CASOS
 % ---------------------------------------------------------------------
 \section*{Parte I. Análisis de casos}
@@ -234,8 +230,8 @@
 % ---------------------------------------------------------------------
 % PARTE II. PROGRAMACIÓN
 % ---------------------------------------------------------------------
-\section*{Parte II. Programación}
-\addcontentsline{toc}{section}{Parte II. Programación}
+\section*{Parte II. Programación: bot de Telegram y panel web}
+\addcontentsline{toc}{section}{Parte II. Programación: bot de Telegram y panel web}
 
 \input{secciones/06-parte2-descripcion}
 \input{secciones/07-parte2-requisitos}
